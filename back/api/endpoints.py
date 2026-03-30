@@ -1923,12 +1923,18 @@ async def generate_lab_links(request: Request, current_user: dict = Depends(get_
             sm.user_cohorts.pop(u, None)
             sm.user_ready_status.pop(u, None)
             sm.user_treatment_groups.pop(u, None)
+            sm.permanent_speculators.discard(u)
+            sm.permanent_informed_goals.pop(u, None)
         # Clear cohort state that was set up for previous lab cohorts
         sm.cohort_members.clear()
         sm.cohort_sessions.clear()
         sm.cohort_treatment_overrides.clear()
         sm.cohort_persistent_session_ids.clear()
         lab_trader_map.clear()
+        # Clear accumulated rewards for lab traders
+        lab_trader_ids = [t for t in accumulated_rewards if t.startswith("HUMAN_LAB_")]
+        for t in lab_trader_ids:
+            del accumulated_rewards[t]
 
         # Use the request's base URL to construct lab links
         base_url = str(request.base_url).rstrip("/")
