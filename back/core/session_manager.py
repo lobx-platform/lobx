@@ -648,14 +648,20 @@ class SessionManager:
         # If user has a forced treatment group, assign to that cohort directly
         if username in self.user_treatment_groups:
             forced_cohort = self.user_treatment_groups[username]
-            if forced_cohort < len(effective_sizes):
-                if forced_cohort not in self.cohort_members:
-                    self.cohort_members[forced_cohort] = set()
-                self.user_cohorts[username] = forced_cohort
-                self.cohort_members[forced_cohort].add(username)
-                self._get_or_create_cohort_session_id(forced_cohort)
-                logger.info(f"Assigned {username} to forced treatment cohort {forced_cohort}")
-                return forced_cohort
+            if forced_cohort >= len(effective_sizes):
+                # Extend market_sizes so the forced cohort exists
+                last_size = effective_sizes[-1] if effective_sizes else 1
+                while len(effective_sizes) <= forced_cohort:
+                    effective_sizes.append(last_size)
+                self.market_sizes = effective_sizes
+                logger.warning(f"Extended market_sizes to {effective_sizes} to accommodate forced cohort {forced_cohort}")
+            if forced_cohort not in self.cohort_members:
+                self.cohort_members[forced_cohort] = set()
+            self.user_cohorts[username] = forced_cohort
+            self.cohort_members[forced_cohort].add(username)
+            self._get_or_create_cohort_session_id(forced_cohort)
+            logger.info(f"Assigned {username} to forced treatment cohort {forced_cohort}")
+            return forced_cohort
 
         # Find first cohort with space
         for cohort_id, max_size in enumerate(effective_sizes):

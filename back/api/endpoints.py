@@ -702,7 +702,16 @@ async def get_trader_info(trader_id: str):
                     else:
                         trader_specific_metrics['Accumulated_Reward'] = pick_random_element_new(all_rewards[1:])
                 else:
-                    trader_specific_metrics = {}
+                    # User was in the market but didn't trade — show zeros, not N/A
+                    trader_specific_metrics = {
+                        'Trades': 0,
+                        'Num_Buy': 0,
+                        'Num_Sell': 0,
+                        'Remaining_Trades': 0,
+                        'PnL': 0,
+                        'Reward': 0,
+                        'Accumulated_Reward': 0,
+                    }
             else:
                 print(f"Log file not found: {log_file_path}")
                 order_book_metrics = {}
@@ -1897,24 +1906,48 @@ async def download_consent_data(current_user: dict = Depends(get_current_admin_u
 # Generate lab session links
 @app.post("/admin/generate-lab-links")
 async def generate_lab_links(request: Request, current_user: dict = Depends(get_current_admin_user)):
-    from .lab_auth import generate_lab_tokens
+    from .lab_auth import generate_lab_tokens, lab_trader_map, LAB_TOKENS
     try:
         body = await request.json()
         count = body.get("count", 10)
         num_treatments = body.get("num_treatments", 1)
         treatment_overrides = body.get("treatment_overrides", None)
+
+        # Clear all previous lab state so re-generated tokens work
+        LAB_TOKENS.clear()
+        sm = market_handler.session_manager
+        lab_usernames = [u for u in sm.user_historical_markets if u.startswith("LAB_")]
+        for u in lab_usernames:
+            sm.user_historical_markets.pop(u, None)
+            sm.user_sessions.pop(u, None)
+            sm.user_cohorts.pop(u, None)
+            sm.user_ready_status.pop(u, None)
+            sm.user_treatment_groups.pop(u, None)
+        # Clear cohort state that was set up for previous lab cohorts
+        sm.cohort_members.clear()
+        sm.cohort_sessions.clear()
+        sm.cohort_treatment_overrides.clear()
+        sm.cohort_persistent_session_ids.clear()
+        lab_trader_map.clear()
+
         # Use the request's base URL to construct lab links
         base_url = str(request.base_url).rstrip("/")
         # Frontend is typically on a different port; use origin header if available
         origin = request.headers.get("origin", base_url)
         links = generate_lab_tokens(count, base_url=origin, num_treatments=num_treatments)
 
+        # Auto-set market_sizes to match treatments so each treatment group gets its own cohort
+        if num_treatments > 1:
+            block_size = count // num_treatments
+            market_sizes = [block_size] * num_treatments
+            sm.update_market_sizes(market_sizes)
+
         # Store cohort treatment overrides if provided
         # Format: {0: {"informed_trade_intensity": 0.36}, 1: {"informed_trade_intensity": 0.69}, ...}
         if treatment_overrides and isinstance(treatment_overrides, dict):
             for cohort_id_str, overrides in treatment_overrides.items():
                 cohort_id = int(cohort_id_str)
-                market_handler.session_manager.cohort_treatment_overrides[cohort_id] = overrides
+                sm.cohort_treatment_overrides[cohort_id] = overrides
 
         return success(message=f"Generated {count} lab links ({num_treatments} treatments)", data={"links": links})
     except Exception as e:
