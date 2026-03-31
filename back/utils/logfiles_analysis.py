@@ -522,15 +522,15 @@ def is_jsonable(x):
     except (TypeError, OverflowError):
         return False
 
-def calculate_trader_specific_metrics(trader_specific_metrics, general_metrics, trader_goal):
+def calculate_trader_specific_metrics(trader_specific_metrics, general_metrics, trader_goal, conversion_rate):
     """Calculate trader-specific metrics based on trading activity and goals."""
-    
+
     # Store the original PnL
     original_pnl = trader_specific_metrics['PnL']
     
     # Calculate reward with scaling between 3 and 10 based on PnL (for no-goal traders)
     if isinstance(original_pnl, (int, float)):
-        max_pnl_possible = 10
+        max_pnl_possible = 10 * conversion_rate
         max_gbp_to_give = 10
         if original_pnl < 0:
             reward = 0

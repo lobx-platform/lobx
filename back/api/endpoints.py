@@ -682,10 +682,13 @@ async def get_trader_info(trader_id: str):
 
                 if trader_specific_metrics:
                     trader_goal = trader_data.get('goal', 0)  # Get trader goal from trader data
+                    conversion_rate = trader_data.get('conversion_rate',1)
+                    
                     trader_specific_metrics = calculate_trader_specific_metrics(
                         trader_specific_metrics, 
                         general_metrics, 
-                        trader_goal
+                        trader_goal,
+                        conversion_rate
                     )
                     
                     # track rewards per market (avoid duplicates)
