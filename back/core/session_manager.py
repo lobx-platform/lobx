@@ -239,12 +239,20 @@ class SessionManager:
         base_params_dict = base_params.model_dump()
         merged_params_dict = treatment_manager.get_merged_params(market_count, base_params_dict)
 
-        # Apply cohort-specific treatment overrides (for parallel treatment groups)
-        cohort_id = self.user_cohorts.get(first_user)
-        if cohort_id is not None and cohort_id in self.cohort_treatment_overrides:
-            overrides = self.cohort_treatment_overrides[cohort_id]
+        # Apply treatment overrides: use user's treatment_group (not cohort_id)
+        # so users in independent cohorts still get the right treatment params
+        treatment_group = self.user_treatment_groups.get(first_user)
+        if treatment_group is not None and treatment_group in self.cohort_treatment_overrides:
+            overrides = self.cohort_treatment_overrides[treatment_group]
             merged_params_dict.update(overrides)
-            logger.info(f"Applied cohort {cohort_id} treatment overrides: {overrides}")
+            logger.info(f"Applied treatment_group {treatment_group} overrides: {overrides}")
+        else:
+            # Fallback: try cohort_id (for non-lab flows)
+            cohort_id = self.user_cohorts.get(first_user)
+            if cohort_id is not None and cohort_id in self.cohort_treatment_overrides:
+                overrides = self.cohort_treatment_overrides[cohort_id]
+                merged_params_dict.update(overrides)
+                logger.info(f"Applied cohort {cohort_id} treatment overrides: {overrides}")
 
         # Create new TradingParameters with merged settings
         params = TradingParameters(**merged_params_dict)
@@ -645,23 +653,9 @@ class SessionManager:
 
         effective_sizes = self._get_effective_market_sizes(params)
 
-        # If user has a forced treatment group, assign to that cohort directly
-        if username in self.user_treatment_groups:
-            forced_cohort = self.user_treatment_groups[username]
-            if forced_cohort >= len(effective_sizes):
-                # Extend market_sizes so the forced cohort exists
-                last_size = effective_sizes[-1] if effective_sizes else 1
-                while len(effective_sizes) <= forced_cohort:
-                    effective_sizes.append(last_size)
-                self.market_sizes = effective_sizes
-                logger.warning(f"Extended market_sizes to {effective_sizes} to accommodate forced cohort {forced_cohort}")
-            if forced_cohort not in self.cohort_members:
-                self.cohort_members[forced_cohort] = set()
-            self.user_cohorts[username] = forced_cohort
-            self.cohort_members[forced_cohort].add(username)
-            self._get_or_create_cohort_session_id(forced_cohort)
-            logger.info(f"Assigned {username} to forced treatment cohort {forced_cohort}")
-            return forced_cohort
+        # Note: treatment_group is NOT used for cohort assignment.
+        # Each user gets their own independent cohort; treatment overrides
+        # are applied via user_treatment_groups lookup at market start time.
 
         # Find first cohort with space
         for cohort_id, max_size in enumerate(effective_sizes):

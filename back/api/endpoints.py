@@ -1942,11 +1942,9 @@ async def generate_lab_links(request: Request, current_user: dict = Depends(get_
         origin = request.headers.get("origin", base_url)
         links = generate_lab_tokens(count, base_url=origin, num_treatments=num_treatments)
 
-        # Auto-set market_sizes to match treatments so each treatment group gets its own cohort
-        if num_treatments > 1:
-            block_size = count // num_treatments
-            market_sizes = [block_size] * num_treatments
-            sm.update_market_sizes(market_sizes)
+        # Each lab user gets their own independent cohort (1 user per cohort)
+        # Treatment overrides are applied via treatment_group, not cohort_id
+        sm.update_market_sizes([1] * count)
 
         # Store cohort treatment overrides if provided
         # Format: {0: {"informed_trade_intensity": 0.36}, 1: {"informed_trade_intensity": 0.69}, ...}
