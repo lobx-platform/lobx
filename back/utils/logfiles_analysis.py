@@ -501,9 +501,9 @@ def process_logfile(logfile_name):
         if num_buy == num_sell:
             pnl = sum(prices_sell) - sum(prices_buy)
         elif num_buy > num_sell:
-            pnl = sum(prices_sell) - sum(prices_buy) + (num_buy - num_sell) * (all_best_bid_prices[-1])
+            pnl = sum(prices_sell) - sum(prices_buy) + (num_buy - num_sell) * (all_best_bid_prices[-1] - 2)
         else:
-            pnl = sum(prices_sell) - sum(prices_buy) - (num_sell - num_buy) * (all_best_ask_prices[-1])
+            pnl = sum(prices_sell) - sum(prices_buy) - (num_sell - num_buy) * (all_best_ask_prices[-1] + 2)
         
         all_metrics[trader] = {'Trades': total_trades_trader_i,
                                'VWAP': trader_i_vwap,
