@@ -279,14 +279,7 @@ export const NavigationService = {
     const sessionStore = useSessionStore()
     const traderStore = useTraderStore()
 
-    console.log('[Navigation] startNextMarket called')
-    console.log('[Navigation] canStartNewMarket:', sessionStore.canStartNewMarket)
-    console.log('[Navigation] current status:', sessionStore.status)
-
-    if (!sessionStore.canStartNewMarket) {
-      console.log('[Navigation] Cannot start new market, returning false')
-      return false
-    }
+    // Note: canStartNewMarket is already checked by the caller (goToNextMarket)
 
     // Tell backend to clean up the finished market session
     try {
