@@ -420,26 +420,28 @@ class SessionManager:
     async def cleanup_finished_markets(self):
         """Clean up finished markets."""
         finished_markets = []
-        
-        for market_id, trader_manager in self.active_markets.items():
+
+        # Snapshot the dict to avoid RuntimeError from concurrent modification
+        for market_id, trader_manager in list(self.active_markets.items()):
             if trader_manager.trading_market.is_finished:
                 finished_markets.append(market_id)
                 await trader_manager.cleanup()
-        
+
         for market_id in finished_markets:
-            del self.active_markets[market_id]
+            self.active_markets.pop(market_id, None)
             # Remove user session mappings for this market
-            users_to_remove = [username for username, session_id in self.user_sessions.items() 
+            users_to_remove = [username for username, session_id in list(self.user_sessions.items())
                              if session_id == market_id]
             for username in users_to_remove:
-                del self.user_sessions[username]
-        
-        logger.info(f"Cleaned up {len(finished_markets)} finished markets")
+                self.user_sessions.pop(username, None)
+
+        if finished_markets:
+            logger.info(f"Cleaned up {len(finished_markets)} finished markets")
     
     async def reset_all(self):
         """Reset all state (for admin reset)."""
         # Cleanup active markets
-        for trader_manager in self.active_markets.values():
+        for trader_manager in list(self.active_markets.values()):
             try:
                 await trader_manager.cleanup()
             except Exception as e:
