@@ -418,13 +418,13 @@ async function savePerMarketResponses() {
   })
 }
 
-// Navigate to next market with page refresh (ensures clean state)
+// Navigate to next market
 const goToNextMarket = async () => {
   isNavigating.value = true
 
   try {
     // Save per-market responses before moving on
-    await savePerMarketResponses()
+    await savePerMarketResponses().catch(e => console.warn('Failed to save responses:', e))
 
     // Check if user can start a new market
     if (!sessionStore.canStartNewMarket) {
@@ -435,14 +435,17 @@ const goToNextMarket = async () => {
       return
     }
 
-    // Use NavigationService to handle the transition properly
-    await NavigationService.startNextMarket()
+    // Try NavigationService first, fall back to page reload
+    try {
+      await NavigationService.startNextMarket()
+    } catch (navError) {
+      console.warn('NavigationService failed, falling back to reload:', navError)
+      window.location.href = window.location.origin + '/onboarding/ready'
+    }
   } catch (error) {
     console.error('Error navigating to next market:', error)
-    dialogTitle.value = 'Error'
-    dialogMessage.value = 'Failed to start next market. Please try again.'
-    showDialog.value = true
-    isNavigating.value = false
+    // Fall back to reload instead of showing error dialog
+    window.location.href = window.location.origin + '/onboarding/ready'
   }
 }
 
