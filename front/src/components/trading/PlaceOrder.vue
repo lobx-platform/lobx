@@ -404,7 +404,7 @@ onUnmounted(() => {
   font-family: var(--font-mono);
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
-  color: var(--color-text-bright);
+  color: var(--color-text-primary);
 }
 
 .order-content {
@@ -438,12 +438,6 @@ onUnmounted(() => {
 .ai-suggested {
   border: var(--border-width) solid var(--color-primary) !important;
   box-shadow: var(--shadow-glow-sm);
-  animation: pulse-highlight 1.5s infinite;
-}
-
-@keyframes pulse-highlight {
-  0%, 100% { box-shadow: 0 0 6px rgba(34, 211, 238, 0.3); }
-  50% { box-shadow: 0 0 14px rgba(34, 211, 238, 0.5); }
 }
 
 .sleep-notification-overlay {

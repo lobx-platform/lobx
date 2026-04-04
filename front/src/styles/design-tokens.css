@@ -1,59 +1,59 @@
 /**
- * Trading Platform Design System — Dark Terminal Theme
+ * Trading Platform Design System — Light Theme
  *
- * Inspired by Bloomberg Terminal / professional trading interfaces.
- * Deep navy/charcoal base with teal/cyan accents.
+ * Clean, professional fintech aesthetic.
+ * White/light gray base with teal/cyan accents.
  */
 
 :root {
   /* ========================================
-   * COLOR PALETTE — DARK TERMINAL
+   * COLOR PALETTE — LIGHT
    * ======================================== */
 
   /* Primary — Teal/Cyan accent for interactive elements */
-  --color-primary: #22D3EE;
-  --color-primary-hover: #06B6D4;
-  --color-primary-light: rgba(34, 211, 238, 0.12);
-  --color-primary-muted: rgba(34, 211, 238, 0.4);
+  --color-primary: #0891B2;
+  --color-primary-hover: #0E7490;
+  --color-primary-light: rgba(8, 145, 178, 0.10);
+  --color-primary-muted: rgba(8, 145, 178, 0.35);
 
   /* Neutral — Text, borders, backgrounds */
-  --color-text-primary: #E2E8F0;
-  --color-text-secondary: #94A3B8;
-  --color-text-muted: #64748B;
-  --color-text-inverse: #0F172A;
-  --color-text-bright: #F8FAFC;
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+  --color-text-inverse: #FFFFFF;
+  --color-text-bright: #0F172A;
 
-  /* Backgrounds — Layered dark surfaces */
-  --color-bg-page: #0B1120;
-  --color-bg-surface: #111827;
-  --color-bg-elevated: #1E293B;
-  --color-bg-subtle: rgba(255, 255, 255, 0.04);
-  --color-bg-hover: rgba(255, 255, 255, 0.06);
-  --color-bg-active: rgba(34, 211, 238, 0.08);
+  /* Backgrounds — Layered light surfaces */
+  --color-bg-page: #F8FAFC;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-elevated: #F1F5F9;
+  --color-bg-subtle: rgba(0, 0, 0, 0.02);
+  --color-bg-hover: rgba(0, 0, 0, 0.04);
+  --color-bg-active: rgba(8, 145, 178, 0.06);
 
   /* Borders */
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-light: rgba(255, 255, 255, 0.04);
-  --color-border-focus: #22D3EE;
-  --color-border-strong: rgba(255, 255, 255, 0.15);
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+  --color-border-focus: #0891B2;
+  --color-border-strong: #CBD5E1;
 
   /* Trading semantic colors */
-  --color-bid: #22C55E;
-  --color-bid-bg: rgba(34, 197, 94, 0.10);
-  --color-bid-border: rgba(34, 197, 94, 0.25);
-  --color-ask: #EF4444;
-  --color-ask-bg: rgba(239, 68, 68, 0.10);
-  --color-ask-border: rgba(239, 68, 68, 0.25);
+  --color-bid: #16A34A;
+  --color-bid-bg: rgba(22, 163, 74, 0.08);
+  --color-bid-border: rgba(22, 163, 74, 0.25);
+  --color-ask: #DC2626;
+  --color-ask-bg: rgba(220, 38, 38, 0.08);
+  --color-ask-border: rgba(220, 38, 38, 0.25);
 
   /* Semantic colors */
-  --color-success: #22C55E;
-  --color-success-light: rgba(34, 197, 94, 0.15);
-  --color-warning: #F59E0B;
-  --color-warning-light: rgba(245, 158, 11, 0.15);
-  --color-error: #EF4444;
-  --color-error-light: rgba(239, 68, 68, 0.15);
-  --color-info: #3B82F6;
-  --color-info-light: rgba(59, 130, 246, 0.15);
+  --color-success: #16A34A;
+  --color-success-light: rgba(22, 163, 74, 0.10);
+  --color-warning: #D97706;
+  --color-warning-light: rgba(217, 119, 6, 0.10);
+  --color-error: #DC2626;
+  --color-error-light: rgba(220, 38, 38, 0.10);
+  --color-info: #2563EB;
+  --color-info-light: rgba(37, 99, 235, 0.10);
 
   /* ========================================
    * TYPOGRAPHY
@@ -121,15 +121,15 @@
   --border-width: 1px;
 
   /* ========================================
-   * SHADOWS — Subtle glow effects
+   * SHADOWS — Subtle, no glow
    * ======================================== */
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(34, 211, 238, 0.15);
-  --shadow-glow-sm: 0 0 10px rgba(34, 211, 238, 0.1);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 0 3px rgba(8, 145, 178, 0.15);
+  --shadow-glow-sm: 0 0 0 2px rgba(8, 145, 178, 0.10);
 
   /* ========================================
    * TRANSITIONS

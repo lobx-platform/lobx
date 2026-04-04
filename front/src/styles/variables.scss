@@ -1,27 +1,27 @@
-/* SASS Variables for the Trading Platform — Dark Terminal Theme */
+/* SASS Variables for the Trading Platform — Light Theme */
 
 :root {
   /* Colors */
-  --primary-color: #22D3EE;
-  --secondary-color: #94A3B8;
-  --success-color: #22C55E;
-  --warning-color: #F59E0B;
-  --error-color: #EF4444;
-  --info-color: #3B82F6;
+  --primary-color: #0891B2;
+  --secondary-color: #475569;
+  --success-color: #16A34A;
+  --warning-color: #D97706;
+  --error-color: #DC2626;
+  --info-color: #2563EB;
 
   /* Background colors */
-  --background-light: #0B1120;
-  --background-dark: #0B1120;
-  --surface-color: #111827;
+  --background-light: #F8FAFC;
+  --background-dark: #F1F5F9;
+  --surface-color: #FFFFFF;
 
   /* Text colors */
-  --text-primary: #E2E8F0;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
 
   /* Border colors */
-  --border-light: rgba(255, 255, 255, 0.08);
-  --border-medium: rgba(255, 255, 255, 0.15);
+  --border-light: #E2E8F0;
+  --border-medium: #CBD5E1;
 
   /* Spacing */
   --spacing-xs: 0.25rem;

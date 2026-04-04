@@ -515,7 +515,7 @@ onMounted(() => {
 
 .market-summary-card .v-card-title {
   background: var(--color-bg-elevated) !important;
-  color: var(--color-text-bright) !important;
+  color: var(--color-text-primary) !important;
   font-family: var(--font-mono) !important;
   font-size: var(--text-xl) !important;
   letter-spacing: var(--tracking-wide) !important;
@@ -546,7 +546,7 @@ onMounted(() => {
 }
 
 .metric-card .text-h6 {
-  color: var(--color-text-bright) !important;
+  color: var(--color-text-primary) !important;
   font-family: var(--font-mono) !important;
 }
 

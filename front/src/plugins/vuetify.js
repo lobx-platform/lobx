@@ -1,7 +1,7 @@
 /**
  * plugins/vuetify.js
  *
- * Trading Platform — Dark Terminal Theme
+ * Trading Platform — Light Theme
  */
 
 // Styles
@@ -13,33 +13,33 @@ import { createVuetify } from 'vuetify'
 
 export default createVuetify({
   theme: {
-    defaultTheme: 'terminal',
+    defaultTheme: 'light',
     themes: {
-      terminal: {
-        dark: true,
+      light: {
+        dark: false,
         colors: {
           // Primary — Teal/Cyan accent
-          primary: '#22D3EE',
-          'primary-darken-1': '#06B6D4',
+          primary: '#0891B2',
+          'primary-darken-1': '#0E7490',
 
           // Secondary
-          secondary: '#94A3B8',
+          secondary: '#475569',
 
           // Semantic colors
-          error: '#EF4444',
-          info: '#3B82F6',
-          success: '#22C55E',
-          warning: '#F59E0B',
+          error: '#DC2626',
+          info: '#2563EB',
+          success: '#16A34A',
+          warning: '#D97706',
 
           // Surface colors
-          background: '#0B1120',
-          surface: '#111827',
-          'surface-variant': '#1E293B',
+          background: '#F8FAFC',
+          surface: '#FFFFFF',
+          'surface-variant': '#F1F5F9',
 
           // Text colors
-          'on-background': '#E2E8F0',
-          'on-surface': '#E2E8F0',
-          'on-primary': '#0F172A',
+          'on-background': '#0F172A',
+          'on-surface': '#0F172A',
+          'on-primary': '#FFFFFF',
         }
       }
     }

@@ -133,7 +133,7 @@ onMounted(() => {
   font-family: var(--font-mono);
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
-  color: var(--color-text-bright);
+  color: var(--color-text-primary);
 }
 
 .v-icon.v-icon--size-x-small {

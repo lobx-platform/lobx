@@ -1,8 +1,5 @@
 <template>
   <div class="auth-page">
-    <!-- Ambient grid background -->
-    <div class="auth-grid-bg"></div>
-
     <div class="auth-container">
       <!-- Logo and Title -->
       <div class="auth-header">
@@ -143,26 +140,14 @@ const handleAdminLogin = async () => {
   overflow: hidden;
 }
 
-/* Subtle grid background */
-.auth-grid-bg {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-}
-
 .auth-container {
   width: 100%;
   max-width: 420px;
   background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border-strong);
+  border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: var(--space-8) var(--space-6);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  box-shadow: var(--shadow-lg);
   position: relative;
   z-index: 1;
   animation: slideUp 0.4s ease-out;
@@ -185,14 +170,12 @@ const handleAdminLogin = async () => {
   background: var(--color-bg-elevated);
   border: var(--border-width) solid var(--color-border);
   margin-bottom: var(--space-4);
-  box-shadow: var(--shadow-glow-sm);
 }
 
 .auth-logo {
   width: 56px;
   height: 56px;
   display: block;
-  filter: brightness(1.1);
 }
 
 .auth-title {
@@ -215,8 +198,10 @@ const handleAdminLogin = async () => {
 .auth-divider {
   width: 40px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-primary-muted), transparent);
+  background: var(--color-primary);
+  opacity: 0.3;
   margin: var(--space-4) auto 0;
+  border-radius: 1px;
 }
 
 .auth-loading {
@@ -279,7 +264,7 @@ const handleAdminLogin = async () => {
   font-size: var(--text-base);
   font-family: var(--font-mono);
   color: var(--color-text-primary);
-  background: var(--color-bg-elevated);
+  background: var(--color-bg-surface);
   border: var(--border-width) solid var(--color-border-strong);
   border-radius: var(--radius-md);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
@@ -288,7 +273,7 @@ const handleAdminLogin = async () => {
 .input-field:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px var(--color-primary-light), var(--shadow-glow-sm);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .input-field::placeholder {
@@ -338,7 +323,7 @@ const handleAdminLogin = async () => {
 .btn-spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(15, 23, 42, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: var(--color-text-inverse);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
@@ -355,7 +340,7 @@ const handleAdminLogin = async () => {
   color: var(--color-error);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
-  border: var(--border-width) solid rgba(239, 68, 68, 0.2);
+  border: var(--border-width) solid rgba(220, 38, 38, 0.2);
 }
 
 .error-close {

@@ -1,16 +1,6 @@
 <template>
   <div class="landing-container">
-    <Toaster position="top-center" theme="dark" :visibleToasts="3" />
-
-    <!-- Modern gradient background -->
-    <div class="gradient-bg"></div>
-
-    <!-- Floating elements for visual interest -->
-    <div class="floating-elements">
-      <div class="floating-shape floating-shape-1"></div>
-      <div class="floating-shape floating-shape-2"></div>
-      <div class="floating-shape floating-shape-3"></div>
-    </div>
+    <Toaster position="top-center" theme="light" :visibleToasts="3" />
 
     <v-container fluid class="fill-height pa-0 relative">
       <v-row justify="center" align="center" class="fill-height">
@@ -224,74 +214,8 @@ const deepBlueColor = ref('deep-blue')
   background: var(--color-bg-page);
 }
 
-.gradient-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(ellipse at 30% 20%, rgba(34, 211, 238, 0.06) 0%, transparent 50%),
-              radial-gradient(ellipse at 70% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 50%);
-  z-index: -2;
-}
-
-.floating-elements {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.floating-shape {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.05), transparent);
-  animation: float 20s infinite ease-in-out;
-}
-
-.floating-shape-1 {
-  width: 300px;
-  height: 300px;
-  top: 10%;
-  left: -150px;
-  animation-delay: 0s;
-}
-
-.floating-shape-2 {
-  width: 200px;
-  height: 200px;
-  top: 60%;
-  right: -100px;
-  animation-delay: -7s;
-}
-
-.floating-shape-3 {
-  width: 150px;
-  height: 150px;
-  bottom: 20%;
-  left: 20%;
-  animation-delay: -14s;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  33% {
-    transform: translateY(-30px) rotate(120deg);
-  }
-  66% {
-    transform: translateY(30px) rotate(240deg);
-  }
-}
-
 .modern-card {
   background: var(--color-bg-surface);
-  backdrop-filter: blur(20px);
   border-radius: var(--radius-xl);
   border: var(--border-width) solid var(--color-border);
   box-shadow: var(--shadow-lg);
@@ -307,7 +231,7 @@ const deepBlueColor = ref('deep-blue')
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), #A855F7, var(--color-bid));
+  background: linear-gradient(90deg, var(--color-primary), #7C3AED, var(--color-bid));
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
@@ -328,7 +252,7 @@ const deepBlueColor = ref('deep-blue')
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), #A855F7);
+  background: linear-gradient(90deg, var(--color-primary), #7C3AED);
   border-radius: 2px;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -357,10 +281,9 @@ const deepBlueColor = ref('deep-blue')
   justify-content: center;
   width: 64px;
   height: 64px;
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border-strong);
+  background: var(--color-primary-light);
+  border: var(--border-width) solid var(--color-primary-muted);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-glow-sm);
 }
 
 .page-icon {
@@ -406,34 +329,19 @@ const deepBlueColor = ref('deep-blue')
   font-family: var(--font-family);
 }
 
-.nav-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left 0.6s;
-}
-
-.nav-btn:hover::before {
-  left: 100%;
-}
-
 .nav-btn-primary {
   background: var(--color-primary);
   color: var(--color-text-inverse);
-  box-shadow: var(--shadow-glow-sm);
 }
 
 .nav-btn-primary:hover:not(.disabled) {
-  box-shadow: var(--shadow-glow);
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
 .nav-btn-secondary {
-  background: var(--color-bg-elevated);
+  background: var(--color-bg-surface);
   color: var(--color-text-secondary);
   border: var(--border-width) solid var(--color-border-strong);
 }
@@ -459,7 +367,6 @@ const deepBlueColor = ref('deep-blue')
 }
 
 .nav-btn-skip:hover {
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
   transform: translateY(-1px);
 }
 

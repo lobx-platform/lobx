@@ -262,7 +262,7 @@ const saveActiveOrders = (orders) => {
   font-family: var(--font-mono);
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
-  color: var(--color-text-bright);
+  color: var(--color-text-primary);
 }
 
 .order-details {
@@ -315,11 +315,11 @@ const saveActiveOrders = (orders) => {
 }
 
 .order-levels-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.12);
   border-radius: 2px;
 }
 
 .order-levels-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
 }
 </style>

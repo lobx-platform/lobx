@@ -37,11 +37,11 @@ const createChart = (data) => {
         {
           label: 'Price',
           data: data,
-          borderColor: '#22D3EE',
+          borderColor: '#0891B2',
           borderWidth: 2,
           pointRadius: 3,
-          pointBackgroundColor: '#22D3EE',
-          pointBorderColor: '#22D3EE',
+          pointBackgroundColor: '#0891B2',
+          pointBorderColor: '#0891B2',
           tension: 0,
           fill: false,
         },
@@ -61,10 +61,10 @@ const createChart = (data) => {
         },
         tooltip: {
           enabled: true,
-          backgroundColor: '#1E293B',
-          titleColor: '#E2E8F0',
-          bodyColor: '#F8FAFC',
-          borderColor: 'rgba(255,255,255,0.1)',
+          backgroundColor: '#FFFFFF',
+          titleColor: '#0F172A',
+          bodyColor: '#0F172A',
+          borderColor: '#E2E8F0',
           borderWidth: 1,
           padding: 10,
           displayColors: false,
@@ -107,7 +107,7 @@ const createChart = (data) => {
         y: {
           position: 'left',
           grid: {
-            color: 'rgba(255,255,255,0.04)',
+            color: '#F1F5F9',
             drawBorder: false,
           },
           ticks: {

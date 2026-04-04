@@ -594,7 +594,7 @@ onMounted(() => {
 /* ===== TOOL CARDS (panels) ===== */
 .v-card {
   border-radius: var(--radius-lg);
-  box-shadow: none;
+  box-shadow: var(--shadow-sm);
   border: var(--border-width) solid var(--color-border);
   background: var(--color-bg-surface);
 }
@@ -619,11 +619,12 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   background: var(--color-bg-surface);
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .tool-card:hover {
   border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .price-history-card {
@@ -701,17 +702,14 @@ onMounted(() => {
 
 .role-chip-modern.teal {
   background: var(--color-primary);
-  box-shadow: 0 0 8px rgba(34, 211, 238, 0.3);
 }
 
 .role-chip-modern.indigo {
-  background: #3B82F6;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+  background: #2563EB;
 }
 
 .role-chip-modern.deep-purple {
-  background: #A855F7;
-  box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+  background: #7C3AED;
 }
 
 .role-chip-modern.grey {
@@ -725,7 +723,7 @@ onMounted(() => {
   align-items: center;
   gap: 6px;
   padding: 5px 14px;
-  background: var(--color-bg-elevated);
+  background: var(--color-primary-light);
   border: var(--border-width) solid var(--color-primary-muted);
   border-radius: var(--radius-md);
   color: var(--color-primary);
@@ -733,7 +731,6 @@ onMounted(() => {
   font-weight: var(--font-bold);
   font-size: var(--text-lg);
   letter-spacing: var(--tracking-wide);
-  box-shadow: var(--shadow-glow-sm);
 }
 
 /* ===== GOAL CHIP ===== */
@@ -778,14 +775,14 @@ onMounted(() => {
 .progress-bar-modern {
   flex: 1;
   height: 6px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 3px;
   overflow: hidden;
 }
 
 .progress-fill-modern {
   height: 100%;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -801,17 +798,14 @@ onMounted(() => {
 /* Goal background colors */
 .success-bg {
   background: var(--color-bid);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
 }
 
 .buy-bg {
-  background: #3B82F6;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+  background: #2563EB;
 }
 
 .sell-bg {
   background: var(--color-ask);
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
 }
 
 /* ===== DYNAMIC HEADER ===== */
@@ -825,7 +819,7 @@ onMounted(() => {
   z-index: 1000 !important;
   background: var(--color-bg-surface) !important;
   border-bottom: var(--border-width) solid var(--color-border) !important;
-  box-shadow: none !important;
+  box-shadow: var(--shadow-xs) !important;
 }
 
 .dynamic-header .v-toolbar__content {

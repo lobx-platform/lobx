@@ -51,8 +51,8 @@ const chartOptions = reactive({
         fontSize: '10px',
       },
     },
-    lineColor: 'rgba(255,255,255,0.08)',
-    tickColor: 'rgba(255,255,255,0.08)',
+    lineColor: '#E2E8F0',
+    tickColor: '#E2E8F0',
   },
   yAxis: {
     title: null,
@@ -63,7 +63,7 @@ const chartOptions = reactive({
         fontSize: '10px',
       },
     },
-    gridLineColor: 'rgba(255,255,255,0.04)',
+    gridLineColor: '#F1F5F9',
   },
   credits: {
     enabled: false,
@@ -73,19 +73,19 @@ const chartOptions = reactive({
   },
   tooltip: {
     shared: true,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    shadow: false,
+    borderColor: '#E2E8F0',
+    shadow: true,
     useHTML: true,
-    headerFormat: '<table><tr><th colspan="2" style="color:#E2E8F0">{point.key:.2f}</th></tr>',
+    headerFormat: '<table><tr><th colspan="2" style="color:#0F172A">{point.key:.2f}</th></tr>',
     pointFormat:
       '<tr><td style="color: {series.color}">{series.name}: </td>' +
-      '<td style="text-align: right; color:#F8FAFC"><b>{point.y:.0f}</b></td></tr>',
+      '<td style="text-align: right; color:#0F172A"><b>{point.y:.0f}</b></td></tr>',
     footerFormat: '</table>',
     style: {
       fontSize: '11px',
-      color: '#E2E8F0',
+      color: '#0F172A',
     },
   },
   plotOptions: {
