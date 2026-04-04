@@ -14,22 +14,22 @@ def parse_log_line(line: str) -> Optional[Dict]:
 
     timestamp_str, _, message_type, content = match.groups()
     timestamp = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S,%f')
-    
+
     content = (content.replace('<OrderStatus.BUFFERED: \'buffered\'>', "'BUFFERED'")
                       .replace('<OrderType.BID: 1>', "'BID'")
                       .replace('<OrderType.ASK: -1>', "'ASK'"))
-    
+
     datetime_match = re.search(r"datetime\.datetime\((\d+, \d+, \d+, \d+, \d+, \d+, \d+)\)", content)
     if datetime_match:
         datetime_str = datetime_match.group(1)
         content = content.replace(datetime_match.group(0), f"'{datetime_str}'")
-    
+
     content_dict = ast.literal_eval(content)
-    
+
     if 'timestamp' in content_dict:
         timestamp_parts = [int(part.strip()) for part in content_dict['timestamp'].split(',')]
         content_dict['timestamp'] = datetime(*timestamp_parts)
-    
+
     return {
         'timestamp': timestamp,
         'message_type': message_type,
@@ -78,12 +78,12 @@ def process_log_file(log_file_path: str) -> List[Dict]:
         log_lines = file.readlines()
 
     parsed_logs = [parse_log_line(line) for line in log_lines if parse_log_line(line) is not None]
-    
+
     if not parsed_logs:
         return []
 
     df = pl.DataFrame(parsed_logs)
-    
+
     start_time = df['timestamp'].min()
     order_book = {'bids': {}, 'asks': {}}
     processed_messages = []
@@ -103,29 +103,8 @@ def process_log_file(log_file_path: str) -> List[Dict]:
 def write_to_csv(data: List[Dict], output_file: io.StringIO):
     if not data:
         return
-
-    # Get the fieldnames from the first dictionary in the list
     fieldnames = list(data[0].keys())
-
-    # Create a CSV writer object
     writer = csv.DictWriter(output_file, fieldnames=fieldnames)
-
-    # Write the header
     writer.writeheader()
-
-    # Write the data
     for row in data:
         writer.writerow(row)
-
-if __name__ == '__main__':
-    log_file_path = 'logs/SESSION_1726606741_trading.log'
-    output_file = 'message_book.csv'
-    
-    processed_data = process_log_file(log_file_path)
-    write_to_csv(processed_data, output_file)
-    
-    print(f"Message book data written to {output_file}")
-    
-    # Display the first few rows using polars
-    df = pl.DataFrame(processed_data)
-    print(df.head())
