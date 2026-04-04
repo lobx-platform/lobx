@@ -137,40 +137,61 @@ Keep: `NOISE`, `MARKET_MAKER`, `INFORMED`, `HUMAN`, `INITIAL_ORDER_BOOK`
 
 ## Execution Order
 
+### Phase 0: Import safety (before deleting anything)
+1. Grep all imports of modules to be deleted
+2. Update `traders/__init__.py`, `trader_manager.py`, `endpoints.py`, `auth.py` to remove dead imports
+3. Verify no runtime ImportError after removing imports (but before deleting files)
+
 ### Phase 1: Safe deletions (zero risk)
-1. Delete dead trader files (RL, reference, manipulator, spoofing, simple_order, agentic)
-2. Remove their imports from `traders/__init__.py`, `trader_manager.py`
-3. Delete `config/agentic_prompts.yaml`
-4. Delete agentic test files
-5. Trim `data_models.py` (13 fields, 4 enum values)
+4. Delete dead trader files (RL, reference, manipulator, spoofing, simple_order, agentic)
+5. Delete `config/agentic_prompts.yaml`
+6. Delete agentic test files (`test_agentic_trader.py`, `run_agentic_test.py`, `run_agentic_paper_test.py`)
+7. Trim `data_models.py` (13 fields, 4 enum values)
+8. **Rewrite `trader_manager.py`** — remove 5 bot creation methods entirely (not just trim)
+9. Test: platform starts, existing lab flow still works with 3 traders
 
 ### Phase 2: Admin auth (unblock everything else)
-6. Add admin password login endpoint (simple, no Firebase)
-7. Update `get_current_admin_user()` to accept admin password OR Firebase (transitional)
-8. Test: admin can log in and generate lab links
+10. Add admin password login: env var `ADMIN_PASSWORD`, Bearer token, ~20 LOC
+11. Update `get_current_admin_user()` to accept admin password OR Firebase (transitional)
+12. Test: admin can log in and generate lab links
 
-### Phase 3: Backend restructure
-9. Split `endpoints.py` → `routes/{auth, trading, admin, questionnaire}.py`
-10. **Rewrite `session_manager.py`** — replace cohort system with simple per-user session
-11. Delete `prolific_auth.py`, `google_sheet_auth.py`
-12. Rewrite `auth.py` — lab token + admin password only, remove Firebase/Prolific paths
-13. Delete agentic endpoints, inline `websocket_utils.py`, delete `calculate_metrics.py`
+### Phase 3: Backend restructure (split into sub-steps, test between each)
+**3a: Split endpoints.py** (pure refactor, no logic change)
+13. Extract → `routes/{auth, trading, admin, questionnaire}.py`
+14. Test: all existing endpoints still work
 
-### Phase 4: Frontend cleanup
-14. Rewrite `Auth.vue` — lab token auto-login + admin password form
-15. Slim down `navigation.js` — keep market lifecycle, delete onboarding over-engineering
-16. Trim `ConfigTab.vue` — remove agentic/deleted trader config
-17. Delete `AIPromptsTab.vue`, `AIAdvisor.vue`, `LogFilesManager.vue`
-18. Simplify stores (app.js, auth.js)
-19. Remove Firebase OAuth and Prolific flows from frontend
+**3b: Rewrite session + auth** (the hard part)
+15. **Rewrite `session_manager.py`** — replace cohort system with simple per-user session
+16. Rewrite `auth.py` — lab token + admin password only, remove Firebase/Prolific paths
+17. Test: full experiment flow works (generate links → onboard → trade → summary)
+
+**3c: Delete old modules** (cleanup)
+18. Delete `prolific_auth.py`, `google_sheet_auth.py`
+19. Delete agentic endpoints from routes
+20. Inline `websocket_utils.py`, delete `calculate_metrics.py`
+
+### Phase 4: Frontend rewrite
+**Follow `FRONTEND-DESIGN.md` for all visual design decisions.**
+
+21. Rewrite `Auth.vue` — lab token auto-login + admin password form
+22. Slim down `navigation.js`:
+    - **Keep**: `startTrading`, `onMarketStarted`, `onTradingEnded`, `startNextMarket`, `afterLogin`, `logout`, `recoverSession`
+    - **Delete**: `loadUserProgress`, `saveUserProgress`, `afterProlificLogin`, `completeStudy`, step navigation functions
+23. Trim `ConfigTab.vue` — remove agentic/deleted trader config, update traderTypes array
+24. Delete `AIPromptsTab.vue`, `AIAdvisor.vue`, `LogFilesManager.vue`
+25. Simplify stores: flatten `app.js` (kill 19 delegating getters), rewrite `auth.js` to lab-only (~80 LOC)
+26. Remove Firebase OAuth and Prolific flows from all frontend code
+27. **Rewrite UI**: all pages get fresh visual design per FRONTEND-DESIGN.md. Onboarding content stays the same, look and feel changes.
 
 ### Phase 5: Verification
-20. Generate 4 lab links with 2 treatments
-21. Open link 1, complete ALL onboarding pages, trade 2 markets
-22. Verify summary shows correct metrics (not N/A)
-23. Open link 3 (different treatment), verify different informed_trade_intensity
-24. Check log files have LAB_X in filename
-25. Admin can download logs and view parameter_history
+28. Generate 4 lab links with 2 treatments
+29. Open link 1, complete ALL onboarding pages, trade 2 markets
+30. Verify summary shows correct metrics (not N/A)
+31. Open link 3 (different treatment), verify different informed_trade_intensity
+32. Check log files have LAB_X in filename
+33. Admin can log in with password, download logs, view parameter_history
+34. Test error paths: invalid lab token, expired token, mid-market page refresh
+35. Test concurrent sessions: 2 users trading simultaneously in separate sessions
 
 ## CI/CD Strategy
 
@@ -178,6 +199,16 @@ Keep: `NOISE`, `MARKET_MAKER`, `INFORMED`, `HUMAN`, `INITIAL_ORDER_BOOK`
 - Do NOT merge to main until Phase 5 verification passes
 - Consider disabling auto-deploy during merge window
 - Docker/deployment files (`docker-compose.yml`, `Dockerfile.back`, CI workflow) update as needed in Phase 3
+
+## Frontend Design
+
+All frontend pages will be rewritten with a fresh visual identity. See `FRONTEND-DESIGN.md` for the design system and aesthetic guidelines. Onboarding **content** (consent text, instructions, questions) stays unchanged; the **look and feel** is redesigned.
+
+## Notes from Review
+
+- **Role flexibility**: Keep `goal` as a configurable parameter (default 0 = speculator). Don't hardcode. Alessio may want informed human traders in future experiments.
+- **market_sizes**: Keep as a vestigial field (unused in simple flow, but costs nothing and preserves option for multi-user markets later).
+- **trader_manager.py**: Mark as "Rewrite" not "Trim" — 5 bot creation methods must be fully removed, not just commented out.
 
 ## Files Not Changed (kept as-is)
 - `core/trading_platform.py`, `core/handlers.py`, `core/services.py`
