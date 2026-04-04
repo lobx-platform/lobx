@@ -57,6 +57,11 @@ firebase-debug.log
 !back/config/firebase/firebase.json
 
 # ====================
+# MCP / PLAYWRIGHT
+# ====================
+.playwright-mcp/
+
+# ====================
 # OS & TEMP FILES
 # ====================
 .DS_Store
