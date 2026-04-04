@@ -3,7 +3,6 @@ import App from './App.vue'
 import { registerPlugins } from '@/plugins'
 import VueApexCharts from 'vue3-apexcharts'
 import VueCountdown from '@chenfengyuan/vue-countdown'
-import { auth } from './firebaseConfig.js'
 
 // Design System - Import order matters
 import './styles/design-tokens.css'
@@ -27,11 +26,5 @@ app.component('Toaster', Toaster)
 // Register all main plugins (Vuetify, Pinia, Router, Motion)
 registerPlugins(app)
 
-// Wait for Firebase Auth to initialize before mounting the app
-let appMounted = false
-auth.onAuthStateChanged(() => {
-  if (!appMounted) {
-    app.mount('#app')
-    appMounted = true
-  }
-})
+// Mount immediately - no Firebase auth gate
+app.mount('#app')

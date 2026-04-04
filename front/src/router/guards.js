@@ -14,16 +14,7 @@ export function setupGuards(router) {
     const authStore = useAuthStore()
     const sessionStore = useSessionStore()
 
-    // 1a. Handle Prolific params in URL - store them for later use
-    if (to.query.PROLIFIC_PID && to.query.STUDY_ID && to.query.SESSION_ID) {
-      sessionStore.setProlificParams({
-        PROLIFIC_PID: to.query.PROLIFIC_PID,
-        STUDY_ID: to.query.STUDY_ID,
-        SESSION_ID: to.query.SESSION_ID,
-      })
-    }
-
-    // 1b. Handle Lab token in URL - store for auto-login
+    // 1. Handle Lab token in URL - store for auto-login
     if (to.query.LAB_TOKEN) {
       sessionStore.setLabToken(to.query.LAB_TOKEN)
     }

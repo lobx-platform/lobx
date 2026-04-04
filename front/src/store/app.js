@@ -1,12 +1,10 @@
 // store.js
 import { defineStore } from 'pinia'
 import axios from '@/api/axios'
-import { auth } from '@/firebaseConfig'
 import { useAuthStore } from './auth'
 import { useMarketStore } from './market'
 import { useWebSocketStore } from './websocket'
 import { useUIStore } from './ui'
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth'
 
 export const useTraderStore = defineStore('trader', {
   state: () => ({
@@ -53,43 +51,12 @@ export const useTraderStore = defineStore('trader', {
     // Transaction tracking
     lastMatchedOrders: null,
 
-    // AI Advisor
-    aiAdvice: null,
-    hasAdvisor: false,
-    advisorEnabled: false,  // Whether advisor is enabled for this session
-
     // Legacy/compatibility - deprecated but kept for backward compatibility
     step: 1000,
     messages: [],
   }),
   getters: {
-    // Delegate to specialized stores while maintaining API compatibility
-    bidData: () => useMarketStore().bidData,
-    askData: () => useMarketStore().askData,
-    chartData: () => useMarketStore().chartData,
-    history: () => useMarketStore().history,
-    midPoint: () => useMarketStore().midPoint,
-    spread: () => useMarketStore().spread,
-    extraParams: () => useMarketStore().extraParams,
-    lastTransactionPrice: () => useMarketStore().lastTransactionPrice,
-    recentTransactions: () => useMarketStore().recentTransactions,
-    current_price: () => useMarketStore().currentPrice,
-
-    // UI delegates
-    showSnackbar: () => useUIStore().showSnackbar,
-    snackbarText: () => useUIStore().snackbarText,
-    dayOver: () => useUIStore().dayOver,
-    intendedRoute: () => useUIStore().intendedRoute,
-
-    // Auth delegates
-    isAuthenticated: () => useAuthStore().isAuthenticated,
-    user: () => useAuthStore().user,
-    isAdmin: () => useAuthStore().isAdmin,
-
-    // WebSocket delegates
-    ws: () => useWebSocketStore().ws,
-
-    // Trader-specific getters (maintain current API)
+    // Trader-specific getters
     shares: (state) => state.trader.shares,
     cash: (state) => state.trader.cash,
     initial_shares: (state) => state.trader.initial_shares,
@@ -196,9 +163,6 @@ export const useTraderStore = defineStore('trader', {
         this.tradingMarketData = response.data.data
         this.gameParams = persistentSettings
         this.formState = this.gameParams
-
-        // Check if AI advisor is enabled
-        this.advisorEnabled = persistentSettings.agentic_advisor_enabled ?? false
 
         // Handle different session states
         if (response.data.status === 'waiting') {
@@ -382,23 +346,6 @@ export const useTraderStore = defineStore('trader', {
         useMarketStore().updateExtraParams({
           [paramName]: data.trader_status
         })
-        return
-      }
-
-      // Handle AI advisor advice
-      if (data.type === 'AI_ADVICE') {
-        this.aiAdvice = data.advice
-        this.hasAdvisor = true
-        // Show notification for new advice
-        const action = data.advice.action
-        const price = data.advice.price
-        if (action === 'place_order' && price) {
-          useUIStore().showMessage(`AI Advisor suggests: ${action} at ${price}`)
-        } else if (action === 'hold') {
-          useUIStore().showMessage(`AI Advisor suggests: Hold position`)
-        } else if (action === 'cancel_order') {
-          useUIStore().showMessage(`AI Advisor suggests: Cancel order`)
-        }
         return
       }
 
@@ -621,25 +568,6 @@ export const useTraderStore = defineStore('trader', {
       }
     },
 
-    // Delegate authentication operations
-    async login(email, password) {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      return userCredential.user.is_admin
-    },
-
-    async register(email, password) {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      return userCredential.user.is_admin
-    },
-
-    async logout() {
-      await signOut(auth)
-      useAuthStore().logout()
-    },
-
-    setAuthenticated(value) {
-      // This is handled by auth store automatically
-    },
     updateTimeInfo(data) {
       this.remainingTime = data.remaining_time
       this.isTradingStarted = data.is_trading_started

@@ -35,14 +35,8 @@
           :serverActive="serverActive"
           @update:formState="updateFormState"
         />
-        <AIPromptsTab v-else-if="activeTab === 'prompts'" :serverActive="serverActive" />
         <MarketsTab v-else-if="activeTab === 'markets'" :serverActive="serverActive" />
       </main>
-
-      <!-- Right: Data Export (Always Visible) -->
-      <aside class="export-sidebar">
-        <LogFilesManager />
-      </aside>
     </div>
   </div>
 </template>
@@ -51,13 +45,10 @@
 import { ref, onMounted } from 'vue'
 import axios from '@/api/axios'
 import ConfigTab from './admin/ConfigTab.vue'
-import AIPromptsTab from './admin/AIPromptsTab.vue'
 import MarketsTab from './admin/MarketsTab.vue'
-import LogFilesManager from './creator/LogFilesManager.vue'
 
 const tabs = [
   { value: 'config', label: 'Config' },
-  { value: 'prompts', label: 'AI Prompts' },
   { value: 'markets', label: 'Markets' },
 ]
 
@@ -69,7 +60,6 @@ const formState = ref({
     INFORMED: { order_throttle_ms: 0, max_orders_per_window: 1 },
     MARKET_MAKER: { order_throttle_ms: 0, max_orders_per_window: 1 },
     INITIAL_ORDER_BOOK: { order_throttle_ms: 0, max_orders_per_window: 1 },
-    SIMPLE_ORDER: { order_throttle_ms: 0, max_orders_per_window: 1 },
   },
 })
 const formFields = ref([])
@@ -104,8 +94,7 @@ const fetchData = async () => {
       INFORMED: { order_throttle_ms: 0, max_orders_per_window: 1 },
       MARKET_MAKER: { order_throttle_ms: 0, max_orders_per_window: 1 },
       INITIAL_ORDER_BOOK: { order_throttle_ms: 0, max_orders_per_window: 1 },
-      SIMPLE_ORDER: { order_throttle_ms: 0, max_orders_per_window: 1 },
-    }
+      }
 
     formState.value.throttle_settings = persistentSettings.throttle_settings || defaultThrottleSettings
     serverActive.value = true
@@ -187,43 +176,22 @@ onMounted(() => {
   background: var(--color-bg-page);
 }
 
-/* Export Sidebar */
-.export-sidebar {
-  width: 320px;
-  background: var(--color-bg-surface);
-  border-left: var(--border-width) solid var(--color-border);
-  padding: var(--space-4);
-  overflow-y: auto;
-}
-
 /* Responsive */
-@media (max-width: 1200px) {
-  .export-sidebar {
-    width: 280px;
-  }
-}
-
 @media (max-width: 960px) {
   .main-layout {
     flex-direction: column;
   }
-  
+
   .tabs-sidebar {
     width: 100%;
     border-right: none;
     border-bottom: var(--border-width) solid var(--color-border);
     padding: var(--space-2) 0;
   }
-  
+
   .tabs-list {
     flex-direction: row;
     overflow-x: auto;
-  }
-  
-  .export-sidebar {
-    width: 100%;
-    border-left: none;
-    border-top: var(--border-width) solid var(--color-border);
   }
 }
 </style>

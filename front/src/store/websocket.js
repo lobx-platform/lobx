@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { auth } from '@/firebaseConfig'
 import { useAuthStore } from './auth'
 
 export const useWebSocketStore = defineStore('websocket', {
@@ -31,14 +30,9 @@ export const useWebSocketStore = defineStore('websocket', {
               const authStore = useAuthStore()
               if (authStore.labToken) {
                 this.ws.send(authStore.labToken)
-              } else if (authStore.prolificToken) {
-                this.ws.send(authStore.prolificToken)
-              } else if (auth.currentUser) {
-                // Use Firebase token for authentication
-                const token = await auth.currentUser.getIdToken()
-                this.ws.send(token)
+              } else if (authStore.adminToken) {
+                this.ws.send(authStore.adminToken)
               } else {
-                // Fallback if no authentication method is available
                 this.ws.send('no-auth')
               }
             }

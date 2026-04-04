@@ -118,13 +118,6 @@
             </v-col>
           </v-row>
           <v-row v-else>
-            <!-- AI Advisor Banner - Full width on top when enabled -->
-            <v-col v-if="isAgenticAdvisorEnabled" cols="12" class="pb-2">
-              <v-card class="ai-advisor-banner" elevation="2">
-                <AIAdvisor />
-              </v-card>
-            </v-col>
-            
             <!-- 3x2 Grid Layout -->
             <v-col cols="12" md="4" class="d-flex flex-column">
               <v-card class="mb-4 tool-card" elevation="2">
@@ -202,13 +195,12 @@ import PlaceOrder from '@trading/PlaceOrder.vue'
 import OrderHistory from '@trading/OrderHistory.vue'
 import ActiveOrders from '@trading/ActiveOrders.vue'
 import MarketMessages from '@trading/MarketMessages.vue'
-import AIAdvisor from '@trading/AIAdvisor.vue'
-
 import { computed, watch, ref, nextTick, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFormatNumber } from '@/composables/utils'
 import { storeToRefs } from 'pinia'
 import { useTraderStore } from '@/store/app'
+import { useWebSocketStore } from '@/store/websocket'
 import { debounce } from 'lodash'
 import axios from '@/api/axios'
 import NavigationService from '@/services/navigation'
@@ -229,12 +221,12 @@ import {
   List,
   LineChart,
   Calculator,
-  Bot,
 } from 'lucide-vue-next'
 
 const { formatNumber } = useFormatNumber()
 const router = useRouter()
 const store = useTraderStore()
+const wsStore = useWebSocketStore()
 const {
   goalMessage,
   initial_shares,
@@ -250,21 +242,6 @@ const {
   activeOrders,
   gameParams,
 } = storeToRefs(store)
-
-const isAgenticAdvisorEnabled = computed(() => {
-  return store.gameParams?.agentic_advisor_enabled ?? false
-})
-
-// Log AI advisor status when session loads
-watch(
-  () => store.gameParams,
-  (params) => {
-    if (params) {
-      console.log('[Session] AI Advisor enabled:', params.agentic_advisor_enabled ?? false)
-    }
-  },
-  { immediate: true }
-)
 
 const formatDelta = computed(() => {
   if (sum_dinv.value == undefined) return ''
@@ -515,7 +492,7 @@ const refreshPage = () => {
 
 // Modify your store watch or WebSocket handler to include error handling
 watch(
-  () => store.ws,
+  () => wsStore.ws,
   (newWs) => {
     if (newWs) {
       const debouncedHandler = debounce((event) => {
@@ -632,13 +609,6 @@ onMounted(() => {
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-/* AI Advisor Banner */
-.ai-advisor-banner {
-  background: #ffffff;
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 16px;
 }
 
 .price-history-card {

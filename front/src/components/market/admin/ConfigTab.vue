@@ -56,21 +56,9 @@
                 <v-tooltip v-for="field in group" :key="field.name" location="top" :text="field.name">
                 <template v-slot:activator="{ props: tooltipProps }">
                   <div class="field-item" v-bind="tooltipProps">
-                    <!-- Dropdown for agentic_prompt_template -->
-                    <v-select
-                      v-if="field.name === 'agentic_prompt_template'"
-                      :label="field.title || ''"
-                      v-model="formState[field.name]"
-                      :items="agenticTemplates"
-                      item-title="name"
-                      item-value="id"
-                      hide-details
-                      :class="getFieldStyle(field.name)"
-                      @update:modelValue="updatePersistentSettings"
-                    />
                     <!-- Boolean switch -->
                     <v-switch
-                      v-else-if="field.type === 'boolean'"
+                      v-if="field.type === 'boolean'"
                       :label="field.title || ''"
                       v-model="formState[field.name]"
                       hide-details
@@ -335,8 +323,6 @@ const showTreatments = ref(false)
 const treatmentYaml = ref('')
 const treatments = ref([])
 const yamlError = ref('')
-const agenticTemplates = ref([])
-
 // Prolific state
 const showProlific = ref(false)
 const prolificSettings = ref({ credentials: '', studyId: '', redirectUrl: '' })
@@ -361,7 +347,7 @@ const treatmentOverrides = ref([
   { informed_trade_intensity: '', informed_share_passive: '' },
 ])
 
-const traderTypes = ['HUMAN', 'NOISE', 'INFORMED', 'MARKET_MAKER', 'INITIAL_ORDER_BOOK', 'SIMPLE_ORDER']
+const traderTypes = ['HUMAN', 'NOISE', 'INFORMED', 'MARKET_MAKER', 'INITIAL_ORDER_BOOK']
 
 const formatTraderType = (type) => {
   return type.replace('_', ' ').toLowerCase().split(' ').map(word => 
@@ -371,12 +357,10 @@ const formatTraderType = (type) => {
 
 const formatGroupTitle = (hint) => {
   const titleMap = {
-    'agentic_parameter': 'AI Agentic Traders',
     'model_parameter': 'Model Parameters',
     'noise_parameter': 'Noise Traders',
     'informed_parameter': 'Informed Traders',
     'human_parameter': 'Human Traders',
-    'manipulator_parameter': 'Manipulator Traders',
   }
   return titleMap[hint] || hint.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 }
@@ -477,15 +461,6 @@ const saveTreatments = async () => {
     uiStore.showSuccess('Treatments saved')
   } catch (error) {
     yamlError.value = error.response?.data?.detail || 'Failed to save'
-  }
-}
-
-const loadAgenticTemplates = async () => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_HTTP_URL}admin/agentic_templates`)
-    agenticTemplates.value = response.data.templates || []
-  } catch (error) {
-    agenticTemplates.value = [{ id: 'buyer_20_default', name: 'Buyer (20 shares)' }]
   }
 }
 
@@ -601,7 +576,6 @@ const copyLabLinks = () => {
 onMounted(() => {
   if (props.serverActive) {
     loadTreatments()
-    loadAgenticTemplates()
     fetchProlificSettings()
   }
 })
@@ -609,7 +583,6 @@ onMounted(() => {
 watch(() => props.serverActive, (newVal) => {
   if (newVal) {
     loadTreatments()
-    loadAgenticTemplates()
     fetchProlificSettings()
   }
 })
