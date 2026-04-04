@@ -24,9 +24,6 @@ export const useSessionStore = defineStore('session', {
     isRecovering: false,
     isSyncing: false,
     lastSyncTime: null,
-    
-    // Prolific-specific
-    prolificParams: null,
 
     // Lab-specific
     labToken: null,
@@ -36,7 +33,6 @@ export const useSessionStore = defineStore('session', {
     canTrade: (state) => state.status === 'trading',
     canStartNewMarket: (state) => state.marketsCompleted < state.maxMarkets,
     isLastMarket: (state) => state.marketsCompleted >= state.maxMarkets,
-    isProlificUser: (state) => !!state.prolificParams,
     isLabUser: (state) => !!state.labToken,
     
     // Get the route name for current onboarding step
@@ -143,43 +139,6 @@ export const useSessionStore = defineStore('session', {
       return null
     },
 
-    // Store Prolific params
-    setProlificParams(params) {
-      this.prolificParams = params
-      if (params) {
-        localStorage.setItem('prolific_params', JSON.stringify({
-          ...params,
-          timestamp: Date.now()
-        }))
-      } else {
-        localStorage.removeItem('prolific_params')
-      }
-    },
-
-    // Load Prolific params from localStorage
-    loadProlificParams() {
-      try {
-        const stored = localStorage.getItem('prolific_params')
-        if (stored) {
-          const parsed = JSON.parse(stored)
-          // Check if params are less than 2 hours old
-          if (Date.now() - parsed.timestamp < 2 * 60 * 60 * 1000) {
-            this.prolificParams = {
-              PROLIFIC_PID: parsed.PROLIFIC_PID,
-              STUDY_ID: parsed.STUDY_ID,
-              SESSION_ID: parsed.SESSION_ID,
-            }
-            return this.prolificParams
-          } else {
-            localStorage.removeItem('prolific_params')
-          }
-        }
-      } catch (e) {
-        localStorage.removeItem('prolific_params')
-      }
-      return null
-    },
-
     // Called when market is completed
     incrementMarketsCompleted() {
       this.marketsCompleted++
@@ -205,10 +164,8 @@ export const useSessionStore = defineStore('session', {
         isRecovering: false,
         isSyncing: false,
         lastSyncTime: null,
-        prolificParams: null,
         labToken: null,
       })
-      localStorage.removeItem('prolific_params')
       localStorage.removeItem('lab_token')
       this.saveToLocalStorage()
     },
@@ -223,7 +180,6 @@ export const useSessionStore = defineStore('session', {
         hasCompletedOnboarding: this.hasCompletedOnboarding,
         marketsCompleted: this.marketsCompleted,
         maxMarkets: this.maxMarkets,
-        prolificParams: this.prolificParams,
         labToken: this.labToken,
       }
       localStorage.setItem('session_store', JSON.stringify(dataToSave))
@@ -257,7 +213,6 @@ export const useSessionStore = defineStore('session', {
         'hasCompletedOnboarding',
         'marketsCompleted',
         'maxMarkets',
-        'prolificParams',
         'labToken',
       ]
     }]
