@@ -44,10 +44,6 @@ class TraderType(str, Enum):
     INFORMED = "INFORMED"
     HUMAN = "HUMAN"
     INITIAL_ORDER_BOOK = "INITIAL_ORDER_BOOK"
-    SIMPLE_ORDER = "SIMPLE_ORDER"
-    SPOOFING = "SPOOFING"
-    MANIPULATOR = "MANIPULATOR"
-    AGENTIC = "AGENTIC"
 
 
 class ThrottleConfig(BaseModel):
@@ -70,25 +66,6 @@ class TradingParameters(BaseModel):
         description="model_parameter", 
         ge=0,
     )
-    num_simple_order_traders: int = Field(
-        default=0,
-        title="Number of Simple Order Traders",
-        description="model_parameter",
-        ge=0,
-    )
-    num_spoofing_traders: int = Field(
-        default=0,
-        title="Number of Spoofing Traders",
-        description="model_parameter",
-        ge=0,
-    )
-    num_manipulator_traders: int = Field(
-        default=0,
-        title="Number of Manipulator Traders",
-        description="model_parameter",
-        ge=0,
-    )
-
     # book setup
     start_of_book_num_order_per_level: int = Field(
         default=3,
@@ -224,11 +201,6 @@ class TradingParameters(BaseModel):
         title="Initial Stocks",
         description="human_parameter",
     )
-    depth_book_shown: int = Field(
-        default=6,
-        title="Depth Book Shown",
-        description="human_parameter",
-    )
 
     # general market settings
     order_book_levels: int = Field(
@@ -246,12 +218,6 @@ class TradingParameters(BaseModel):
         default=1,
         title="Lira-GBP Conversion Rate",
         description="model_parameter",
-        gt=0,
-    )
-    cancel_time: int = Field(
-        default=1,
-        title="Seconds Locked Until Cancelation (not used yet)",
-        description="human_parameter",
         gt=0,
     )
 
@@ -301,60 +267,6 @@ class TradingParameters(BaseModel):
         description="human_parameter",
     )
 
-    execution_throttle_ms: int = Field(
-        default=250,
-        title="Execution Throttle (ms)",
-        description="model_parameter",
-        gt=0,
-    )
-
-    manipulator_open_shares: int = Field(
-        default=20,
-        title="Open Shares (int)",
-        description="manipulator_parameter",
-        ne=0 
-    )
-    manipulator_open_time: int = Field(
-        default=30,
-        title="Open Time (in secs)",
-        description="manipulator_parameter",
-        gt=0,
-    )
-    manipulator_pause_time: int = Field(
-        default=20,
-        title="Pause Time (in secs)",
-        description="manipulator_parameter",
-        gt=0,
-    )
-    manipulator_random_direction: bool = Field(
-        default=False,
-        title="Random Direction",
-        description="manipulator_parameter",
-    )
-
-    # Agentic trader settings
-    num_agentic_traders: int = Field(
-        default=0,
-        title="Number of Agentic Traders",
-        description="agentic_parameter",
-        ge=0,
-    )
-    agentic_model: str = Field(
-        default="anthropic/claude-haiku-4.5",
-        title="Agentic Model",
-        description="agentic_parameter",
-    )
-    agentic_prompt_template: str = Field(
-        default="buyer_20_default",
-        title="Agentic Prompt Template",
-        description="agentic_parameter",
-    )
-    agentic_advisor_enabled: bool = Field(
-        default=False,
-        title="Enable Agentic Advisors for All Humans",
-        description="agentic_parameter",
-    )
-
     throttle_settings: Dict[TraderType, ThrottleConfig] = Field(
         default_factory=lambda: {
             TraderType.HUMAN: ThrottleConfig(order_throttle_ms=100, max_orders_per_window=1),
@@ -362,9 +274,6 @@ class TradingParameters(BaseModel):
             TraderType.INFORMED: ThrottleConfig(),
             TraderType.MARKET_MAKER: ThrottleConfig(),
             TraderType.INITIAL_ORDER_BOOK: ThrottleConfig(),
-            TraderType.SIMPLE_ORDER: ThrottleConfig(),
-            TraderType.SPOOFING: ThrottleConfig(),
-            TraderType.AGENTIC: ThrottleConfig(),
         },
         title="Throttle Settings Per Trader Type",
         description="model_parameter"
