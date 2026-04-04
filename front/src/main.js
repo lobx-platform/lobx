@@ -26,5 +26,4 @@ app.component('Toaster', Toaster)
 // Register all main plugins (Vuetify, Pinia, Router, Motion)
 registerPlugins(app)
 
-// Mount immediately - no Firebase auth gate
 app.mount('#app')
