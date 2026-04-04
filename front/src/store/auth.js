@@ -94,7 +94,7 @@ export const useAuthStore = defineStore('auth', {
     async adminPasswordLogin(password) {
       try {
         this.adminToken = password
-        const response = await axios.post('/admin/login')
+        const response = await axios.post('/admin/login', { password })
 
         this.user = {
           uid: 'admin',
