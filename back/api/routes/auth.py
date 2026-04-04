@@ -1,0 +1,128 @@
+"""Auth routes: /user/login, /admin/login, /session/status, /session/reset-for-new-market"""
+
+import os
+from fastapi import APIRouter, HTTPException, Depends, Request
+from core.data_models import TradingParameters
+from ..auth import get_current_user, ADMIN_PASSWORD
+from ..shared import base_settings, market_handler, get_historical_markets_count
+from utils.api_responses import success
+
+router = APIRouter()
+
+
+@router.post("/user/login")
+async def user_login(request: Request):
+    # Check for lab token first
+    lab_token = request.query_params.get('LAB_TOKEN')
+    if lab_token:
+        from ..lab_auth import validate_lab_token, lab_trader_map
+        is_valid, lab_user = validate_lab_token(lab_token)
+        if not is_valid:
+            raise HTTPException(status_code=401, detail="Invalid or expired lab token")
+        gmail_username = lab_user['gmail_username']
+        trader_id = lab_user['trader_id']
+        treatment_group = lab_user.get('treatment_group')
+        lab_trader_map[trader_id] = lab_user
+        await market_handler.remove_user_from_session(gmail_username)
+        # Register forced cohort assignment if treatment_group is set
+        if treatment_group is not None:
+            market_handler.session_manager.user_treatment_groups[gmail_username] = treatment_group
+        return success(
+            message="Lab login successful",
+            data={"trader_id": trader_id, "username": gmail_username, "is_admin": False,
+                  "is_lab": True, "lab_token": lab_token, "treatment_group": treatment_group}
+        )
+
+    raise HTTPException(status_code=401, detail="Invalid authentication method")
+
+
+@router.post("/admin/login")
+async def admin_login(request: Request):
+    """Admin login with password or Firebase token (transitional)."""
+    body = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+
+    password = body.get("password")
+    if password and password == ADMIN_PASSWORD:
+        return success(message="Admin login successful", data={"username": "admin", "is_admin": True, "token": ADMIN_PASSWORD})
+
+    # Transitional: try Firebase
+    auth_header = request.headers.get('Authorization', '')
+    if auth_header.startswith('Bearer '):
+        token = auth_header.split('Bearer ')[1]
+        try:
+            from firebase_admin import auth as firebase_auth
+            decoded_token = firebase_auth.verify_id_token(token, check_revoked=True, clock_skew_seconds=60)
+            email = decoded_token['email']
+            from ..auth import extract_gmail_username
+            gmail_username = extract_gmail_username(email)
+            from core.data_models import TradingParameters
+            admin_users = [a.lower() for a in TradingParameters().admin_users]
+            if gmail_username.lower() not in admin_users:
+                raise HTTPException(status_code=403, detail="User does not have admin privileges")
+            return success(message="Admin login successful", data={"username": email, "is_admin": True})
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+
+    raise HTTPException(status_code=401, detail="Invalid authentication method")
+
+
+@router.get("/session/status")
+async def get_session_status(request: Request, current_user: dict = Depends(get_current_user)):
+    """Get the current session status for the authenticated user."""
+    gmail_username = current_user['gmail_username']
+    trader_id = f"HUMAN_{gmail_username}"
+    is_admin = current_user.get('is_admin', False)
+
+    try:
+        merged_params = TradingParameters(**(base_settings or {}))
+    except Exception:
+        merged_params = TradingParameters()
+
+    session_status = market_handler.get_session_status_by_trader_id(trader_id)
+    historical_markets_count = get_historical_markets_count(gmail_username)
+    max_markets = merged_params.max_markets_per_human
+
+    status = "authenticated"
+    market_id = None
+    onboarding_step = 0
+
+    if session_status.get("status") == "active":
+        status = "trading"
+        trader_manager = market_handler.get_trader_manager_by_trader_id(trader_id)
+        if trader_manager:
+            market_id = trader_manager.market_id
+    elif session_status.get("status") == "finished":
+        status = "summary"
+        market_id = session_status.get("market_id")
+    elif session_status.get("status") == "waiting":
+        status = "waiting"
+    elif historical_markets_count >= max_markets and not is_admin:
+        status = "complete"
+    else:
+        status = "onboarding"
+
+    return success(data={
+        "status": status, "trader_id": trader_id, "market_id": market_id,
+        "onboarding_step": onboarding_step, "markets_completed": historical_markets_count,
+        "max_markets": max_markets, "is_admin": is_admin
+    })
+
+
+@router.post("/session/reset-for-new-market")
+async def reset_session_for_new_market(request: Request, current_user: dict = Depends(get_current_user)):
+    """Reset user's session to prepare for a new market."""
+    gmail_username = current_user['gmail_username']
+    await market_handler.remove_user_from_session(gmail_username)
+    await market_handler.cleanup_finished_markets()
+    return success(message="Session reset for new market", data={"username": gmail_username})
+
+
+@router.get("/settings/session-type")
+async def get_session_type():
+    return success(data={"session_type": base_settings.get("session_type", "lab")})
