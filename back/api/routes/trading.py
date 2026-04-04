@@ -334,8 +334,8 @@ async def start_trading_market(background_tasks: BackgroundTasks, request: Reque
         trader_manager = market_handler.get_trader_manager_by_trader_id(trader_id)
         if trader_manager:
             internal_session_id = market_handler.trader_to_market_lookup.get(trader_id)
-            background_tasks.add_task(trader_manager.launch)
-            background_tasks.add_task(broadcast_trader_count, internal_session_id)
+            asyncio.create_task(trader_manager.launch())
+            asyncio.create_task(broadcast_trader_count(internal_session_id))
     else:
         status_message = "Marked as ready. Waiting for other traders to be ready."
 
@@ -458,11 +458,14 @@ async def websocket_trader_endpoint(websocket: WebSocket, trader_id: str):
             return
 
         session_status = market_handler.get_session_status_by_trader_id(trader_id)
+        print(f"[WS] {trader_id} gmail={gmail_username} status={session_status.get('status')}")
 
         if session_status.get("status") == "not_found":
+            print(f"[WS] {trader_id} NOT IN SESSION - closing")
             await websocket.close(code=1008, reason="Not in any session")
             return
 
+        # Wait for market to become active (handles timing between API start and WS connect)
         if session_status.get("status") == "waiting":
             waiting_message = {
                 "type": "session_waiting",
@@ -472,24 +475,25 @@ async def websocket_trader_endpoint(websocket: WebSocket, trader_id: str):
             await websocket.send_json(sanitized_waiting)
 
             try:
-                while True:
+                for _ in range(60):  # Wait up to 60 seconds
                     new_status = market_handler.get_session_status_by_trader_id(trader_id)
                     if new_status.get("status") == "active":
-                        market_started_message = {
-                            "type": "market_started",
-                            "data": {"status": "active", "message": "Market is now active!", "trading_started": True}
-                        }
-                        sanitized_started = sanitize_websocket_message(market_started_message)
-                        await websocket.send_json(sanitized_started)
-                        await websocket.close(code=1000, reason="Market started")
-                        return
+                        break
                     await asyncio.sleep(1)
+                else:
+                    await websocket.close(code=1008, reason="Timeout waiting for market")
+                    return
             except WebSocketDisconnect:
                 return
-            except Exception:
-                return
 
-        trader_manager = market_handler.get_trader_manager_by_trader_id(trader_id)
+        # Wait for trader_manager to be ready (launch() is a background task)
+        trader_manager = None
+        for _ in range(10):
+            trader_manager = market_handler.get_trader_manager_by_trader_id(trader_id)
+            if trader_manager:
+                break
+            await asyncio.sleep(0.5)
+
         if not trader_manager:
             await websocket.close(code=1008, reason="No trader manager found")
             return
@@ -512,6 +516,12 @@ async def websocket_trader_endpoint(websocket: WebSocket, trader_id: str):
         }
         sanitized_count = sanitize_websocket_message(initial_count)
         await websocket.send_json(sanitized_count)
+
+        # Wait for trading to actually start (launch() is a background task)
+        for _ in range(30):
+            if trader_manager.trading_market.trading_started:
+                break
+            await asyncio.sleep(0.5)
 
         await trader.connect_to_socket(websocket)
 

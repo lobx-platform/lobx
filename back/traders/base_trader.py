@@ -355,7 +355,7 @@ class BaseTrader:
         """Post a new order with throttling if configured."""
         # Check balance for human and agentic traders (noise/informed traders have infinite resources)
         # This prevents negative inventory issues
-        traders_with_finite_resources = [TraderType.HUMAN.value, TraderType.AGENTIC.value]
+        traders_with_finite_resources = [TraderType.HUMAN.value]
         if self.trader_type in traders_with_finite_resources:
             if order_type == OrderType.BID:
                 # buying - check if enough cash (including locked cash in active orders)

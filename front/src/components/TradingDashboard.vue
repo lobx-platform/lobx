@@ -201,6 +201,8 @@ import { useFormatNumber } from '@/composables/utils'
 import { storeToRefs } from 'pinia'
 import { useTraderStore } from '@/store/app'
 import { useWebSocketStore } from '@/store/websocket'
+import { useSessionStore } from '@/store/session'
+import { useAuthStore } from '@/store/auth'
 import { debounce } from 'lodash'
 import axios from '@/api/axios'
 import NavigationService from '@/services/navigation'
@@ -227,6 +229,8 @@ const { formatNumber } = useFormatNumber()
 const router = useRouter()
 const store = useTraderStore()
 const wsStore = useWebSocketStore()
+const sessionStore = useSessionStore()
+const authStore = useAuthStore()
 const {
   goalMessage,
   initial_shares,
@@ -280,6 +284,16 @@ onMounted(async () => {
 
   // Set default user role
   userRole.value = 'trader'
+
+  // Ensure trader is initialized and WebSocket is connected
+  const traderId = store.traderUuid || sessionStore.traderId || authStore.traderId
+  if (traderId && !wsStore.isConnected) {
+    try {
+      await store.initializeTrader(traderId)
+    } catch (e) {
+      console.warn('Trader init on trading page:', e)
+    }
+  }
 
   // Start market timeout countdown if not started
   if (!isTradingStarted.value) {
