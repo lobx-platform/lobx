@@ -719,7 +719,11 @@ class SessionManager:
         if first_user:
             market_count = len(self.user_historical_markets.get(first_user, set()))
         
-        market_id = f"{persistent_session_id}_MARKET_{market_count}"
+        # Include username in market_id for lab users so log files are easily identifiable
+        if username.startswith("LAB_"):
+            market_id = f"{persistent_session_id}_{username}_MARKET_{market_count}"
+        else:
+            market_id = f"{persistent_session_id}_MARKET_{market_count}"
         
         # Determine cohort size from effective market sizes
         effective_sizes = self._get_effective_market_sizes(params)
