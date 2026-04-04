@@ -154,6 +154,11 @@ async def generate_lab_links(request: Request, current_user: dict = Depends(get_
         for t in lab_trader_ids:
             del accumulated_rewards[t]
 
+        # Clear questionnaire data for lab users
+        import glob
+        for f in glob.glob("logs/questionnaire/HUMAN_LAB_*.json"):
+            Path(f).unlink(missing_ok=True)
+
         origin = request.headers.get("origin", str(request.base_url).rstrip("/"))
         links = generate_lab_tokens(count, base_url=origin, num_treatments=num_treatments)
 
