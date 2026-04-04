@@ -79,6 +79,22 @@ onMounted(async () => {
       isLoading.value = false
     }
   }
+
+  // Auto-detect Prolific params in URL
+  const prolificPID = route.query.PROLIFIC_PID
+  if (prolificPID) {
+    isLoading.value = true
+    loadingMessage.value = 'Signing in via Prolific...'
+    try {
+      await authStore.prolificLogin(prolificPID, route.query.STUDY_ID, route.query.SESSION_ID)
+      await NavigationService.afterLogin()
+      return
+    } catch (error) {
+      console.error('Prolific auto-login failed:', error)
+      errorMessage.value = error.message || 'Failed to sign in via Prolific'
+      isLoading.value = false
+    }
+  }
 })
 
 const handleAdminLogin = async () => {

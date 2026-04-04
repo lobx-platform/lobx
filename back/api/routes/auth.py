@@ -33,6 +33,26 @@ async def user_login(request: Request):
                   "is_lab": True, "lab_token": lab_token, "treatment_group": treatment_group}
         )
 
+    # Check for Prolific params
+    prolific_pid = request.query_params.get('PROLIFIC_PID')
+    if prolific_pid:
+        study_id = request.query_params.get('STUDY_ID', '')
+        session_id = request.query_params.get('SESSION_ID', '')
+        gmail_username = f"PROLIFIC_{prolific_pid}"
+        trader_id = f"HUMAN_{gmail_username}"
+        await market_handler.remove_user_from_session(gmail_username)
+        # Store in authenticated_users so subsequent requests work
+        from ..auth import authenticated_users
+        prolific_user = {"gmail_username": gmail_username, "trader_id": trader_id,
+                         "is_admin": False, "is_prolific": True, "prolific_pid": prolific_pid}
+        authenticated_users[gmail_username] = prolific_user
+        return success(
+            message="Prolific login successful",
+            data={"trader_id": trader_id, "username": gmail_username, "is_admin": False,
+                  "is_prolific": True, "prolific_pid": prolific_pid,
+                  "study_id": study_id, "session_id": session_id}
+        )
+
     raise HTTPException(status_code=401, detail="Invalid authentication method")
 
 

@@ -56,6 +56,41 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async prolificLogin(prolificPID, studyID, sessionID) {
+      if (this.loginInProgress) return
+
+      try {
+        this.loginInProgress = true
+        const params = new URLSearchParams({ PROLIFIC_PID: prolificPID })
+        if (studyID) params.set('STUDY_ID', studyID)
+        if (sessionID) params.set('SESSION_ID', sessionID)
+
+        const response = await axios.post(`/user/login?${params.toString()}`)
+
+        if (!response.data.data || !response.data.data.trader_id) {
+          throw new Error('No trader ID received')
+        }
+
+        const data = response.data.data
+        this.user = {
+          uid: prolificPID,
+          email: `${prolificPID}@prolific`,
+          displayName: 'Prolific Participant',
+          isProlific: true,
+          prolificData: { PROLIFIC_PID: prolificPID, STUDY_ID: studyID, SESSION_ID: sessionID },
+        }
+        this.isAdmin = false
+        this.traderId = data.trader_id
+        this.syncToSessionStore()
+      } catch (error) {
+        console.error('Prolific login error:', error)
+        this.user = null
+        throw new Error(error.message || 'Failed to login via Prolific')
+      } finally {
+        this.loginInProgress = false
+      }
+    },
+
     async adminPasswordLogin(password) {
       try {
         this.adminToken = password
