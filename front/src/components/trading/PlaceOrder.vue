@@ -104,8 +104,8 @@ const props = defineProps({
 const tradingStore = useTraderStore()
 const marketStore = useMarketStore()
 const uiStore = useUIStore()
-const { gameParams, bidData, askData, trader, aiAdvice, advisorEnabled } = storeToRefs(tradingStore)
-const { extraParams } = storeToRefs(marketStore)
+const { gameParams, trader } = storeToRefs(tradingStore)
+const { bidData, askData, extraParams } = storeToRefs(marketStore)
 
 const step = computed(() => gameParams.value.step || 1)
 const hasAskData = computed(() => askData.value.length > 0)
@@ -269,11 +269,8 @@ function checkMobile() {
 
 // Check if a price is the AI suggested price (uses same clamping logic as AIAdvisor)
 function isSuggestedPrice(price, side) {
-  // Only highlight if advisor is enabled and has advice
-  if (!advisorEnabled.value || !aiAdvice.value || aiAdvice.value.action !== 'place_order') return false
-  
-  const advicePrice = aiAdvice.value.price
-  if (!advicePrice) return false
+  // AI advisor removed - never highlight
+  return false
   
   // Determine expected side based on goal
   const goal = tradingStore.traderAttributes?.goal || 0

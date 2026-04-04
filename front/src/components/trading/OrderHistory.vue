@@ -1,10 +1,13 @@
 <script setup>
 import { computed } from 'vue'
 import { useTraderStore } from '@/store/app'
+import { useMarketStore } from '@/store/market'
 import { storeToRefs } from 'pinia'
 
 const traderStore = useTraderStore()
-const { executedOrders, recentTransactions, traderUuid } = storeToRefs(traderStore)
+const marketStore = useMarketStore()
+const { executedOrders, traderUuid } = storeToRefs(traderStore)
+const { recentTransactions } = storeToRefs(marketStore)
 
 const filledOrders = computed(() => {
   // Only use transactions from market store to avoid double counting

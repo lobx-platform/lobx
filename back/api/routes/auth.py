@@ -96,7 +96,7 @@ async def get_session_status(request: Request, current_user: dict = Depends(get_
         status = "trading"
         trader_manager = market_handler.get_trader_manager_by_trader_id(trader_id)
         if trader_manager:
-            market_id = trader_manager.market_id
+            market_id = trader_manager.trading_market.id
     elif session_status.get("status") == "finished":
         status = "summary"
         market_id = session_status.get("market_id")

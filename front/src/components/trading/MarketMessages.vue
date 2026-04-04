@@ -46,9 +46,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useTraderStore } from '@/store/app'
+import { useMarketStore } from '@/store/market'
 
-const { extraParams } = storeToRefs(useTraderStore())
+const { extraParams } = storeToRefs(useMarketStore())
 
 //filter params are extraParams without imbalance
 // remove them if imbalance is needed

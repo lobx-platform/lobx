@@ -12,12 +12,12 @@
 
 <script setup>
 import { reactive, watchEffect } from 'vue'
-import { useTraderStore } from '@/store/app'
+import { useMarketStore } from '@/store/market'
 import { storeToRefs } from 'pinia'
 import { Chart as HighchartsChart } from 'highcharts-vue'
 import Highcharts from 'highcharts'
 
-const { chartData, midPoint } = storeToRefs(useTraderStore())
+const { chartData, midPoint } = storeToRefs(useMarketStore())
 
 const chartOptions = reactive({
   chart: {

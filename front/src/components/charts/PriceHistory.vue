@@ -9,6 +9,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useTraderStore } from '@/store/app'
+import { useMarketStore } from '@/store/market'
 import { storeToRefs } from 'pinia'
 import { Chart, registerables } from 'chart.js'
 import 'chartjs-adapter-date-fns'
@@ -17,7 +18,8 @@ import 'chartjs-adapter-date-fns'
 Chart.register(...registerables)
 
 const traderStore = useTraderStore()
-const { history } = storeToRefs(traderStore)
+const marketStore = useMarketStore()
+const { history } = storeToRefs(marketStore)
 const chartCanvas = ref(null)
 let priceChart = null
 

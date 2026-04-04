@@ -1,0 +1,112 @@
+- generic [ref=e2]:
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - navigation "Main" [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "Yew Logo Yew" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img "Yew Logo" [ref=e9]
+          - generic [ref=e10]: Yew
+        - button "0.23" [ref=e12] [cursor=pointer]
+        - button "English" [ref=e14] [cursor=pointer]:
+          - img [ref=e15]
+          - text: English
+        - link "Docs" [ref=e17] [cursor=pointer]:
+          - /url: /docs/getting-started/introduction
+        - link "Tutorial" [ref=e18] [cursor=pointer]:
+          - /url: /docs/tutorial
+      - generic [ref=e19]:
+        - link "Community" [ref=e20] [cursor=pointer]:
+          - /url: /community/awesome
+        - link "Blog" [ref=e21] [cursor=pointer]:
+          - /url: /blog
+        - link "Playground(opens in new tab)" [ref=e22] [cursor=pointer]:
+          - /url: https://play.yew.rs/
+          - text: Playground
+          - img "(opens in new tab)" [ref=e23]
+        - link "API(opens in new tab)" [ref=e25] [cursor=pointer]:
+          - /url: https://docs.rs/yew
+          - text: API
+          - img "(opens in new tab)" [ref=e26]
+        - link "GitHub(opens in new tab)" [ref=e28] [cursor=pointer]:
+          - /url: https://github.com/yewstack/yew
+          - text: GitHub
+          - img "(opens in new tab)" [ref=e29]
+        - button "Switch between dark and light mode (currently system mode)" [ref=e32] [cursor=pointer]:
+          - img [ref=e33]
+        - button "Search (Meta+k)" [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]:
+            - img [ref=e38]
+            - generic [ref=e41]: Search
+          - generic [ref=e42]:
+            - img [ref=e44]
+            - img [ref=e47]
+  - generic [ref=e49]:
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - img "Logo" [ref=e52]
+        - heading "Yew" [level=1] [ref=e53]
+      - generic [ref=e54]: A framework for creating reliable and efficient web applications.
+      - generic [ref=e55]:
+        - link "Get Started" [ref=e56] [cursor=pointer]:
+          - /url: /docs/getting-started/introduction
+        - link "Playground(opens in new tab)" [ref=e57] [cursor=pointer]:
+          - /url: https://play.yew.rs
+          - text: Playground
+          - img "(opens in new tab)" [ref=e58]
+    - article [ref=e60]:
+      - heading "Features" [level=2] [ref=e61]
+      - generic [ref=e62]:
+        - generic [ref=e64]:
+          - heading "Component Based" [level=3] [ref=e66]
+          - paragraph [ref=e68]: Features a component-based framework which makes it easy to create interactive UIs. Developers who have experience with frameworks like React and Elm should feel quite at home when using Yew.
+          - link "Learn more" [ref=e70] [cursor=pointer]:
+            - /url: /docs/next/concepts/function-components
+        - generic [ref=e72]:
+          - heading "HTML macro" [level=3] [ref=e74]
+          - paragraph [ref=e76]: Features a macro for declaring interactive HTML with Rust expressions. Developers who have experience using JSX in React should feel quite at home when using Yew.
+          - link "Learn more" [ref=e78] [cursor=pointer]:
+            - /url: /docs/next/concepts/html
+        - generic [ref=e80]:
+          - heading "Server Side Rendering" [level=3] [ref=e82]
+          - paragraph [ref=e84]: Features server side rendering for all the SEO and enhancements of server-rendered app while keeping the feel of an SPA
+          - link "Learn more" [ref=e86] [cursor=pointer]:
+            - /url: /docs/next/advanced-topics/server-side-rendering
+  - contentinfo [ref=e87]:
+    - generic [ref=e89]:
+      - generic [ref=e90]:
+        - generic [ref=e91]: Support
+        - list [ref=e92]:
+          - listitem [ref=e93]:
+            - link "Sponsor Project(opens in new tab)" [ref=e94] [cursor=pointer]:
+              - /url: https://opencollective.com/yew
+              - text: Sponsor Project
+              - img "(opens in new tab)" [ref=e95]
+      - generic [ref=e97]:
+        - generic [ref=e98]: Participate
+        - list [ref=e99]:
+          - listitem [ref=e100]:
+            - link "GitHub(opens in new tab)" [ref=e101] [cursor=pointer]:
+              - /url: https://github.com/yewstack/yew
+              - text: GitHub
+              - img "(opens in new tab)" [ref=e102]
+          - listitem [ref=e104]:
+            - link "Discord(opens in new tab)" [ref=e105] [cursor=pointer]:
+              - /url: https://discord.gg/VQck8X4
+              - text: Discord
+              - img "(opens in new tab)" [ref=e106]
+          - listitem [ref=e108]:
+            - link "Twitter(opens in new tab)" [ref=e109] [cursor=pointer]:
+              - /url: https://twitter.com/yewstack
+              - text: Twitter
+              - img "(opens in new tab)" [ref=e110]
+      - generic [ref=e112]:
+        - generic [ref=e113]: More
+        - list [ref=e114]:
+          - listitem [ref=e115]:
+            - link "Yew Awesome(opens in new tab)" [ref=e116] [cursor=pointer]:
+              - /url: https://github.com/jetli/awesome-yew
+              - text: Yew Awesome
+              - img "(opens in new tab)" [ref=e117]

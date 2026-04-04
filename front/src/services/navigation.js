@@ -107,6 +107,36 @@ export const NavigationService = {
   },
 
   /**
+   * Navigate to next onboarding step
+   */
+  async nextOnboardingStep() {
+    const sessionStore = useSessionStore()
+    const currentStep = sessionStore.onboardingStep
+
+    if (currentStep >= READY_PAGE_INDEX) return
+
+    const nextStep = currentStep + 1
+    sessionStore.setOnboardingStep(nextStep)
+
+    const nextRoute = this.getRouteForStep(nextStep)
+    return router.push({ name: nextRoute })
+  },
+
+  /**
+   * Navigate to previous onboarding step
+   */
+  async prevOnboardingStep() {
+    const sessionStore = useSessionStore()
+    const currentStep = sessionStore.onboardingStep
+
+    if (currentStep <= 0) return
+
+    const prevStep = currentStep - 1
+    sessionStore.setOnboardingStep(prevStep)
+    return router.push({ name: this.getRouteForStep(prevStep) })
+  },
+
+  /**
    * When user clicks "Start Trading" from ready page
    */
   async startTrading() {
