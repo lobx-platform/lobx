@@ -615,14 +615,12 @@ const copyLabLinks = () => {
 onMounted(() => {
   if (props.serverActive) {
     loadTreatments()
-    fetchProlificSettings()
   }
 })
 
 watch(() => props.serverActive, (newVal) => {
   if (newVal) {
     loadTreatments()
-    fetchProlificSettings()
   }
 })
 </script>
