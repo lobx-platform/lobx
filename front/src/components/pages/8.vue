@@ -273,14 +273,14 @@ const marketProgress = computed(() => {
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.5px;
-  background: linear-gradient(45deg, #2196f3, #4caf50) !important;
-  color: white !important;
+  background: var(--color-primary) !important;
+  color: var(--color-text-inverse) !important;
   transition: all 0.3s ease;
 }
 
 .start-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+  box-shadow: var(--shadow-glow);
 }
 
 .action-buttons {

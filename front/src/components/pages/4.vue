@@ -448,36 +448,37 @@ const goalDescription = computed(() => {
 <style scoped>
 /* Page-specific styles only - shared styles are in components.css */
 .earnings-formula {
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
 }
 
 .formula-title {
-  color: #1976d2;
+  color: var(--color-primary);
 }
 
 .formula-content {
   padding-left: 1.5rem;
   line-height: 1.6;
+  color: var(--color-text-secondary);
 }
 
 .formula-highlight {
-  color: #1976d2;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
 .formula-note {
   font-size: 0.9em;
   font-style: italic;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .strategy-hint-box {
-  background: linear-gradient(135deg, #fff8e1, #fff3cd);
-  border-left: 4px solid #ffb300;
+  background: rgba(245, 158, 11, 0.06);
+  border-left: 4px solid var(--color-warning);
   border-radius: 8px;
   padding: 14px 18px;
-  color: #4e3b00;
+  color: var(--color-text-primary);
 }
 
 .strategy-hint-header {
@@ -489,11 +490,12 @@ const goalDescription = computed(() => {
 .strategy-hint-title {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #e65100;
+  color: var(--color-warning);
 }
 
 .strategy-hint-body {
   font-size: 0.9rem;
   line-height: 1.6;
+  color: var(--color-text-secondary);
 }
 </style>

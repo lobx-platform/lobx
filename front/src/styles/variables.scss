@@ -1,38 +1,37 @@
-/* SASS Variables for the Trading Platform */
-/* This file contains global CSS custom properties used throughout the application */
+/* SASS Variables for the Trading Platform — Dark Terminal Theme */
 
 :root {
   /* Colors */
-  --primary-color: #1976d2;
-  --secondary-color: #424242;
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --error-color: #ef4444;
-  --info-color: #3b82f6;
-  
+  --primary-color: #22D3EE;
+  --secondary-color: #94A3B8;
+  --success-color: #22C55E;
+  --warning-color: #F59E0B;
+  --error-color: #EF4444;
+  --info-color: #3B82F6;
+
   /* Background colors */
-  --background-light: #f8fafc;
-  --background-dark: #1e293b;
-  --surface-color: #ffffff;
-  
+  --background-light: #0B1120;
+  --background-dark: #0B1120;
+  --surface-color: #111827;
+
   /* Text colors */
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  
+  --text-primary: #E2E8F0;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+
   /* Border colors */
-  --border-light: #e2e8f0;
-  --border-medium: #cbd5e1;
-  
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.15);
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
-  
+
   /* Border radius */
-  --border-radius-sm: 6px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
+  --border-radius-sm: 3px;
+  --border-radius-md: 5px;
+  --border-radius-lg: 8px;
 }

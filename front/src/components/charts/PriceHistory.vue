@@ -37,11 +37,11 @@ const createChart = (data) => {
         {
           label: 'Price',
           data: data,
-          borderColor: '#2196F3',
-          borderWidth: 3,
-          pointRadius: 4,
-          pointBackgroundColor: '#2196F3',
-          pointBorderColor: '#2196F3',
+          borderColor: '#22D3EE',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#22D3EE',
+          pointBorderColor: '#22D3EE',
           tension: 0,
           fill: false,
         },
@@ -61,21 +61,21 @@ const createChart = (data) => {
         },
         tooltip: {
           enabled: true,
-          backgroundColor: 'white',
-          titleColor: 'black',
-          bodyColor: 'black',
-          borderColor: '#E0E0E0',
+          backgroundColor: '#1E293B',
+          titleColor: '#E2E8F0',
+          bodyColor: '#F8FAFC',
+          borderColor: 'rgba(255,255,255,0.1)',
           borderWidth: 1,
-          padding: 12,
+          padding: 10,
           displayColors: false,
           titleFont: {
-            size: 16,
-            family: "'Inter', sans-serif",
+            size: 12,
+            family: "'JetBrains Mono', monospace",
             weight: 'normal',
           },
           bodyFont: {
-            size: 16,
-            family: "'Inter', sans-serif",
+            size: 13,
+            family: "'JetBrains Mono', monospace",
             weight: 'bold',
           },
           callbacks: {
@@ -98,23 +98,24 @@ const createChart = (data) => {
           },
           ticks: {
             font: {
-              size: 12,
-              family: "'Inter', sans-serif",
+              size: 10,
+              family: "'JetBrains Mono', monospace",
             },
-            color: '#666',
+            color: '#64748B',
           },
         },
         y: {
           position: 'left',
           grid: {
-            display: false,
+            color: 'rgba(255,255,255,0.04)',
+            drawBorder: false,
           },
           ticks: {
             font: {
-              size: 12,
-              family: "'Inter', sans-serif",
+              size: 10,
+              family: "'JetBrains Mono', monospace",
             },
-            color: '#666',
+            color: '#64748B',
             callback: (value) => `${Math.round(value)}`,
             maxTicksLimit: 8,
             precision: 0,
@@ -169,13 +170,13 @@ onMounted(() => {
 <style scoped>
 .history-chart-container {
   width: 100%;
-  background-color: #ffffff;
+  background: var(--color-bg-surface);
   overflow: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-mono);
 }
 
 .chart-wrapper {
-  padding: 0;
+  padding: var(--space-1);
   height: 250px;
 }
 </style>

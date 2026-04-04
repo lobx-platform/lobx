@@ -13,7 +13,7 @@
         <v-btn color="white" variant="text" class="ml-4" @click="refreshPage"> Refresh Now </v-btn>
       </v-alert>
 
-      <v-app-bar app elevation="2" color="white" height="auto" class="dynamic-header">
+      <v-app-bar app elevation="0" height="auto" class="dynamic-header">
         <v-container fluid class="py-2">
           <v-row align="center" no-gutters>
             <v-col cols="auto">
@@ -85,7 +85,7 @@
         </v-container>
       </v-app-bar>
 
-      <v-main class="grey lighten-4 dynamic-main">
+      <v-main class="dynamic-main">
         <v-container fluid class="pa-4">
           <!-- Modified waiting screen -->
           <v-row v-if="!isTradingStarted" justify="center" align="center" style="height: 80vh">
@@ -571,263 +571,285 @@ onMounted(() => {
 
 <style scoped>
 .trading-dashboard {
-  font-family: 'Inter', sans-serif;
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-family: var(--font-family);
+  background: var(--color-bg-page);
 }
 
+/* ===== HEADER BAR ===== */
 .dashboard-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e293b;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  letter-spacing: -0.025em;
-}
-
-.title-icon {
-  color: #3b82f6;
-}
-
-.v-card {
-  border-radius: 16px;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.tool-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #374151;
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-bright);
   display: flex;
   align-items: center;
   gap: 8px;
-  letter-spacing: -0.025em;
+  letter-spacing: var(--tracking-wide);
+}
+
+.title-icon {
+  color: var(--color-primary);
+}
+
+/* ===== TOOL CARDS (panels) ===== */
+.v-card {
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-surface);
+}
+
+.tool-title {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
 }
 
 .tool-icon {
-  color: #6366f1;
+  color: var(--color-primary);
+  opacity: 0.7;
 }
 
 .tool-card {
   display: flex;
   flex-direction: column;
-  background-color: white;
-  transition: all 0.2s ease;
+  background: var(--color-bg-surface);
+  transition: border-color var(--transition-fast);
 }
 
 .tool-card:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: var(--color-border-strong);
 }
 
 .price-history-card {
-  /* Remove flex-grow to prevent blank space below chart */
+  /* No flex-grow */
 }
 
-/* Dashboard stats responsive layout */
+/* ===== STATS BAR ===== */
 .dashboard-stats {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
-/* Modern chip styles */
 .stats-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 }
 
 .stat-chip {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  background: rgba(248, 250, 252, 0.8);
-  border: 1px solid rgba(203, 213, 225, 0.5);
-  border-radius: 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
+  gap: 5px;
+  padding: 5px 10px;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast);
 }
 
 .stat-chip:hover {
-  background: rgba(241, 245, 249, 0.9);
-  border-color: rgba(203, 213, 225, 0.8);
+  border-color: var(--color-border-strong);
 }
 
 .chip-icon {
-  color: #6b7280;
+  color: var(--color-text-muted);
+  opacity: 0.6;
 }
 
 .chip-label {
-  font-weight: 500;
-  color: #6b7280;
+  font-weight: var(--font-medium);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
 }
 
 .chip-value {
-  font-weight: 600;
-  color: #111827;
+  font-family: var(--font-mono);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-bright);
+  font-size: var(--text-sm);
 }
 
+/* ===== ROLE CHIP ===== */
 .role-chip-modern {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: white;
-  margin-right: 16px;
-  letter-spacing: 0.025em;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  color: var(--color-text-inverse);
+  margin-right: 8px;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
 }
 
 .role-chip-modern.teal {
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  background: var(--color-primary);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.3);
 }
 
 .role-chip-modern.indigo {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  background: #3B82F6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
 .role-chip-modern.deep-purple {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background: #A855F7;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
 }
 
 .role-chip-modern.grey {
-  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
-  opacity: 0.8;
+  background: var(--color-text-muted);
+  opacity: 0.7;
 }
 
+/* ===== TIME CHIP ===== */
 .time-chip {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  border-radius: 20px;
-  color: white;
-  font-weight: 600;
-  font-size: 0.875rem;
-  letter-spacing: 0.025em;
+  padding: 5px 14px;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-primary-muted);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+  font-weight: var(--font-bold);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-wide);
+  box-shadow: var(--shadow-glow-sm);
 }
 
-/* Goal chip styles */
+/* ===== GOAL CHIP ===== */
 .goal-chip-modern {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-  border-radius: 20px;
+  gap: 10px;
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
   color: white;
-  font-weight: 600;
-  font-size: 0.875rem;
-  margin-right: 12px;
-  min-width: 180px;
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  margin-right: 6px;
+  min-width: 160px;
 }
 
 .goal-content {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .goal-icon {
   color: white;
+  opacity: 0.9;
 }
 
 .goal-type-text {
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: var(--font-bold);
+  letter-spacing: var(--tracking-wider);
+  font-size: var(--text-xs);
 }
 
 .progress-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
 }
 
 .progress-bar-modern {
   flex: 1;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .progress-fill-modern {
   height: 100%;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 3px;
   transition: width 0.3s ease;
 }
 
 .progress-text {
-  font-size: 0.75rem;
-  font-weight: 600;
-  min-width: 35px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  min-width: 32px;
   text-align: right;
 }
 
 /* Goal background colors */
 .success-bg {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  background: var(--color-bid);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
 }
 
 .buy-bg {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: #3B82F6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
 .sell-bg {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: var(--color-ask);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
 }
 
-/* Dynamic header styles */
+/* ===== DYNAMIC HEADER ===== */
 .dynamic-header {
-  min-height: 64px !important;
+  min-height: 52px !important;
   height: auto !important;
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   z-index: 1000 !important;
+  background: var(--color-bg-surface) !important;
+  border-bottom: var(--border-width) solid var(--color-border) !important;
+  box-shadow: none !important;
 }
 
 .dynamic-header .v-toolbar__content {
   height: auto !important;
-  padding: 8px 0 !important;
+  padding: 6px 0 !important;
 }
 
-/* Dynamic main content adjustment */
 .dynamic-main {
-  padding-top: 64px !important;
+  padding-top: 52px !important;
   transition: padding-top 0.2s ease;
+  background: var(--color-bg-page) !important;
 }
 
 .v-application .v-main {
-  padding-top: 64px !important;
+  padding-top: 52px !important;
   transition: padding-top 0.2s ease;
+  background: var(--color-bg-page) !important;
 }
 
-/* Alert styles */
+/* ===== ALERT ===== */
 .v-alert {
   max-width: 500px;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-radius: 12px;
-  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-medium);
 }
 </style>

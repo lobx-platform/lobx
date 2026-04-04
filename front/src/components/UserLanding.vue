@@ -1,6 +1,6 @@
 <template>
   <div class="landing-container">
-    <Toaster position="top-center" theme="light" :visibleToasts="3" />
+    <Toaster position="top-center" theme="dark" :visibleToasts="3" />
 
     <!-- Modern gradient background -->
     <div class="gradient-bg"></div>
@@ -221,6 +221,7 @@ const deepBlueColor = ref('deep-blue')
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  background: var(--color-bg-page);
 }
 
 .gradient-bg {
@@ -229,8 +230,8 @@ const deepBlueColor = ref('deep-blue')
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  opacity: 0.03;
+  background: radial-gradient(ellipse at 30% 20%, rgba(34, 211, 238, 0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 50%);
   z-index: -2;
 }
 
@@ -247,7 +248,7 @@ const deepBlueColor = ref('deep-blue')
 .floating-shape {
   position: absolute;
   border-radius: 50%;
-  background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.05), transparent);
   animation: float 20s infinite ease-in-out;
 }
 
@@ -289,13 +290,11 @@ const deepBlueColor = ref('deep-blue')
 }
 
 .modern-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--color-bg-surface);
   backdrop-filter: blur(20px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-xl);
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-lg);
   padding: 2rem;
   position: relative;
   overflow: hidden;
@@ -307,9 +306,9 @@ const deepBlueColor = ref('deep-blue')
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-  border-radius: 24px 24px 0 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), #A855F7, var(--color-bid));
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .progress-indicator {
@@ -321,24 +320,26 @@ const deepBlueColor = ref('deep-blue')
 
 .progress-bar {
   flex: 1;
-  height: 6px;
-  background: rgba(102, 126, 234, 0.1);
-  border-radius: 3px;
+  height: 4px;
+  background: var(--color-bg-elevated);
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  border-radius: 3px;
+  background: linear-gradient(90deg, var(--color-primary), #A855F7);
+  border-radius: 2px;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .progress-text {
-  font-size: 0.875rem;
-  color: #64748b;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-medium);
   min-width: fit-content;
+  letter-spacing: var(--tracking-wide);
 }
 
 .modern-header {
@@ -347,35 +348,33 @@ const deepBlueColor = ref('deep-blue')
   gap: 1.5rem;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+  border-bottom: var(--border-width) solid var(--color-border);
 }
 
 .icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  width: 64px;
+  height: 64px;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glow-sm);
 }
 
 .page-icon {
-  color: white;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  color: var(--color-primary);
 }
 
 .page-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  color: #1e293b;
-  background: linear-gradient(135deg, #1e293b, #475569);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-text-bright);
   line-height: 1.2;
   margin: 0;
+  -webkit-text-fill-color: unset;
+  background: none;
 }
 
 .content-area {
@@ -388,7 +387,7 @@ const deepBlueColor = ref('deep-blue')
   justify-content: space-between;
   align-items: center;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(102, 126, 234, 0.1);
+  border-top: var(--border-width) solid var(--color-border);
 }
 
 .nav-btn {
@@ -397,13 +396,14 @@ const deepBlueColor = ref('deep-blue')
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 0.875rem;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  font-family: var(--font-family);
 }
 
 .nav-btn::before {
@@ -413,7 +413,7 @@ const deepBlueColor = ref('deep-blue')
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   transition: left 0.6s;
 }
 
@@ -422,44 +422,44 @@ const deepBlueColor = ref('deep-blue')
 }
 
 .nav-btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-glow-sm);
 }
 
 .nav-btn-primary:hover:not(.disabled) {
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
 }
 
 .nav-btn-secondary {
-  background: rgba(102, 126, 234, 0.1);
-  color: #475569;
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  border: var(--border-width) solid var(--color-border-strong);
 }
 
 .nav-btn-secondary:hover:not(.disabled) {
-  background: rgba(102, 126, 234, 0.15);
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
   transform: translateY(-1px);
 }
 
 .nav-btn.disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
 }
 
 .nav-btn-skip {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
+  background: var(--color-warning);
+  color: var(--color-text-inverse);
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
 .nav-btn-skip:hover {
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
   transform: translateY(-1px);
 }
 
@@ -472,7 +472,7 @@ const deepBlueColor = ref('deep-blue')
   .modern-card {
     margin: 1rem;
     padding: 1.5rem;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
   }
 
   .modern-header {

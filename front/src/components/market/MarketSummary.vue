@@ -500,38 +500,85 @@ onMounted(() => {
 
 <style scoped>
 .market-summary-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
+  background: var(--color-bg-surface) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-xl) !important;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: border-color var(--transition-base);
   max-width: 800px;
   width: 100%;
 }
 
 .market-summary-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  border-color: var(--color-border-strong);
+}
+
+.market-summary-card .v-card-title {
+  background: var(--color-bg-elevated) !important;
+  color: var(--color-text-bright) !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--text-xl) !important;
+  letter-spacing: var(--tracking-wide) !important;
+  text-transform: uppercase !important;
+  border-bottom: var(--border-width) solid var(--color-border) !important;
 }
 
 .metric-card {
-  background-color: rgba(245, 247, 250, 0.8);
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast);
 }
 
 .metric-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-border-strong);
+}
+
+.metric-card h3 {
+  color: var(--color-text-secondary) !important;
+  font-size: var(--text-xs) !important;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.metric-card .text-subtitle-1 {
+  color: var(--color-text-secondary) !important;
+}
+
+.metric-card .text-h6 {
+  color: var(--color-text-bright) !important;
+  font-family: var(--font-mono) !important;
 }
 
 .questionnaire-section {
   text-align: left;
+  color: var(--color-text-primary);
+}
+
+.questionnaire-section h3 {
+  color: var(--color-text-primary) !important;
+}
+
+.questionnaire-section p {
+  color: var(--color-text-secondary) !important;
 }
 
 .question-container {
-  background: rgba(245, 247, 250, 0.5);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
+}
+
+.market-summary-card .text-h5 {
+  color: var(--color-primary) !important;
+}
+
+.market-summary-card .text-subtitle-1 {
+  color: var(--color-text-secondary) !important;
+}
+
+.market-summary-card a {
+  color: var(--color-primary) !important;
 }
 </style>

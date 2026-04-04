@@ -179,13 +179,13 @@ const formatTime = (timestamp) => {
 
 <style scoped>
 .order-history-card {
-  background-color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  background: var(--color-bg-surface);
+  font-family: var(--font-family);
 }
 
 .trading-summary {
-  background-color: #fafafa;
-  padding: 6px;
+  background: var(--color-bg-elevated);
+  padding: 6px var(--space-3);
 }
 
 .vwap-display,
@@ -193,8 +193,8 @@ const formatTime = (timestamp) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  font-size: 0.9rem;
+  gap: 10px;
+  font-size: var(--text-sm);
   white-space: nowrap;
   position: relative;
 }
@@ -202,34 +202,27 @@ const formatTime = (timestamp) => {
 .label {
   position: absolute;
   left: 0;
-  font-size: 0.7rem;
-  color: #666;
-  font-weight: 500;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-semibold);
   text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
 }
-
-/* .count-display {
-  margin-top: 4px;
-  font-size: 0.8rem;
-} */
 
 .vwap-item,
 .count-item {
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-weight: var(--font-semibold);
 }
-
-/* .count-divider {
-  color: #999;
-} */
 
 .vwap-item.buy,
 .count-item.buy {
-  color: #1976d2;
+  color: var(--color-bid);
 }
 
 .vwap-item.sell,
 .count-item.sell {
-  color: #d32f2f;
+  color: var(--color-ask);
 }
 
 .order-history-container {
@@ -239,7 +232,7 @@ const formatTime = (timestamp) => {
 
 .order-columns {
   display: flex;
-  gap: 16px;
+  gap: var(--space-2);
 }
 
 .order-column {
@@ -249,51 +242,56 @@ const formatTime = (timestamp) => {
 }
 
 .order-item {
-  background-color: white;
-  border-radius: 6px;
-  padding: 2px 10px;
-  margin-bottom: 4px;
-  font-size: 12px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  padding: 3px 8px;
+  margin-bottom: 3px;
+  font-size: var(--text-sm);
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease;
+  transition: border-color var(--transition-fast);
+  border: var(--border-width) solid transparent;
 }
 
 .order-item:hover {
-  transform: translateY(-2px);
+  border-color: var(--color-border-strong);
 }
 
 .order-item.bid {
-  border-left: 3px solid #2196f3;
-  background-color: #f3f8fe;
+  border-left: 2px solid var(--color-bid);
+  background: var(--color-bid-bg);
 }
 
 .order-item.ask {
-  border-left: 3px solid #f44336;
-  background-color: #fef3f3;
+  border-left: 2px solid var(--color-ask);
+  background: var(--color-ask-bg);
 }
 
 .price-amount {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .price {
-  font-size: 13px;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--color-text-bright);
 }
 
 .amount {
-  font-size: 11px;
-  font-weight: 500;
-  color: #666;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-text-muted);
 }
 
 .time {
-  font-size: 10px;
-  color: #888;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--color-text-muted);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -301,9 +299,9 @@ const formatTime = (timestamp) => {
 
 .no-orders-message {
   text-align: center;
-  color: #9e9e9e;
-  font-size: 14px;
-  padding: 40px 20px;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  padding: 32px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -317,24 +315,24 @@ const formatTime = (timestamp) => {
 .order-change-enter-from,
 .order-change-leave-to {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(12px);
 }
 
-/* Scrollbar styles */
+/* Scrollbar */
 .order-history-container::-webkit-scrollbar {
   width: 4px;
 }
 
 .order-history-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 .order-history-container::-webkit-scrollbar-thumb {
-  background: #888;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
 }
 
 .order-history-container::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: rgba(255, 255, 255, 0.2);
 }
 </style>

@@ -1,8 +1,8 @@
 /**
- * Trading Platform Component Styles
- * 
- * Reusable component classes that follow the design system.
- * Import this after design-tokens.css
+ * Trading Platform Component Styles — Dark Terminal Theme
+ *
+ * Reusable component classes + Vuetify overrides.
+ * Import after design-tokens.css
  */
 
 /* ========================================
@@ -48,8 +48,12 @@ html, body, #app {
 
 .font-mono { font-family: var(--font-mono); }
 
+.tracking-wide { letter-spacing: var(--tracking-wide); }
+.tracking-wider { letter-spacing: var(--tracking-wider); }
+.uppercase { text-transform: uppercase; }
+
 /* ========================================
- * CARD COMPONENT
+ * CARD COMPONENT — Terminal Panel
  * ======================================== */
 
 .tp-card {
@@ -60,35 +64,36 @@ html, body, #app {
 }
 
 .tp-card-header {
-  padding: var(--space-3) var(--space-4);
-  border-bottom: var(--border-width) solid var(--color-border-light);
-  background: var(--color-bg-subtle);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-elevated);
 }
 
 .tp-card-title {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   font-weight: var(--font-semibold);
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   margin: 0;
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
 }
 
 .tp-card-body {
-  padding: var(--space-4);
+  padding: var(--space-3);
 }
 
 .tp-card-footer {
-  padding: var(--space-3) var(--space-4);
-  border-top: var(--border-width) solid var(--color-border-light);
-  background: var(--color-bg-subtle);
+  padding: var(--space-2) var(--space-3);
+  border-top: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-elevated);
   display: flex;
   justify-content: flex-end;
   gap: var(--space-2);
 }
 
-/* Collapsible card header */
 .tp-card-header-collapsible {
   cursor: pointer;
   user-select: none;
@@ -122,11 +127,10 @@ html, body, #app {
 }
 
 .tp-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-/* Primary button */
 .tp-btn-primary {
   background: var(--color-primary);
   color: var(--color-text-inverse);
@@ -136,21 +140,21 @@ html, body, #app {
 .tp-btn-primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-glow-sm);
 }
 
-/* Secondary button */
 .tp-btn-secondary {
-  background: var(--color-bg-surface);
+  background: var(--color-bg-elevated);
   color: var(--color-text-secondary);
-  border-color: var(--color-border);
+  border-color: var(--color-border-strong);
 }
 
 .tp-btn-secondary:hover:not(:disabled) {
-  background: var(--color-bg-subtle);
+  background: var(--color-bg-hover);
   color: var(--color-text-primary);
+  border-color: var(--color-text-muted);
 }
 
-/* Ghost button */
 .tp-btn-ghost {
   background: transparent;
   color: var(--color-text-secondary);
@@ -162,7 +166,6 @@ html, body, #app {
   color: var(--color-text-primary);
 }
 
-/* Button sizes */
 .tp-btn-sm {
   padding: var(--space-1) var(--space-2);
   font-size: var(--text-xs);
@@ -183,8 +186,8 @@ html, body, #app {
   font-size: var(--text-sm);
   font-family: var(--font-family);
   color: var(--color-text-primary);
-  background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border-strong);
   border-radius: var(--radius-md);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -192,7 +195,7 @@ html, body, #app {
 .tp-input:focus {
   outline: none;
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .tp-input::placeholder {
@@ -202,6 +205,7 @@ html, body, #app {
 .tp-input:disabled {
   background: var(--color-bg-subtle);
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* ========================================
@@ -212,10 +216,10 @@ html, body, #app {
   display: block;
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   margin-bottom: var(--space-1);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--tracking-wider);
 }
 
 /* ========================================
@@ -226,32 +230,39 @@ html, body, #app {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-0-5) var(--space-2);
   font-size: var(--text-xs);
-  font-weight: var(--font-medium);
-  border-radius: var(--radius-full);
-  background: var(--color-bg-subtle);
+  font-weight: var(--font-semibold);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-elevated);
   color: var(--color-text-secondary);
+  border: var(--border-width) solid var(--color-border);
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-wide);
 }
 
 .tp-badge-success {
   background: var(--color-success-light);
   color: var(--color-success);
+  border-color: rgba(34, 197, 94, 0.2);
 }
 
 .tp-badge-warning {
   background: var(--color-warning-light);
   color: var(--color-warning);
+  border-color: rgba(245, 158, 11, 0.2);
 }
 
 .tp-badge-error {
   background: var(--color-error-light);
   color: var(--color-error);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .tp-badge-info {
   background: var(--color-info-light);
   color: var(--color-info);
+  border-color: rgba(59, 130, 246, 0.2);
 }
 
 /* ========================================
@@ -267,19 +278,20 @@ html, body, #app {
 }
 
 .tp-status-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: var(--radius-full);
   background: var(--color-text-muted);
 }
 
 .tp-status-dot-success {
   background: var(--color-success);
-  box-shadow: 0 0 0 3px var(--color-success-light);
+  box-shadow: 0 0 6px var(--color-success);
 }
 
 .tp-status-dot-error {
   background: var(--color-error);
+  box-shadow: 0 0 6px var(--color-error);
 }
 
 .tp-status-dot-warning {
@@ -287,29 +299,30 @@ html, body, #app {
 }
 
 /* ========================================
- * TABLE STYLES
+ * TABLE STYLES — Terminal data table
  * ======================================== */
 
 .tp-table {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--text-sm);
+  font-family: var(--font-mono);
 }
 
 .tp-table th {
   text-align: left;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-1-5) var(--space-2);
   font-size: var(--text-xs);
   font-weight: var(--font-semibold);
   color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: var(--border-width) solid var(--color-border);
-  background: var(--color-bg-subtle);
+  letter-spacing: var(--tracking-wider);
+  border-bottom: var(--border-width) solid var(--color-border-strong);
+  background: var(--color-bg-elevated);
 }
 
 .tp-table td {
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-1-5) var(--space-2);
   border-bottom: var(--border-width) solid var(--color-border-light);
   color: var(--color-text-primary);
 }
@@ -326,7 +339,7 @@ html, body, #app {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .tp-section-title {
@@ -344,7 +357,7 @@ html, body, #app {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-3) var(--space-4);
   background: var(--color-bg-surface);
   border-bottom: var(--border-width) solid var(--color-border);
 }
@@ -362,18 +375,18 @@ html, body, #app {
 
 .tp-divider {
   height: var(--border-width);
-  background: var(--color-border-light);
+  background: var(--color-border);
   border: none;
-  margin: var(--space-4) 0;
+  margin: var(--space-3) 0;
 }
 
 /* ========================================
- * SCROLLBAR
+ * SCROLLBAR — Minimal dark
  * ======================================== */
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -381,19 +394,19 @@ html, body, #app {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* ========================================
- * VUETIFY OVERRIDES
+ * VUETIFY OVERRIDES — Dark Terminal
  * ======================================== */
 
-/* Force Inter font globally - highest specificity */
+/* Force DM Sans globally */
 html,
 body,
 #app,
@@ -416,7 +429,7 @@ body,
 .v-application h4,
 .v-application h5,
 .v-application h6 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
 .v-application .text-body-1,
@@ -431,24 +444,31 @@ body,
 .v-application .text-h4,
 .v-application .text-h5,
 .v-application .text-h6 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
-/* Make Vuetify cards match our design */
+/* Dark Vuetify cards */
 .v-card {
   background: var(--color-bg-surface) !important;
   border: var(--border-width) solid var(--color-border) !important;
   border-radius: var(--radius-lg) !important;
   box-shadow: none !important;
+  color: var(--color-text-primary) !important;
 }
 
 .v-card-title {
-  font-size: var(--text-sm) !important;
+  font-size: var(--text-xs) !important;
   font-weight: var(--font-semibold) !important;
+  color: var(--color-text-secondary) !important;
+  padding: var(--space-2) var(--space-3) !important;
+  border-bottom: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-elevated);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.v-card-text {
   color: var(--color-text-primary) !important;
-  padding: var(--space-3) var(--space-4) !important;
-  border-bottom: var(--border-width) solid var(--color-border-light);
-  background: var(--color-bg-subtle);
 }
 
 /* Vuetify buttons */
@@ -459,19 +479,28 @@ body,
   border-radius: var(--radius-md) !important;
 }
 
-/* Vuetify inputs */
+/* Vuetify inputs - dark */
 .v-field {
   border-radius: var(--radius-md) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.v-field__input {
+  color: var(--color-text-primary) !important;
 }
 
 .v-field--variant-outlined .v-field__outline__start,
 .v-field--variant-outlined .v-field__outline__end {
-  border-color: var(--color-border) !important;
+  border-color: var(--color-border-strong) !important;
 }
 
 .v-field--focused .v-field__outline__start,
 .v-field--focused .v-field__outline__end {
   border-color: var(--color-primary) !important;
+}
+
+.v-label {
+  color: var(--color-text-secondary) !important;
 }
 
 /* Vuetify tabs */
@@ -494,29 +523,60 @@ body,
 /* Vuetify data tables */
 .v-data-table {
   font-size: var(--text-sm) !important;
+  background: var(--color-bg-surface) !important;
 }
 
 .v-data-table-header th {
   font-size: var(--text-xs) !important;
   font-weight: var(--font-semibold) !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  letter-spacing: var(--tracking-wider) !important;
   color: var(--color-text-muted) !important;
 }
 
-/* Vuetify tooltips - dark background with white text */
+/* Vuetify tooltips */
 .v-tooltip > .v-overlay__content {
-  background: #1f2937 !important;
-  color: #ffffff !important;
+  background: var(--color-bg-elevated) !important;
+  color: var(--color-text-primary) !important;
   font-family: var(--font-mono) !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
   padding: 6px 10px !important;
-  border-radius: 6px !important;
+  border-radius: var(--radius-md) !important;
+  border: var(--border-width) solid var(--color-border-strong) !important;
+}
+
+/* Vuetify dialogs/overlays */
+.v-dialog > .v-overlay__content > .v-card {
+  background: var(--color-bg-elevated) !important;
+}
+
+/* Vuetify radio groups */
+.v-selection-control .v-label {
+  color: var(--color-text-primary) !important;
+}
+
+/* Vuetify progress */
+.v-progress-circular {
+  color: var(--color-primary) !important;
+}
+
+.v-progress-linear {
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Vuetify divider */
+.v-divider {
+  border-color: var(--color-border) !important;
+}
+
+/* Vuetify snackbar */
+.v-snackbar__wrapper {
+  border-radius: var(--radius-md) !important;
 }
 
 /* ========================================
  * ONBOARDING PAGE SHARED STYLES
- * Used by instruction pages 0-8
+ * Dark theme adaptations for pages 0-8
  * ======================================== */
 
 .page-container {
@@ -531,7 +591,7 @@ body,
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, #2196f3, #4caf50);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-bid));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
@@ -550,24 +610,29 @@ body,
 
 .info-card {
   height: 100%;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   transition: all 0.3s ease;
+  background: var(--color-bg-surface) !important;
+  border: var(--border-width) solid var(--color-border) !important;
 }
 
 .success-gradient {
-  background: linear-gradient(135deg, #4caf5011, #81c78411) !important;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(34, 197, 94, 0.04)) !important;
+  border: var(--border-width) solid var(--color-bid-border) !important;
 }
 
 .info-gradient {
-  background: linear-gradient(135deg, #2196f311, #64b5f611) !important;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.04)) !important;
+  border: var(--border-width) solid rgba(59, 130, 246, 0.2) !important;
 }
 
 .warning-gradient {
-  background: linear-gradient(135deg, #ffa00011, #ffd54f11) !important;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.04)) !important;
+  border: var(--border-width) solid rgba(245, 158, 11, 0.2) !important;
 }
 
 .highlight-text {
-  color: #1976d2;
+  color: var(--color-primary);
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -581,11 +646,12 @@ body,
   padding: 0.5rem 0;
   padding-left: 1.5rem;
   position: relative;
+  color: var(--color-text-primary);
 }
 
 .rules-list li::before {
-  content: '•';
-  color: #1976d2;
+  content: '\25B8';
+  color: var(--color-primary);
   font-weight: bold;
   position: absolute;
   left: 0;
@@ -599,10 +665,11 @@ body,
   min-height: 44px;
   padding: 0.5rem;
   transition: all 0.3s ease;
+  color: var(--color-text-primary);
 }
 
 .improvement-list .v-list-item:hover {
-  background: rgba(0, 0, 0, 0.03);
+  background: var(--color-bg-hover);
   transform: translateX(5px);
 }
 

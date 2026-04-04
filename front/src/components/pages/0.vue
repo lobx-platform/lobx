@@ -356,51 +356,49 @@ const submitConsent = async () => {
   justify-content: center;
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--color-primary), #A855F7);
   border-radius: 16px;
   margin-bottom: 1rem;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 25px rgba(34, 211, 238, 0.2);
 }
 
 .header-icon {
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 .header-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-text-bright);
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
 }
 
 .header-subtitle {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 1rem;
   margin: 0;
 }
 
 .content-container {
-  background: white;
+  background: var(--color-bg-surface);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: var(--shadow-md);
+  border: var(--border-width) solid var(--color-border);
   margin-bottom: 2rem;
 }
 
 .project-info {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+  border-bottom: 2px solid var(--color-border);
 }
 
 .project-info h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-text-bright);
   margin-bottom: 1.5rem;
   text-align: center;
 }
@@ -415,25 +413,25 @@ const submitConsent = async () => {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
-  background: rgba(102, 126, 234, 0.05);
+  background: var(--color-bg-elevated);
   border-radius: 8px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid var(--color-primary);
 }
 
 .info-item svg {
-  color: #667eea;
+  color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .info-item strong {
   display: block;
-  color: #374151;
+  color: var(--color-text-primary);
   margin-bottom: 0.25rem;
 }
 
 .info-item span {
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .content-sections {
@@ -444,8 +442,8 @@ const submitConsent = async () => {
 .content-section {
   padding: 1.5rem;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(249, 250, 251, 0.5);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-elevated);
 }
 
 .content-section h4 {
@@ -454,16 +452,16 @@ const submitConsent = async () => {
   gap: 0.5rem;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-text-primary);
   margin: 0 0 1rem 0;
 }
 
 .content-section h4 svg {
-  color: #667eea;
+  color: var(--color-primary);
 }
 
 .content-section p {
-  color: #4b5563;
+  color: var(--color-text-secondary);
   line-height: 1.6;
   margin: 0 0 0.75rem 0;
 }
@@ -473,36 +471,36 @@ const submitConsent = async () => {
 }
 
 .highlight-section {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-  border-color: rgba(102, 126, 234, 0.2);
+  background: rgba(34, 211, 238, 0.04);
+  border-color: rgba(34, 211, 238, 0.15);
   border-width: 2px;
 }
 
 .earnings-section {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.05));
-  border-color: rgba(16, 185, 129, 0.2);
+  background: rgba(34, 197, 94, 0.04);
+  border-color: rgba(34, 197, 94, 0.15);
   border-width: 2px;
 }
 
 .earnings-section h4 svg {
-  color: #10b981;
+  color: var(--color-success);
 }
 
 .consent-section {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(217, 119, 6, 0.05));
-  border-color: rgba(245, 158, 11, 0.2);
+  background: rgba(245, 158, 11, 0.04);
+  border-color: rgba(245, 158, 11, 0.15);
   border-width: 2px;
 }
 
 .consent-section h4 svg {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 .gdpr-content {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-bg-subtle);
   padding: 1rem;
   border-radius: 8px;
-  border-left: 4px solid #6366f1;
+  border-left: 4px solid var(--color-info);
 }
 
 .consent-list {
@@ -517,37 +515,36 @@ const submitConsent = async () => {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
   padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-bg-subtle);
   border-radius: 6px;
+  color: var(--color-text-secondary);
 }
 
 .consent-list li::before {
-  content: '✓';
-  color: #10b981;
+  content: '\2713';
+  color: var(--color-success);
   font-weight: bold;
   flex-shrink: 0;
 }
 
 .external-link {
-  color: #667eea;
+  color: var(--color-primary);
   text-decoration: underline;
-  text-decoration-color: rgba(102, 126, 234, 0.3);
+  text-decoration-color: rgba(34, 211, 238, 0.3);
   transition: all 0.2s;
 }
 
 .external-link:hover {
-  color: #4f46e5;
-  text-decoration-color: #4f46e5;
+  color: var(--color-primary-hover);
+  text-decoration-color: var(--color-primary-hover);
 }
 
 .consent-footer {
-  background: white;
+  background: var(--color-bg-surface);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: var(--shadow-md);
+  border: var(--border-width) solid var(--color-border);
   text-align: center;
 }
 
@@ -562,12 +559,12 @@ const submitConsent = async () => {
   gap: 0.75rem;
   cursor: pointer;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-primary);
   transition: color 0.2s;
 }
 
 .checkbox-label:hover {
-  color: #1f2937;
+  color: var(--color-text-bright);
 }
 
 .consent-checkbox {
@@ -580,19 +577,19 @@ const submitConsent = async () => {
   justify-content: center;
   width: 24px;
   height: 24px;
-  border: 2px solid #d1d5db;
+  border: 2px solid var(--color-border-strong);
   border-radius: 6px;
-  background: white;
+  background: var(--color-bg-elevated);
   transition: all 0.2s;
 }
 
 .consent-checkbox:checked + .checkbox-label .checkbox-indicator {
-  background: #667eea;
-  border-color: #667eea;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .check-icon {
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 .consent-btn {
@@ -601,26 +598,26 @@ const submitConsent = async () => {
   justify-content: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-glow);
   min-width: 200px;
 }
 
 .consent-btn:hover:not(.disabled) {
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
   transform: translateY(-2px);
 }
 
 .consent-btn.disabled {
-  background: #d1d5db;
-  color: #9ca3af;
+  background: var(--color-text-muted);
+  color: var(--color-bg-elevated);
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
@@ -651,7 +648,7 @@ const submitConsent = async () => {
 
 /* Typography improvements */
 .prose {
-  color: #374151;
+  color: var(--color-text-secondary);
   max-width: none;
 }
 
@@ -661,18 +658,18 @@ const submitConsent = async () => {
 }
 
 .prose strong {
-  color: #1f2937;
+  color: var(--color-text-bright);
   font-weight: 600;
 }
 
 .prose h3 {
-  color: #1f2937;
+  color: var(--color-text-bright);
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
 .prose h4 {
-  color: #374151;
+  color: var(--color-text-primary);
   font-weight: 600;
   margin-bottom: 0.75rem;
 }

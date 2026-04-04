@@ -23,9 +23,9 @@ const chartOptions = reactive({
   chart: {
     type: 'column',
     animation: false,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
     style: {
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: "'JetBrains Mono', monospace",
     },
     height: 250,
     marginTop: 10,
@@ -47,23 +47,23 @@ const chartOptions = reactive({
         return this.value.toString()
       },
       style: {
-        color: '#666',
+        color: '#64748B',
         fontSize: '10px',
       },
     },
-    lineColor: '#ccd6eb',
-    tickColor: '#ccd6eb',
+    lineColor: 'rgba(255,255,255,0.08)',
+    tickColor: 'rgba(255,255,255,0.08)',
   },
   yAxis: {
     title: null,
     labels: {
       format: '{value:.0f}',
       style: {
-        color: '#666',
+        color: '#64748B',
         fontSize: '10px',
       },
     },
-    gridLineColor: '#e6e6e6',
+    gridLineColor: 'rgba(255,255,255,0.04)',
   },
   credits: {
     enabled: false,
@@ -73,17 +73,19 @@ const chartOptions = reactive({
   },
   tooltip: {
     shared: true,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderWidth: 0,
-    shadow: true,
+    backgroundColor: '#1E293B',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    shadow: false,
     useHTML: true,
-    headerFormat: '<table><tr><th colspan="2">{point.key:.2f}</th></tr>',
+    headerFormat: '<table><tr><th colspan="2" style="color:#E2E8F0">{point.key:.2f}</th></tr>',
     pointFormat:
       '<tr><td style="color: {series.color}">{series.name}: </td>' +
-      '<td style="text-align: right"><b>{point.y:.0f}</b></td></tr>',
+      '<td style="text-align: right; color:#F8FAFC"><b>{point.y:.0f}</b></td></tr>',
     footerFormat: '</table>',
     style: {
-      fontSize: '12px',
+      fontSize: '11px',
+      color: '#E2E8F0',
     },
   },
   plotOptions: {
@@ -102,20 +104,20 @@ watchEffect(() => {
   chartOptions.series = chartData.value.map((series) => ({
     ...series,
     pointPlacement: 0,
-    color: series.name === 'Bids' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)',
-    borderColor: series.name === 'Bids' ? 'rgba(25, 118, 210, 1)' : 'rgba(211, 47, 47, 1)',
+    color: series.name === 'Bids' ? 'rgba(34, 197, 94, 0.7)' : 'rgba(239, 68, 68, 0.7)',
+    borderColor: series.name === 'Bids' ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)',
   }))
 
   chartOptions.xAxis.plotBands = [
     {
       from: -Infinity,
       to: midPoint.value,
-      color: 'rgba(33, 150, 243, 0.1)',
+      color: 'rgba(34, 197, 94, 0.05)',
     },
     {
       from: midPoint.value,
       to: Infinity,
-      color: 'rgba(244, 67, 54, 0.1)',
+      color: 'rgba(239, 68, 68, 0.05)',
     },
   ]
 })
@@ -124,8 +126,8 @@ watchEffect(() => {
 <style scoped>
 .bid-ask-chart-container {
   width: 100%;
-  background-color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  background: var(--color-bg-surface);
+  font-family: var(--font-mono);
 }
 
 .chart-wrapper {
@@ -133,7 +135,7 @@ watchEffect(() => {
 }
 
 :deep(.highcharts-container) {
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'JetBrains Mono', monospace !important;
 }
 
 :deep(.highcharts-axis-labels),
@@ -143,6 +145,10 @@ watchEffect(() => {
 }
 
 :deep(.highcharts-tooltip) {
-  font-size: 12px !important;
+  font-size: 11px !important;
+}
+
+:deep(.highcharts-background) {
+  fill: transparent;
 }
 </style>

@@ -1,7 +1,7 @@
 /**
  * plugins/vuetify.js
  *
- * Framework documentation: https://vuetifyjs.com`
+ * Trading Platform — Dark Terminal Theme
  */
 
 // Styles
@@ -11,38 +11,35 @@ import 'vuetify/styles'
 // Composables
 import { createVuetify } from 'vuetify'
 
-/**
- * Trading Platform Design System - Vuetify Theme
- * Colors aligned with design-tokens.css
- */
 export default createVuetify({
   theme: {
-    defaultTheme: 'light',
+    defaultTheme: 'terminal',
     themes: {
-      light: {
+      terminal: {
+        dark: true,
         colors: {
-          // Primary - Main brand color
-          primary: '#4F46E5',
-          'primary-darken-1': '#4338CA',
-          
-          // Secondary - Neutral gray
-          secondary: '#4B5563',
-          
+          // Primary — Teal/Cyan accent
+          primary: '#22D3EE',
+          'primary-darken-1': '#06B6D4',
+
+          // Secondary
+          secondary: '#94A3B8',
+
           // Semantic colors
           error: '#EF4444',
           info: '#3B82F6',
-          success: '#10B981',
+          success: '#22C55E',
           warning: '#F59E0B',
-          
+
           // Surface colors
-          background: '#F9FAFB',
-          surface: '#FFFFFF',
-          'surface-variant': '#F3F4F6',
-          
+          background: '#0B1120',
+          surface: '#111827',
+          'surface-variant': '#1E293B',
+
           // Text colors
-          'on-background': '#111827',
-          'on-surface': '#111827',
-          'on-primary': '#FFFFFF',
+          'on-background': '#E2E8F0',
+          'on-surface': '#E2E8F0',
+          'on-primary': '#0F172A',
         }
       }
     }

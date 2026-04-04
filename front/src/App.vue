@@ -34,10 +34,11 @@ const uiStore = useUIStore()
 
 <style>
 .gradient-background {
-  background: linear-gradient(135deg, #eceff1 0%, #90a4ae 100%);
+  background: var(--color-bg-page);
 }
 
 .v-application__wrap {
   min-height: 100vh;
+  background: var(--color-bg-page);
 }
 </style>

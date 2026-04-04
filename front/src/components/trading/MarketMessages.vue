@@ -101,51 +101,58 @@ onMounted(() => {
 
 <style scoped>
 .market-info-card {
-  background-color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  background: var(--color-bg-surface);
+  font-family: var(--font-family);
 }
 
 .market-info-content {
-  padding: 12px 8px;
+  padding: var(--space-3) var(--space-2);
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .info-cell {
   text-align: center;
+  padding: var(--space-1);
 }
 
 .info-title {
-  font-size: 11px;
-  font-weight: 500;
-  color: #666;
-  margin-bottom: 4px;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-text-muted);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
 }
 
 .info-value {
-  font-size: 16px;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-bright);
 }
 
 .v-icon.v-icon--size-x-small {
-  font-size: 12px;
+  font-size: 11px;
   margin-left: 2px;
+  opacity: 0.5;
 }
 
 .imbalance-msg {
   text-align: left;
-  margin-top: 8px;
+  margin-top: var(--space-2);
   white-space: pre-line;
 }
 
 .imbalance-red {
-  color: red !important;
-  font-size: 13px;
-  font-weight: 700;
+  color: var(--color-ask) !important;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
   animation: flicker 3s infinite;
 }
 
@@ -155,43 +162,45 @@ onMounted(() => {
 }
 
 .imbalance-green {
-  color: green !important;
-  font-size: 14px;
-  font-weight: 700;
+  color: var(--color-bid) !important;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
 }
 
 .guidance-msg {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 14px 16px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  color: #334155;
-  margin-top: 10px;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-2);
 }
 
 .tip-title {
-  font-weight: 600;
-  margin-bottom: 6px;
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-1);
+  color: var(--color-text-primary);
 }
 
 .tip-list {
-  padding-left: 18px;
+  padding-left: 16px;
   margin: 0;
 }
 
 .tip-list li {
-  margin-bottom: 6px;
+  margin-bottom: var(--space-1);
+  color: var(--color-text-secondary);
 }
 
 .buy-text {
-  color: blue;
-  font-weight: 600;
+  color: var(--color-bid);
+  font-weight: var(--font-semibold);
 }
 
 .sell-text {
-  color: #dc2626;
-  font-weight: 600;
+  color: var(--color-ask);
+  font-weight: var(--font-semibold);
 }
-
 </style>

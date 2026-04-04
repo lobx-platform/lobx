@@ -1,7 +1,7 @@
 /**
- * Trading Platform - Global Styles
- * 
- * This file contains app-specific overrides and utilities.
+ * Trading Platform — Global Styles (Dark Terminal)
+ *
+ * App-specific overrides and utilities.
  * Base styles are in design-tokens.css and components.css
  */
 
@@ -19,11 +19,11 @@ body {
 
 .v-main {
   min-height: 100vh;
+  background: var(--color-bg-page) !important;
 }
 
 /* ========================================
  * LEGACY UTILITY CLASSES
- * Keep for backward compatibility
  * ======================================== */
 
 .card {
@@ -40,8 +40,30 @@ body {
 }
 
 .bg-secondary {
-  background-color: var(--color-bg-subtle);
+  background-color: var(--color-bg-elevated);
   color: var(--color-text-primary);
+}
+
+/* ========================================
+ * DATA DISPLAY UTILITIES
+ * ======================================== */
+
+.data-value {
+  font-family: var(--font-mono);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-wide);
+}
+
+.data-positive {
+  color: var(--color-bid);
+}
+
+.data-negative {
+  color: var(--color-ask);
+}
+
+.data-neutral {
+  color: var(--color-text-secondary);
 }
 
 /* ========================================
@@ -53,8 +75,22 @@ body {
   to { opacity: 1; }
 }
 
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes subtleGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba(34, 211, 238, 0.1); }
+  50% { box-shadow: 0 0 12px rgba(34, 211, 238, 0.2); }
+}
+
 .fade-in {
   animation: fadeIn var(--transition-base);
+}
+
+.slide-up {
+  animation: slideUp var(--transition-slow);
 }
 
 /* ========================================

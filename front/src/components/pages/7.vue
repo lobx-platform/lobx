@@ -258,7 +258,7 @@ const getCardColor = (question) => {
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, #2196f3, #4caf50);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-bid));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
@@ -290,7 +290,7 @@ const getCardColor = (question) => {
   text-align: center;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .question-card {
@@ -304,10 +304,11 @@ const getCardColor = (question) => {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-bg-subtle);
   padding: 0.3rem 0.8rem;
   border-radius: 1rem;
   font-weight: bold;
+  color: var(--color-text-muted);
 }
 
 .question-text {

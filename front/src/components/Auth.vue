@@ -1,11 +1,17 @@
 <template>
   <div class="auth-page">
+    <!-- Ambient grid background -->
+    <div class="auth-grid-bg"></div>
+
     <div class="auth-container">
       <!-- Logo and Title -->
       <div class="auth-header">
-        <img :src="logo" alt="Trading Platform" class="auth-logo" />
-        <h1 class="auth-title">Trading Platform</h1>
-        <p class="auth-subtitle">Experimental Market Research</p>
+        <div class="logo-glow">
+          <img :src="logo" alt="Trading Platform" class="auth-logo" />
+        </div>
+        <h1 class="auth-title">LOBX</h1>
+        <p class="auth-subtitle">Experimental Market Research Platform</p>
+        <div class="auth-divider"></div>
       </div>
 
       <!-- Loading State -->
@@ -16,7 +22,7 @@
 
       <!-- Admin Password Form (no LAB_TOKEN in URL) -->
       <div v-else class="auth-form">
-        <h2 class="form-title">Admin Login</h2>
+        <h2 class="form-title">Admin Access</h2>
         <form @submit.prevent="handleAdminLogin">
           <div class="input-group">
             <label class="input-label">Password</label>
@@ -30,7 +36,11 @@
             />
           </div>
           <button type="submit" class="btn btn-primary" :disabled="loginLoading">
-            {{ loginLoading ? 'Signing in...' : 'Sign In' }}
+            <span v-if="loginLoading" class="btn-loading">
+              <span class="btn-spinner"></span>
+              Authenticating...
+            </span>
+            <span v-else>Sign In</span>
           </button>
         </form>
       </div>
@@ -39,6 +49,11 @@
       <div v-if="errorMessage" class="error-message">
         <span>{{ errorMessage }}</span>
         <button class="error-close" @click="errorMessage = ''">&times;</button>
+      </div>
+
+      <!-- Footer -->
+      <div class="auth-footer">
+        <span>Royal Holloway, University of London</span>
       </div>
     </div>
   </div>
@@ -124,40 +139,84 @@ const handleAdminLogin = async () => {
   justify-content: center;
   background: var(--color-bg-page);
   padding: var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle grid background */
+.auth-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
 }
 
 .auth-container {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border);
+  border: var(--border-width) solid var(--color-border-strong);
   border-radius: var(--radius-xl);
-  padding: var(--space-8);
-  box-shadow: var(--shadow-lg);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .auth-header {
   text-align: center;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
+}
+
+.logo-glow {
+  display: inline-block;
+  padding: var(--space-3);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-glow-sm);
 }
 
 .auth-logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: var(--space-4);
+  width: 56px;
+  height: 56px;
+  display: block;
+  filter: brightness(1.1);
 }
 
 .auth-title {
-  font-size: var(--text-2xl);
+  font-family: var(--font-mono);
+  font-size: var(--text-4xl);
   font-weight: var(--font-bold);
-  color: var(--color-text-primary);
+  color: var(--color-text-bright);
   margin: 0 0 var(--space-1) 0;
+  letter-spacing: var(--tracking-widest);
 }
 
 .auth-subtitle {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
   margin: 0;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.auth-divider {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary-muted), transparent);
+  margin: var(--space-4) auto 0;
 }
 
 .auth-loading {
@@ -166,9 +225,9 @@ const handleAdminLogin = async () => {
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--color-border);
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--color-border-strong);
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -183,6 +242,7 @@ const handleAdminLogin = async () => {
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
   margin: 0;
+  font-family: var(--font-mono);
 }
 
 .auth-form {
@@ -190,10 +250,12 @@ const handleAdminLogin = async () => {
 }
 
 .form-title {
-  font-size: var(--text-lg);
+  font-size: var(--text-xs);
   font-weight: var(--font-semibold);
-  color: var(--color-text-primary);
+  color: var(--color-text-muted);
   margin: 0 0 var(--space-4) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
 }
 
 .input-group {
@@ -203,19 +265,22 @@ const handleAdminLogin = async () => {
 
 .input-label {
   display: block;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   font-weight: var(--font-medium);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-1);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1-5);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
 }
 
 .input-field {
   width: 100%;
   padding: var(--space-3);
   font-size: var(--text-base);
+  font-family: var(--font-mono);
   color: var(--color-text-primary);
-  background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border-strong);
   border-radius: var(--radius-md);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -223,7 +288,12 @@ const handleAdminLogin = async () => {
 .input-field:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  box-shadow: 0 0 0 2px var(--color-primary-light), var(--shadow-glow-sm);
+}
+
+.input-field::placeholder {
+  color: var(--color-text-muted);
+  font-family: var(--font-family);
 }
 
 .btn {
@@ -232,16 +302,19 @@ const handleAdminLogin = async () => {
   justify-content: center;
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  font-size: var(--text-base);
-  font-weight: var(--font-medium);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  font-family: var(--font-family);
   border-radius: var(--radius-md);
   border: var(--border-width) solid transparent;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-smooth);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -253,6 +326,22 @@ const handleAdminLogin = async () => {
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.btn-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(15, 23, 42, 0.3);
+  border-top-color: var(--color-text-inverse);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 
 .error-message {
@@ -266,6 +355,7 @@ const handleAdminLogin = async () => {
   color: var(--color-error);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
+  border: var(--border-width) solid rgba(239, 68, 68, 0.2);
 }
 
 .error-close {
@@ -278,13 +368,29 @@ const handleAdminLogin = async () => {
   line-height: 1;
 }
 
+.auth-footer {
+  text-align: center;
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border-light);
+}
+
+.auth-footer span {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-wide);
+}
+
 @media (max-width: 480px) {
   .auth-container {
-    padding: var(--space-6);
+    padding: var(--space-6) var(--space-4);
   }
   .auth-logo {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
+  }
+  .auth-title {
+    font-size: var(--text-3xl);
   }
 }
 </style>

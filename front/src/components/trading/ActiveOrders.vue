@@ -199,19 +199,19 @@ const saveActiveOrders = (orders) => {
 .my-orders-card {
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  background: var(--color-bg-surface);
+  font-family: var(--font-family);
 }
 
 .orders-container {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--space-3);
 }
 
 .orders-columns {
   display: flex;
-  gap: 16px;
+  gap: var(--space-2);
 }
 
 .orders-column {
@@ -221,45 +221,66 @@ const saveActiveOrders = (orders) => {
 }
 
 .order-level {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  padding: 8px;
-  margin-bottom: 8px;
-  font-size: 12px;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  margin-bottom: var(--space-1-5);
+  font-size: var(--text-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.order-level:hover {
+  border-color: var(--color-border-strong);
+}
+
+.order-level.bid {
+  border-left: 2px solid var(--color-bid);
+}
+
+.order-level.ask {
+  border-left: 2px solid var(--color-ask);
 }
 
 .order-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .order-type {
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-weight: var(--font-semibold);
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-wider);
 }
 
 .price {
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-text-bright);
 }
 
 .order-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .amount {
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
 }
 
 .order-actions {
   display: flex;
-  gap: 4px;
+  gap: 3px;
 }
 
 .action-btn {
@@ -268,37 +289,37 @@ const saveActiveOrders = (orders) => {
 }
 
 .amount-progress {
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .no-orders-message {
   text-align: center;
-  color: #666;
-  font-size: 14px;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
   padding: 20px;
 }
 
 .order-levels-container {
   max-height: 300px;
   overflow-y: auto;
-  padding-right: 8px;
+  padding-right: 6px;
 }
 
-/* Scrollbar styles */
+/* Scrollbar */
 .order-levels-container::-webkit-scrollbar {
   width: 4px;
 }
 
 .order-levels-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 .order-levels-container::-webkit-scrollbar-thumb {
-  background: #888;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
 }
 
 .order-levels-container::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: rgba(255, 255, 255, 0.2);
 }
 </style>
