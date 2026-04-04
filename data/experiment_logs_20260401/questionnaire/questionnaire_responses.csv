@@ -1,0 +1,43 @@
+timestamp,trader_id,question1,question2,question3,question4
+2026-01-26 11:28:13,HUMAN_123456abcdef,No,Order Book Chart,Yes,Yes
+2026-01-27 09:41:06,HUMAN_123456abcdef,No,Order Book Chart,No,Yes
+2026-02-10 10:49:15,HUMAN_5e3ddcf95556b204cb143eab,Yes,Trade Price History Chart,Yes,Yes
+2026-02-10 10:52:39,HUMAN_6969682819258eddb397598e,No,Trade Price History Chart,No,No
+2026-02-10 10:52:41,HUMAN_66c20b634a3b292d25596fbc,Not sure,Trade Price History Chart,Yes,Not sure
+2026-02-10 10:59:39,HUMAN_69668d79b18ab69a81a98a14,No,Trade Price History Chart,No,No
+2026-02-10 10:59:39,HUMAN_58404fd8ad98e40001ce915f,No,Trade Price History Chart,No,No
+2026-02-10 10:59:46,HUMAN_5edeea354d54cb1a825aa8f9,Yes,Market Info Card,Yes,Not sure
+2026-02-10 11:00:00,HUMAN_61bb36bc40db417c1a1388fa,No,Trade Price History Chart,No,No
+2026-02-10 11:00:12,HUMAN_5ea00a8a39c0f00008064b2b,Yes,Trade Price History Chart,No,No
+2026-02-10 11:00:51,HUMAN_676d2c3ddcb926c724d27928,Yes,Trade Price History Chart,Yes,No
+2026-02-10 11:04:09,HUMAN_66c347304e6dd11def71183e,Not sure,Market Info Card,Not sure,Not sure
+2026-02-10 11:04:47,HUMAN_5bae3351a91ee200011a4220,Yes,Market Info Card,Not sure,Not sure
+2026-02-10 11:06:52,HUMAN_559272f4fdf99b7e42e96932,Yes,Trade Price History Chart,Yes,Yes
+2026-02-10 11:07:34,HUMAN_65312c849894e46849dda502,Yes,Trade Price History Chart,No,Not sure
+2026-02-10 11:09:26,HUMAN_677a8e5affbe5673b3a79e6b,No,Trade Price History Chart,Not sure,No
+2026-02-10 11:10:39,HUMAN_58f669cefb4d7500014af69b,Not sure,Order Book Chart,No,No
+2026-02-10 11:11:49,HUMAN_63d7a26f594b17eba6a83328,Not sure,Market Info Card,Yes,Not sure
+2026-02-10 11:11:57,HUMAN_6704539fe462b87182866f14,Yes,Trade Price History Chart,Not sure,Yes
+2026-02-10 11:12:36,HUMAN_65e4a6bdde84e615dcac2651,Not sure,Market Info Card,No,No
+2026-02-10 11:23:00,HUMAN_6664c7aa5c1c7846d3618f74,Yes,Trade Price History Chart,Yes,Yes
+2026-02-13 11:51:44,HUMAN_66df195291efa52e95e957ae,Yes,Price History Chart,Yes,Yes
+2026-02-13 11:56:31,HUMAN_5b2c0994f1ca3c000190196a,No,Market Info Card,Yes,No
+2026-02-13 11:59:11,HUMAN_59a3b1a35fd74b0001abf9c1,Yes,Price History Chart,No,No
+2026-02-13 11:59:17,HUMAN_5f13fa31696881329aea2f14,No,Order Book Chart,No,No
+2026-02-13 12:01:39,HUMAN_6156fef09d1ab07148870099,No,Market Info Card,No,No
+2026-02-13 12:01:55,HUMAN_5f47d8f1e974b12169221876,Yes,Market Info Card,No,No
+2026-02-13 12:03:02,HUMAN_562a00dac8ffc20012513fbe,Yes,Market Info Card,Yes,Yes
+2026-02-13 12:03:12,HUMAN_63d3f953f8fb0fe970f0d0c6,Yes,Price History Chart,Yes,No
+2026-02-13 12:05:24,HUMAN_6888f9158ab561d6bbcf7466,No,Price History Chart,Yes,Not sure
+2026-02-13 12:07:08,HUMAN_67d1d172e049a486152a5ce9,Not sure,Price History Chart,No,No
+2026-02-13 12:07:17,HUMAN_62e41888387197b61ec6eb6f,Yes,Price History Chart,Yes,Yes
+2026-02-13 12:08:33,HUMAN_696b3a9f5554bafe2565ef24,Yes,Price History Chart,Yes,Yes
+2026-02-13 12:09:42,HUMAN_5ab8c3fb9534ba0001c6b60d,Yes,Order Book Chart,Yes,Not sure
+2026-02-13 12:11:29,HUMAN_672c99775b51436252e1b231,Not sure,Market Info Card,Yes,Not sure
+2026-02-13 12:11:47,HUMAN_6007421356226920359b5f3e,Yes,Price History Chart,Yes,Not sure
+2026-02-13 12:13:00,HUMAN_5a993b151eda410001365a23,Yes,Price History Chart,Yes,No
+2026-02-13 12:13:50,HUMAN_5c0720b08ea12d0001e8f6ac,Yes,Market Info Card,Yes,Yes
+2026-02-13 12:17:25,HUMAN_5fd6b4a35025425f9acafb30,Not sure,Market Info Card,No,Not sure
+2026-02-13 12:32:43,HUMAN_68022f459a6e791147ee95b1,Yes,Order Book Chart,Yes,Yes
+2026-02-13 13:19:47,HUMAN_5c747244f33ac60001b7a9e2,Yes,Price History Chart,Yes,Yes
+2026-02-13 13:26:53,HUMAN_5cf245d4639b150018eb7351,No,Price History Chart,No,No
