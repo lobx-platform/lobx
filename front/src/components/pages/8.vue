@@ -137,8 +137,14 @@ const onWaitingRoomUpdate = (data) => {
   waitingRoom.readyCount = data.ready_count || 0
 }
 
+const onMarketStarted = () => {
+  console.log('[Page8] market_started received — navigating to trading')
+  NavigationService.onMarketStarted()
+}
+
 onMounted(() => {
   wsBus.on('waiting_room_update', onWaitingRoomUpdate)
+  wsBus.on('market_started', onMarketStarted)
 
   // Set initial needed count from predefined_goals
   const goals = traderStore.gameParams?.predefined_goals ||
@@ -148,6 +154,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   wsBus.off('waiting_room_update', onWaitingRoomUpdate)
+  wsBus.off('market_started', onMarketStarted)
 })
 
 // Watch for market started signal
