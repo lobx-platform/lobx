@@ -181,14 +181,16 @@ const marketDuration = computed(() => {
 const initialShares = computed(() => props.traderAttributes?.shares ?? '...')
 const initialCash = computed(() => props.traderAttributes?.cash ?? '...')
 
+const hasClickedStart = ref(false)
+
 const canStartTrading = computed(() => {
   if (!props.traderAttributes) return false
-  // Multi-participant: need all participants joined
-  if (waitingRoom.needed > 1 && waitingRoom.joined < waitingRoom.needed) return false
+  if (hasClickedStart.value) return false  // Already clicked, waiting
   return true
 })
 
 const startButtonText = computed(() => {
+  if (hasClickedStart.value) return `Waiting for ${Math.max(0, waitingRoom.needed - waitingRoom.joined)} more...`
   if (isLoading.value) return 'Starting...'
   if (traderStore.isWaitingForOthers) return 'Waiting for others...'
   if (waitingRoom.needed > 1 && waitingRoom.joined < waitingRoom.needed) {
@@ -225,6 +227,7 @@ const startTrading = async () => {
   if (!canStartTrading.value || isLoading.value) return
 
   isLoading.value = true
+  hasClickedStart.value = true
 
   try {
     await NavigationService.startTrading()
