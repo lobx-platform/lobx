@@ -22,7 +22,7 @@
       </div>
 
       <div class="guidance-msg">
-        <div class="tip-title">💡 Trading Tip</div>
+        <div class="tip-title">Trading Tip</div>
         <ul class="tip-list">
         <li>
         If you believe the market will go up:
@@ -65,9 +65,9 @@ const imbalanceMessage = computed(() => {
   const val = imbalanceValue.value || 0
   
   if (val > 0) {
-    return `⚠️ You have ${val} shares in excess. \n Sell ${val} shares before the market ends. \n Penalty if not corrected: ${val*(-5)}`
+    return `You have ${val} shares in excess. \n Sell ${val} shares before the market ends. \n Penalty if not corrected: ${val*(-5)}`
   } else if (val < 0) {
-    return `⚠️ You have ${Math.abs(val)} shares in deficit. \n Buy ${Math.abs(val)} shares before the market ends. \n Penalty if not corrected: ${Math.abs(val)* (-5)}`
+    return `You have ${Math.abs(val)} shares in deficit. \n Buy ${Math.abs(val)} shares before the market ends. \n Penalty if not corrected: ${Math.abs(val)* (-5)}`
   } else {
     return `Your inventory is balanced.`
   }

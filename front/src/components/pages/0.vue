@@ -3,7 +3,7 @@
     <!-- Animated header -->
     <div v-motion-slide-visible-once-bottom :delay="200" class="page-header">
       <div class="icon-wrapper">
-        <ClipboardCheck :size="32" class="header-icon" />
+        
       </div>
       <h2 class="header-title">Research Participant Consent Form</h2>
       <p class="header-subtitle">Please read this information carefully before proceeding</p>
@@ -47,7 +47,7 @@
 
         <div class="content-sections">
           <section class="content-section">
-            <h4><Info :size="20" /> Introduction</h4>
+            <h4>Introduction</h4>
             <p>
               Royal Holloway, University of London supports the practise of protecting human
               participants in research. This form provides you with important information about
@@ -61,7 +61,7 @@
           </section>
 
           <section class="content-section highlight-section">
-            <h4><Target :size="20" /> Summary</h4>
+            <h4>Summary</h4>
             <p>
               The purpose of this study is to investigate the interaction between human and machines
               (AI agents) in electronic financial markets. In this study, we will ask you to
@@ -75,7 +75,7 @@
           </section>
 
           <section class="content-section">
-            <h4><Shield :size="20" /> Ethical Approval</h4>
+            <h4>Ethical Approval</h4>
             <p>
               This study has received ethics approval from Royal Holloway, University of London's
               Research Ethics Committee, with the approval ID of <strong>713</strong>.
@@ -83,7 +83,7 @@
           </section>
 
           <section class="content-section">
-            <h4><Database :size="20" /> Data Collection</h4>
+            <h4>Data Collection</h4>
             <p>
               During this study, we will collect data from you only related to your buy or sell
               decision orders. At the end of the study, you will be asked to complete a short survey
@@ -94,12 +94,12 @@
           </section>
 
           <section class="content-section">
-            <h4><Lock :size="20" /> Data Protection</h4>
+            <h4>Data Protection</h4>
             <p>This research commits to abide by the Data Protection Act (2018).</p>
           </section>
 
           <section class="content-section">
-            <h4><FileText :size="20" /> General Data Protection Regulation Statement</h4>
+            <h4>General Data Protection Regulation Statement</h4>
             <div class="gdpr-content">
               <p>
                 Important General Data Protection Regulation information (GDPR). Royal Holloway,
@@ -149,7 +149,7 @@
           </section>
 
           <section class="content-section earnings-section">
-            <h4><DollarSign :size="20" /> Compensation</h4>
+            <h4>Compensation</h4>
             <p>
               For your time and effort, you will receive compensation through the Prolific platform
               payment. You will receive a participation fee of <strong>£5 GBP</strong>, and
@@ -160,7 +160,7 @@
           </section>
 
           <section class="content-section">
-            <h4><MessageSquare :size="20" /> Contact Information</h4>
+            <h4>Contact Information</h4>
             <p>
               If you have any question, concerns, or feedback related to this study, please feel
               free to contact us through the Prolific message box.
@@ -168,7 +168,7 @@
           </section>
 
           <section class="content-section consent-section">
-            <h4><CheckSquare :size="20" /> Statement of Consent</h4>
+            <h4>Statement of Consent</h4>
             <p><strong>I confirm that:</strong></p>
             <ul class="consent-list">
               <li>I have read and understood the information provided in this consent form.</li>

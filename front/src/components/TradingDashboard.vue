@@ -279,8 +279,7 @@ watch(remainingTime, (newValue) => {
 const zoomLevel = ref(0.95) // Fixed 90% zoom
 
 onMounted(async () => {
-  // Apply zoom - use CSS zoom (not transform) to preserve position:fixed on the app bar
-  document.body.style.zoom = '0.95'
+  // No zoom hack — use proper font sizing instead
 
   // Set default user role
   userRole.value = 'trader'
