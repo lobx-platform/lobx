@@ -19,6 +19,13 @@
         </div>
       </div>
     </div>
+
+    <div class="trading-tip">
+      <ul>
+        <li>If you believe the market will go up: <strong class="bid-color">Buy now</strong> and sell later.</li>
+        <li>If you believe the market will go down: <strong class="ask-color">Sell now</strong> and buy later.</li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -124,6 +131,31 @@ onMounted(() => {
 }
 
 .val-red {
+  color: var(--color-ask);
+}
+
+.trading-tip {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.trading-tip ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.trading-tip li {
+  margin-bottom: 4px;
+}
+
+.bid-color {
+  color: var(--color-bid);
+}
+
+.ask-color {
   color: var(--color-ask);
 }
 </style>
