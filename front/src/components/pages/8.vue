@@ -134,7 +134,7 @@ watch(
   () => traderStore.shouldRedirectToTrading,
   (shouldRedirect) => {
     if (shouldRedirect) {
-      traderStore.shouldRedirectToTrading = false
+      traderStore.setShouldRedirectToTrading(false)
       NavigationService.onMarketStarted()
     }
   }

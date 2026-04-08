@@ -96,8 +96,8 @@ export const useTraderStore = defineStore('trader', {
     cancelOrder(id) { useOrderStore().cancelOrder(id) },
     checkLimits() { useOrderStore().checkLimits() },
 
-    // ── Proxy setters for direct assignment patterns ─────────────────────
-    set shouldRedirectToTrading(val) { useTraderCoreStore().shouldRedirectToTrading = val },
+    // ── Proxy setter for direct assignment patterns ────────────────────
+    setShouldRedirectToTrading(val) { useTraderCoreStore().shouldRedirectToTrading = val },
 
     clearStore() {
       useTraderCoreStore().clearStore()
