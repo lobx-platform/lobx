@@ -89,6 +89,7 @@ export const useTraderStore = defineStore('trader', {
     initializeTrader(id) { return useTraderCoreStore().initializeTrader(id) },
     startTradingMarket() { return useTraderCoreStore().startTradingMarket() },
     initializeWebSocket() { return useTraderCoreStore().initializeWebSocket() },
+    _subscribeToEvents() { return useTraderCoreStore()._subscribeToEvents() },
     calculateProgress(orders) { return useTraderCoreStore().calculateProgress(orders) },
 
     // ── Delegated to orders ──────────────────────────────────────────────

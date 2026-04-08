@@ -261,6 +261,8 @@ export const useTraderCoreStore = defineStore('traderCore', {
       wsBus.off('time_update')
       wsBus.off('market_status_update')
       wsBus.off('trader_status_update')
+      wsBus.off('stop_trading')
+      wsBus.off('closure')
       wsBus.off('book_updated')
       wsBus.off('transaction_update')
       wsBus.off('filled_order')
@@ -361,6 +363,18 @@ export const useTraderCoreStore = defineStore('traderCore', {
         }
         if (vwap !== undefined) this.trader.vwap = vwap
       }
+
+      // Market end events — navigate to summary
+      wsBus.on('stop_trading', () => {
+        console.log('[WebSocket] Market stopped')
+        this.isTradingStarted = false
+      })
+
+      wsBus.on('closure', async () => {
+        console.log('[WebSocket] Market closed — navigating to summary')
+        const { default: NavigationService } = await import('@/services/navigation')
+        NavigationService.onTradingEnded()
+      })
 
       wsBus.on('book_updated', handleDataUpdate)
       wsBus.on('transaction_update', handleDataUpdate)

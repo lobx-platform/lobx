@@ -284,17 +284,20 @@ onMounted(async () => {
   // Set default user role
   userRole.value = 'trader'
 
-  // Initialize trader + join Socket.IO market room
+  // Always subscribe to wsBus events and join market room
   const traderId = store.traderUuid || sessionStore.traderId || authStore.traderId
   if (traderId) {
+    // Subscribe to events first (so we don't miss any)
+    store._subscribeToEvents?.()
+
     try {
       await store.initializeTrader(traderId)
-      // Join market room AFTER trading has started
-      const { joinMarket } = await import('@/socket')
-      joinMarket(traderId)
     } catch (e) {
       console.warn('Trader init on trading page:', e)
     }
+    // Join market room (sets _lastJoinedTrader for auto-rejoin)
+    const { joinMarket } = await import('@/socket')
+    joinMarket(traderId)
   }
 
   // Start market timeout countdown if not started
