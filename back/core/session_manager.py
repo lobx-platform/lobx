@@ -66,6 +66,9 @@ class SessionManager:
         # Treatment groups: lab users can be assigned specific treatment groups
         self.user_treatment_groups: Dict[str, int] = {}          # username -> treatment_group
 
+        # Persistent random goal signs (so direction doesn't flip between markets)
+        self._goal_signs: Dict[str, int] = {}
+
         # Multi-participant: deterministic goal assignment
         self.user_group_index: Dict[str, int] = {}               # username -> index into predefined_goals
         self.user_market_count: Dict[str, int] = {}              # username -> markets completed in current sequence
@@ -319,8 +322,13 @@ class SessionManager:
             # Fallback: wrap around or use 0
             goal = goals[group_index % len(goals)] if goals else 0
 
+        # Random direction flipping (only on first assignment, then persisted)
         if goal != 0 and params.allow_random_goals:
-            goal = abs(goal) * random.choice([-1, 1])
+            # Check if we already assigned a direction for this user
+            persist_key = f"{username}_goal_sign"
+            if persist_key not in self._goal_signs:
+                self._goal_signs[persist_key] = random.choice([-1, 1])
+            goal = abs(goal) * self._goal_signs[persist_key]
 
         role = TraderRole.INFORMED if goal != 0 else TraderRole.SPECULATOR
 
