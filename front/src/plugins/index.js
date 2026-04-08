@@ -18,5 +18,5 @@ export function registerPlugins(app) {
   const pinia = createPinia()
   pinia.use(piniaPluginPersistedstate)
 
-  app.use(vuetify).use(router).use(pinia).use(MotionPlugin)
+  app.use(pinia).use(vuetify).use(router).use(MotionPlugin)
 }
