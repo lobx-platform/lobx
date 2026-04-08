@@ -74,23 +74,21 @@ def _authenticate(auth: dict) -> dict | None:
                 "is_admin": True,
             }
 
-    # Firebase id-token fallback
-    id_token = auth.get("id_token")
-    if id_token:
-        try:
-            from firebase_admin import auth as firebase_auth
-            decoded = firebase_auth.verify_id_token(
-                id_token, check_revoked=True, clock_skew_seconds=60
-            )
-            email = decoded["email"]
-            gmail_username = extract_gmail_username(email)
-            return {
-                "gmail_username": gmail_username,
-                "trader_id": f"HUMAN_{gmail_username}",
-                "is_admin": False,
-            }
-        except Exception:
-            pass
+    # Prolific user — authenticate via trader_id lookup in authenticated_users
+    prolific_pid = auth.get("prolific_pid")
+    if prolific_pid:
+        from .auth import authenticated_users
+        gmail_username = f"PROLIFIC_{prolific_pid}"
+        if gmail_username in authenticated_users:
+            return authenticated_users[gmail_username]
+        # Auto-create if not found (Prolific users are pre-validated via HTTP login)
+        trader_id = f"HUMAN_{gmail_username}"
+        return {
+            "gmail_username": gmail_username,
+            "trader_id": trader_id,
+            "is_admin": False,
+            "is_prolific": True,
+        }
 
     return None
 

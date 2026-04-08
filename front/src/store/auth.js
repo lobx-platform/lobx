@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', {
     marketId: null,
     labToken: null,
     adminToken: null,
+    prolificPid: null,
     loginInProgress: false,
   }),
   actions: {
@@ -81,10 +82,12 @@ export const useAuthStore = defineStore('auth', {
         }
         this.isAdmin = false
         this.traderId = data.trader_id
+        this.prolificPid = prolificPID
         this.syncToSessionStore()
       } catch (error) {
         console.error('Prolific login error:', error)
         this.user = null
+        this.prolificPid = null
         throw new Error(error.message || 'Failed to login via Prolific')
       } finally {
         this.loginInProgress = false
@@ -117,7 +120,7 @@ export const useAuthStore = defineStore('auth', {
       this.marketId = null
       this.labToken = null
       this.adminToken = null
-      localStorage.removeItem('auth')
+      this.prolificPid = null
     },
   },
   getters: {
@@ -125,6 +128,6 @@ export const useAuthStore = defineStore('auth', {
     isLabUser: (state) => !!state.user?.isLab,
   },
   persist: {
-    pick: ['isAdmin', 'traderId', 'marketId', 'labToken', 'adminToken', 'user'],
+    pick: ['isAdmin', 'traderId', 'marketId', 'labToken', 'adminToken', 'prolificPid', 'user'],
   },
 })

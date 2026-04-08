@@ -49,27 +49,17 @@ async def get_current_user(request: Request):
         if gmail_username in authenticated_users:
             return authenticated_users[gmail_username]
 
+    # Check for Prolific users by trader_id in authenticated_users
+    if trader_id and trader_id.startswith("HUMAN_PROLIFIC_"):
+        prolific_username = trader_id.split('_', 1)[1]  # "PROLIFIC_xxx"
+        if prolific_username in authenticated_users:
+            return authenticated_users[prolific_username]
+
     # Check for admin Bearer token
     if auth_header.startswith('Bearer '):
         token = auth_header.split('Bearer ')[1]
         if token == ADMIN_PASSWORD:
             return {"username": "admin", "gmail_username": "admin", "is_admin": True}
-
-        # Transitional: try Firebase token verification
-        try:
-            import firebase_admin
-            from firebase_admin import auth as firebase_auth
-            decoded_token = firebase_auth.verify_id_token(token, check_revoked=True, clock_skew_seconds=60)
-            email = decoded_token['email']
-            gmail_username = extract_gmail_username(email)
-            from core.data_models import TradingParameters
-            admin_users = [a.lower() for a in TradingParameters().admin_users]
-            is_admin = gmail_username.lower() in admin_users
-            user = {**decoded_token, "is_admin": is_admin, "gmail_username": gmail_username}
-            authenticated_users[gmail_username] = user
-            return user
-        except Exception:
-            pass
 
     if not auth_header:
         raise HTTPException(

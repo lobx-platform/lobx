@@ -69,26 +69,6 @@ async def admin_login(request: Request):
     if password and password == ADMIN_PASSWORD:
         return success(message="Admin login successful", data={"username": "admin", "is_admin": True, "token": ADMIN_PASSWORD})
 
-    # Transitional: try Firebase
-    auth_header = request.headers.get('Authorization', '')
-    if auth_header.startswith('Bearer '):
-        token = auth_header.split('Bearer ')[1]
-        try:
-            from firebase_admin import auth as firebase_auth
-            decoded_token = firebase_auth.verify_id_token(token, check_revoked=True, clock_skew_seconds=60)
-            email = decoded_token['email']
-            from ..auth import extract_gmail_username
-            gmail_username = extract_gmail_username(email)
-            from core.data_models import TradingParameters
-            admin_users = [a.lower() for a in TradingParameters().admin_users]
-            if gmail_username.lower() not in admin_users:
-                raise HTTPException(status_code=403, detail="User does not have admin privileges")
-            return success(message="Admin login successful", data={"username": email, "is_admin": True})
-        except HTTPException:
-            raise
-        except Exception as e:
-            raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
-
     raise HTTPException(status_code=401, detail="Invalid authentication method")
 
 
