@@ -1,100 +1,118 @@
 import { defineStore } from 'pinia'
+import { io } from 'socket.io-client'
 import { useAuthStore } from './auth'
 
 export const useWebSocketStore = defineStore('websocket', {
   state: () => ({
-    ws: null,
+    socket: null,
     isConnected: false,
     reconnectAttempts: 0,
     maxReconnectAttempts: 5,
-    reconnectInterval: 3000,
   }),
 
   actions: {
     async initializeWebSocket(traderUuid) {
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      if (this.socket && this.socket.connected) {
         return // Already connected
       }
 
-      const wsUrl = `${import.meta.env.VITE_WS_URL}trader/${traderUuid}`
-      this.ws = new WebSocket(wsUrl)
+      // Disconnect any stale socket
+      if (this.socket) {
+        this.socket.disconnect()
+        this.socket = null
+      }
 
-      this.ws.onopen = async (event) => {
+      const authStore = useAuthStore()
+      const auth = {}
+      if (authStore.labToken) {
+        auth.lab_token = authStore.labToken
+      } else if (authStore.adminToken) {
+        auth.admin_token = authStore.adminToken
+      }
+
+      // Derive the Socket.IO URL from the existing HTTP_URL env var
+      // (Socket.IO client uses http(s), not ws(s))
+      const baseUrl = import.meta.env.VITE_HTTP_URL || 'http://localhost:8000/'
+
+      this.socket = io(baseUrl, {
+        auth,
+        transports: ['websocket', 'polling'],
+        reconnectionAttempts: this.maxReconnectAttempts,
+        reconnectionDelay: 3000,
+        // Socket.IO path defaults to /socket.io/ which matches the server
+      })
+
+      this.socket.on('connect', () => {
         this.isConnected = true
         this.reconnectAttempts = 0
 
-        // Add a small delay to ensure WebSocket is fully ready
-        setTimeout(async () => {
-          try {
-            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-              const authStore = useAuthStore()
-              if (authStore.labToken) {
-                this.ws.send(authStore.labToken)
-              } else if (authStore.adminToken) {
-                this.ws.send(authStore.adminToken)
-              } else {
-                this.ws.send('no-auth')
-              }
-            }
-          } catch (error) {
-            // Error sending authentication token
+        // Automatically join the market after connecting
+        this.socket.emit('join_market', { trader_id: traderUuid })
+      })
+
+      this.socket.on('disconnect', () => {
+        this.isConnected = false
+      })
+
+      this.socket.on('connect_error', () => {
+        this.isConnected = false
+      })
+
+      // ── Event routing ──────────────────────────────────────────────
+      // Each server event is forwarded to the handleMessage callback,
+      // wrapped in the same { type, data } shape the old WS used.
+
+      const routedEvents = [
+        'time_update',
+        'trader_count_update',
+        'session_waiting',
+        'market_started',
+        'market_status_update',
+        'trader_status_update',
+        'book_updated',
+        'trading_started',
+        'stop_trading',
+        'closure',
+        'filled_order',
+        'transaction_update',
+        'error',
+        'ready_ack',
+      ]
+
+      for (const event of routedEvents) {
+        this.socket.on(event, (payload) => {
+          // The server may send the payload with a `type` field already
+          // or it may be a raw dict. Normalise to { type, data/... }.
+          if (payload && payload.type) {
+            this.handleMessage(payload)
+          } else {
+            this.handleMessage({ type: event, data: payload })
           }
-        }, 100) // 100ms delay
-      }
-
-      this.ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data)
-          this.handleMessage(data)
-        } catch (error) {
-          // Error processing WebSocket message
-        }
-      }
-
-      this.ws.onerror = (error) => {
-        this.isConnected = false
-      }
-
-      this.ws.onclose = (event) => {
-        this.isConnected = false
-
-        // Don't auto-reconnect for session waiting (code 1000)
-        if (event.code === 1000 && event.reason === 'Session waiting') {
-          return
-        }
-
-        this.attemptReconnect(traderUuid)
+        })
       }
     },
 
     handleMessage(data) {
-      // This will be overridden by the main store to route messages
+      // This will be overridden by the trader store to route messages
     },
 
     async sendMessage(type, messageData) {
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        const message = JSON.stringify({ type, data: messageData })
-        this.ws.send(message)
-      } else {
-        // WebSocket is not open
-      }
-    },
-
-    attemptReconnect(traderUuid) {
-      if (this.reconnectAttempts < this.maxReconnectAttempts) {
-        this.reconnectAttempts++
-        setTimeout(() => {
-          this.initializeWebSocket(traderUuid)
-        }, this.reconnectInterval)
-      } else {
-        // Max reconnection attempts reached
+      if (this.socket && this.socket.connected) {
+        // Map legacy message types to Socket.IO events
+        if (type === 'add_order') {
+          this.socket.emit('place_order', messageData)
+        } else if (type === 'cancel_order') {
+          this.socket.emit('cancel_order', messageData)
+        } else {
+          this.socket.emit(type, messageData)
+        }
       }
     },
 
     disconnect() {
-      if (this.ws) {
-        this.ws.close()
-        this.ws = null
+      if (this.socket) {
+        this.socket.disconnect()
+        this.socket = null
         this.isConnected = false
         this.reconnectAttempts = 0
       }

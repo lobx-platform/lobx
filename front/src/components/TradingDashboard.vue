@@ -203,7 +203,7 @@ import { useTraderStore } from '@/store/app'
 import { useWebSocketStore } from '@/store/websocket'
 import { useSessionStore } from '@/store/session'
 import { useAuthStore } from '@/store/auth'
-import { debounce } from 'lodash'
+// lodash debounce removed — no longer needed with Socket.IO
 import axios from '@/api/axios'
 import NavigationService from '@/services/navigation'
 import {
@@ -504,31 +504,12 @@ const refreshPage = () => {
   window.location.reload()
 }
 
-// Modify your store watch or WebSocket handler to include error handling
+// Watch Socket.IO connection errors
 watch(
-  () => wsStore.ws,
-  (newWs) => {
-    if (newWs) {
-      const debouncedHandler = debounce((event) => {
-        try {
-          if (
-            typeof event.data === 'string' &&
-            (event.data.startsWith('<!DOCTYPE') || event.data.startsWith('<html'))
-          ) {
-            showErrorAlert.value = true
-            return
-          }
-          const data = JSON.parse(event.data)
-          // Your normal message handling...
-        } catch (error) {
-          if (error.message.includes("Unexpected token '<'")) {
-            showErrorAlert.value = true
-          }
-          // WebSocket message error
-        }
-      }, 16) // Debounce to roughly one frame (60fps)
-
-      newWs.addEventListener('message', debouncedHandler)
+  () => wsStore.isConnected,
+  (connected) => {
+    if (!connected && wsStore.socket) {
+      // Socket.IO handles reconnection automatically
     }
   },
   { immediate: true }

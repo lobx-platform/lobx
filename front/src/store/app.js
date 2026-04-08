@@ -82,10 +82,6 @@ export const useTraderStore = defineStore('trader', {
       }
     },
 
-    ws_path: (state) => {
-      return `${import.meta.env.VITE_WS_URL}trader/${state.traderUuid}`
-    },
-
     activeOrders: (state) => state.placedOrders.filter((order) => order.status === 'active'),
     pendingOrders: (state) => state.placedOrders.filter((order) => order.status === 'pending'),
 
@@ -546,7 +542,7 @@ export const useTraderStore = defineStore('trader', {
               try {
                 await this.getTraderAttributes(this.traderUuid)
                 const wsStore = useWebSocketStore()
-                if (!wsStore.ws || wsStore.ws.readyState !== WebSocket.OPEN) {
+                if (!wsStore.socket || !wsStore.socket.connected) {
                   await this.initializeWebSocket()
                 }
               } catch (error) {
