@@ -327,8 +327,11 @@ async def mark_ready(sid, data=None):
         if trader_manager:
             market_id = market_handler.trader_to_market_lookup.get(trader_id)
             asyncio.create_task(trader_manager.launch())
-            # Notify all participants in the room that market is starting
-            await sio.emit("market_started", {"market_id": market_id}, room=market_id)
+            # Notify ALL participants directly (they may not be in the market room yet)
+            for hu in trader_manager.human_traders:
+                user_sid = _username_to_sid.get(hu.gmail_username)
+                if user_sid:
+                    await sio.emit("market_started", {"market_id": market_id}, to=user_sid)
     else:
         # Broadcast updated waiting room status to all participants
         if session_id:
