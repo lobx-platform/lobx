@@ -168,7 +168,8 @@ class SessionManager:
             merged = treatment_manager.get_merged_params(market_count, base_params_dict)
 
         params = TradingParameters(**merged)
-        trader_manager = TraderManager(params, market_id=session_id)
+        timestamped_id = f"{session_id}_{int(time.time())}"
+        trader_manager = TraderManager(params, market_id=timestamped_id)
         market_id = trader_manager.trading_market.id
 
         for wu in users:
