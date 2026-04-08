@@ -22,6 +22,7 @@ export const wsBus = mitt()
 
 // ── The raw socket instance (NOT reactive — never put in Pinia state) ───────
 let _socket = null
+let _lastJoinedTrader = null
 
 /**
  * All server events we want to forward through the bus.
@@ -68,6 +69,7 @@ export function connectSocket(traderUuid, { labToken, adminToken, prolificPid } 
   else if (adminToken) auth.admin_token = adminToken
   else if (prolificPid) auth.prolific_pid = prolificPid
 
+  console.log(`[Socket.IO] Connecting to ${url.origin} path=${sioPath} auth=`, auth)
   _socket = io(url.origin, {
     auth,
     path: sioPath,
@@ -78,16 +80,18 @@ export function connectSocket(traderUuid, { labToken, adminToken, prolificPid } 
 
   // ── Lifecycle events ──────────────────────────────────────────────────────
   _socket.on('connect', () => {
+    console.log(`[Socket.IO] Connected! sid=${_socket.id}`)
     socketState.connected = true
-    // Auto-join the market room
-    _socket.emit('join_market', { trader_id: traderUuid })
+    // Don't auto-join market here — wait until trading actually starts
+    // Components call joinMarket() explicitly when ready
   })
 
   _socket.on('disconnect', () => {
     socketState.connected = false
   })
 
-  _socket.on('connect_error', () => {
+  _socket.on('connect_error', (err) => {
+    console.error(`[Socket.IO] Connection error:`, err.message)
     socketState.connected = false
   })
 
@@ -101,11 +105,28 @@ export function connectSocket(traderUuid, { labToken, adminToken, prolificPid } 
 
   // ── Reconnect: re-join the market room automatically ──────────────────────
   _socket.io.on('reconnect', () => {
+    console.log('[Socket.IO] Reconnected')
     socketState.connected = true
-    _socket.emit('join_market', { trader_id: traderUuid })
+    // Re-join market if we were in one
+    if (_lastJoinedTrader) {
+      _socket.emit('join_market', { trader_id: _lastJoinedTrader })
+    }
   })
 
   return _socket
+}
+
+/**
+ * Join a market room. Call this after /trading/start succeeds.
+ */
+export function joinMarket(traderId) {
+  if (!_socket || !_socket.connected) {
+    console.warn('[Socket.IO] Cannot join market — not connected')
+    return
+  }
+  console.log(`[Socket.IO] Joining market for ${traderId}`)
+  _lastJoinedTrader = traderId
+  _socket.emit('join_market', { trader_id: traderId })
 }
 
 /**

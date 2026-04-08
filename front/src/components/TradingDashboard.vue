@@ -285,11 +285,14 @@ onMounted(async () => {
   // Set default user role
   userRole.value = 'trader'
 
-  // Always initialize trader on mount (subscribes to wsBus events + connects WS if needed)
+  // Initialize trader + join Socket.IO market room
   const traderId = store.traderUuid || sessionStore.traderId || authStore.traderId
   if (traderId) {
     try {
       await store.initializeTrader(traderId)
+      // Join market room AFTER trading has started
+      const { joinMarket } = await import('@/socket')
+      joinMarket(traderId)
     } catch (e) {
       console.warn('Trader init on trading page:', e)
     }

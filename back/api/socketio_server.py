@@ -115,7 +115,7 @@ async def connect(sid, environ, auth):
         "is_admin": user.get("is_admin", False),
         "market_id": None,
     }
-    logger.info(f"[SIO] connected sid={sid} user={user['gmail_username']}")
+    print(f"[SIO] connected sid={sid} user={user['gmail_username']}", flush=True)
 
 
 @sio.event
@@ -148,6 +148,7 @@ async def join_market(sid, data):
     # Resolve market_id from trader's active session
     session_status = market_handler.get_session_status_by_trader_id(trader_id)
     status = session_status.get("status")
+    print(f"[SIO] join_market: {trader_id} status={status}", flush=True)
 
     if status == "not_found":
         await sio.emit("error", {"message": "Not in any session"}, to=sid)
@@ -222,7 +223,7 @@ async def join_market(sid, data):
     # Start the time-update loop for this client
     asyncio.create_task(_time_update_loop(sid, trader_manager, market_id))
 
-    logger.info(f"[SIO] {trader_id} joined room {market_id}")
+    print(f"[SIO] {trader_id} joined room {market_id}, trading_started={trader_manager.trading_market.trading_started}", flush=True)
 
 
 @sio.event
