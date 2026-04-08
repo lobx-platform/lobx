@@ -503,22 +503,6 @@ const saveTreatments = async () => {
   }
 }
 
-// Prolific functions
-const fetchProlificSettings = async () => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_HTTP_URL}admin/prolific-settings`)
-    if (response.data?.data) {
-      prolificSettings.value = {
-        credentials: response.data.data.PROLIFIC_CREDENTIALS || '',
-        studyId: response.data.data.PROLIFIC_STUDY_ID || '',
-        redirectUrl: response.data.data.PROLIFIC_REDIRECT_URL || '',
-      }
-    }
-  } catch (error) {
-    console.error('Failed to fetch Prolific settings:', error)
-  }
-}
-
 const saveProlificSettings = async () => {
   try {
     savingProlific.value = true

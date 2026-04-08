@@ -8,7 +8,7 @@ import io
 import os
 from typing import Dict, Any
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, Request, Query
+from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from core.trader_manager import TraderManager
@@ -90,7 +90,7 @@ async def get_trader_defaults():
 
 
 @router.post("/trading/initiate")
-async def create_trading_market(background_tasks: BackgroundTasks, request: Request, current_user: dict = Depends(get_current_user)):
+async def create_trading_market(request: Request, current_user: dict = Depends(get_current_user)):
     try:
         merged_params = TradingParameters(**(base_settings or {}))
     except Exception:
@@ -310,7 +310,7 @@ async def get_market_metrics(trader_id: str, market_id: str, current_user: dict 
 
 
 @router.post("/trading/start")
-async def start_trading_market(background_tasks: BackgroundTasks, request: Request):
+async def start_trading_market(request: Request):
     current_user = await get_current_user(request)
     gmail_username = current_user['gmail_username']
     trader_id = f"HUMAN_{gmail_username}"

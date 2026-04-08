@@ -3,7 +3,7 @@
 import asyncio
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Request, Query
+from fastapi import APIRouter, HTTPException, Depends, Request, Query
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -166,7 +166,6 @@ async def test_reset_state():
 
 @router.post("/admin/run_headless_batch")
 async def run_headless_batch(
-    background_tasks: BackgroundTasks,
     num_markets: int = Query(default=3, ge=1, le=10),
     start_treatment: int = Query(default=0, ge=0),
     parallel: bool = Query(default=True),
@@ -227,7 +226,6 @@ async def list_sessions(current_user: dict = Depends(get_current_user)):
 @router.post("/sessions/{market_id}/force-start")
 async def force_start_session(
     market_id: str,
-    background_tasks: BackgroundTasks,
     current_user: dict = Depends(get_current_user)
 ):
     if market_id not in market_handler.trader_managers:

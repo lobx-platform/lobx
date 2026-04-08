@@ -142,7 +142,6 @@ const wsStore = useWebSocketStore()
 const sessionStore = useSessionStore()
 const authStore = useAuthStore()
 const {
-  goalMessage,
   initial_shares,
   pnl,
   vwap,
@@ -194,10 +193,6 @@ onMounted(async () => {
       }
     }, 1000)
   }
-})
-
-onUnmounted(() => {
-  // cleanup
 })
 
 const goal = computed(() => store.traderAttributes?.goal)

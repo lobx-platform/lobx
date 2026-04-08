@@ -127,6 +127,3 @@ async def reset_session_for_new_market(request: Request, current_user: dict = De
     return success(message="Session reset for new market", data={"username": gmail_username})
 
 
-@router.get("/settings/session-type")
-async def get_session_type():
-    return success(data={"session_type": base_settings.get("session_type", "lab")})

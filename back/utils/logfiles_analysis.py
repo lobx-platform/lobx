@@ -338,16 +338,6 @@ def get_best_bid_order(orders):
     return best_bid_order
 
 
-def get_random_order(orders,trader):
-    random_orders = []
-    for order in orders:
-        if order['Trader'] == trader:
-            random_orders.append(order)
-    
-    return_order = random.choice(random_orders)
-    
-    return return_order
-
 def get_order_to_cancel(orders,trader,price):
     orders_trader = [order for order in orders if order['Trader'] ==trader]
     orders_at_price = [order for order in orders_trader if order['Price'] ==price] 

@@ -54,7 +54,7 @@ function buildData() {
   const bidSeries = chartData.value.find(s => s.name === 'Bids') || { data: [] }
   const askSeries = chartData.value.find(s => s.name === 'Asks') || { data: [] }
 
-  // Merge all price points so both datasets share the same x labels
+  // Merge all price points and fill gaps for continuous x-axis
   const allPoints = new Map()
   for (const pt of bidSeries.data) allPoints.set(pt.x, { bid: pt.y, ask: 0 })
   for (const pt of askSeries.data) {
@@ -63,10 +63,22 @@ function buildData() {
     allPoints.set(pt.x, entry)
   }
 
+  // Fill in missing price points between min and max
+  if (allPoints.size > 0) {
+    const prices = [...allPoints.keys()]
+    const min = Math.min(...prices)
+    const max = Math.max(...prices)
+    for (let p = min; p <= max; p++) {
+      if (!allPoints.has(p)) {
+        allPoints.set(p, { bid: 0, ask: 0 })
+      }
+    }
+  }
+
   const sorted = [...allPoints.entries()].sort((a, b) => a[0] - b[0])
   return {
     labels: sorted.map(([x]) => x),
-    bids: sorted.map(([, v]) => v.bid || null),  // null hides the bar instead of showing 0
+    bids: sorted.map(([, v]) => v.bid || null),
     asks: sorted.map(([, v]) => v.ask || null),
   }
 }
