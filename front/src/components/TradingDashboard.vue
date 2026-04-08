@@ -78,7 +78,7 @@
                 >
                   {{ minutes }}:{{ seconds.toString().padStart(2, '0') }}
                 </vue-countdown>
-                <span v-else>Waiting to start</span>
+                <span v-else>--:--</span>
               </div>
             </v-col>
           </v-row>
@@ -87,37 +87,7 @@
 
       <v-main class="dynamic-main">
         <v-container fluid class="pa-4">
-          <!-- Modified waiting screen -->
-          <v-row v-if="!isTradingStarted" justify="center" align="center" style="height: 80vh">
-            <v-col cols="12" md="6" class="text-center">
-              <v-card elevation="2" class="pa-6">
-                <v-card-title class="text-h4 mb-4">Waiting for Traders</v-card-title>
-                <v-card-text>
-                  <p class="text-h6 mb-4">
-                    {{ currentHumanTraders }} out of {{ expectedHumanTraders }} traders have joined
-                  </p>
-                  <p class="subtitle-1 mb-4">
-                    Your Role:
-                    <v-chip :color="roleColor" text-color="white" small>
-                      <v-icon left small>{{ roleIcon }}</v-icon>
-                      {{ roleDisplay.text }}
-                    </v-chip>
-                  </p>
-                  <v-progress-circular
-                    :size="70"
-                    :width="7"
-                    color="primary"
-                    indeterminate
-                  ></v-progress-circular>
-                  <p class="text--secondary mt-4">
-                    <v-icon small color="grey">mdi-refresh</v-icon>
-                    If waiting too long, you can refresh the page to try again
-                  </p>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-          <v-row v-else>
+          <v-row>
             <!-- 3x2 Grid Layout -->
             <v-col cols="12" md="4" class="d-flex flex-column">
               <v-card class="mb-4 tool-card" elevation="2">
