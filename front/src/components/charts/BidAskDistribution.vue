@@ -90,8 +90,6 @@ function buildChart() {
           backgroundColor: 'rgba(33, 150, 243, 0.7)',
           borderColor: 'rgba(25, 118, 210, 1)',
           borderWidth: 1,
-          barPercentage: 0.95,
-          categoryPercentage: 1.0,
         },
         {
           label: 'Asks',
@@ -99,8 +97,6 @@ function buildChart() {
           backgroundColor: 'rgba(244, 67, 54, 0.7)',
           borderColor: 'rgba(211, 47, 47, 1)',
           borderWidth: 1,
-          barPercentage: 0.95,
-          categoryPercentage: 1.0,
         },
       ],
     },
@@ -123,6 +119,7 @@ function buildChart() {
       },
       scales: {
         x: {
+          stacked: true,
           ticks: {
             color: '#666',
             font: { size: 10, family: "'IBM Plex Mono', monospace" },
@@ -131,6 +128,7 @@ function buildChart() {
           border: { color: '#ccd6eb' },
         },
         y: {
+          stacked: false,
           ticks: {
             color: '#666',
             font: { size: 10, family: "'IBM Plex Mono', monospace" },

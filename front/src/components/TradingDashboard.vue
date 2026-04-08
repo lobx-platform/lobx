@@ -173,11 +173,7 @@ watch(remainingTime, (newValue) => {
   }
 })
 
-const zoomLevel = ref(0.95)
-
 onMounted(async () => {
-  userRole.value = 'trader'
-
   const traderId = store.traderUuid || sessionStore.traderId || authStore.traderId
   if (traderId) {
     store._subscribeToEvents?.()
@@ -231,16 +227,6 @@ const getGoalMessageClass = computed(() => {
   return goal.value > 0 ? 'goal-buy' : 'goal-sell'
 })
 
-const displayGoalMessage = computed(() => {
-  if (!goalMessage.value) {
-    return {
-      type: 'info',
-      text: 'You can freely trade. Your goal is to profit from the market.',
-    }
-  }
-  return goalMessage.value
-})
-
 const cancelAllActiveOrders = () => {
   activeOrders.value.forEach((order) => {
     store.cancelOrder(order.id)
@@ -253,7 +239,6 @@ watch(isGoalAchieved, (newValue) => {
   }
 })
 
-const userRole = ref('')
 const marketTimeRemaining = ref(null)
 const marketTimeoutInterval = ref(null)
 
@@ -290,25 +275,6 @@ const goalTypeText = computed(() => {
   if (!hasGoal.value) return 'FREE'
   return goal.value > 0 ? 'BUY' : 'SELL'
 })
-
-const allTradersReady = computed(() => {
-  return store.allTradersReady
-})
-
-const readyCount = computed(() => {
-  return store.readyCount || 0
-})
-
-const traderCountDisplay = computed(() => {
-  return `${currentHumanTraders.value} / ${expectedHumanTraders.value}`
-})
-
-watch(
-  [currentHumanTraders, expectedHumanTraders],
-  ([newCurrent, newExpected], [oldCurrent, oldExpected]) => {
-    // Trader count updated
-  },
-)
 
 const showErrorAlert = ref(false)
 
