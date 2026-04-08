@@ -336,11 +336,14 @@ async def start_trading_market(request: Request):
         if trader_manager:
             internal_session_id = market_handler.trader_to_market_lookup.get(trader_id)
             asyncio.create_task(trader_manager.launch())
-            # Broadcast market_started via Socket.IO room
-            from api.socketio_server import emit_to_market
-            asyncio.create_task(
-                emit_to_market(internal_session_id, "market_started", {"market_id": internal_session_id})
-            )
+            # Broadcast market_started to each user directly (they haven't joined the SIO room yet)
+            from api.socketio_server import sio, _username_to_sid
+            for hu in trader_manager.human_traders:
+                user_sid = _username_to_sid.get(hu.gmail_username)
+                if user_sid:
+                    asyncio.create_task(
+                        sio.emit("market_started", {"market_id": internal_session_id}, to=user_sid)
+                    )
     else:
         status_message = "Marked as ready. Waiting for other traders to be ready."
 
