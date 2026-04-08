@@ -1,21 +1,22 @@
-"""Trading routes: /trading/start, /trader_info/{id}, /trader/{id}/market, /traders/defaults, /market_metrics, WebSocket"""
+"""Trading routes: /trading/start, /trader_info/{id}, /trader/{id}/market, /traders/defaults, /market_metrics
+
+WebSocket handler has been replaced by Socket.IO events in api/socketio_server.py.
+"""
 
 import asyncio
 import io
-import json
 import os
-from datetime import timedelta
 from typing import Dict, Any
 
-from fastapi import APIRouter, WebSocket, HTTPException, WebSocketDisconnect, BackgroundTasks, Depends, Request, Query
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, Request, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from core.trader_manager import TraderManager
 from core.data_models import TradingParameters
-from ..auth import get_current_user, extract_gmail_username
+from ..auth import get_current_user
 from ..shared import (
-    base_settings, market_handler, accumulated_rewards, trader_locks,
-    get_historical_markets_count, sanitize_websocket_message,
+    base_settings, market_handler, accumulated_rewards,
+    get_historical_markets_count,
 )
 from utils.api_responses import success, waiting, not_in_session
 from utils.logfiles_analysis import order_book_contruction, calculate_trader_specific_metrics
@@ -335,7 +336,11 @@ async def start_trading_market(background_tasks: BackgroundTasks, request: Reque
         if trader_manager:
             internal_session_id = market_handler.trader_to_market_lookup.get(trader_id)
             asyncio.create_task(trader_manager.launch())
-            asyncio.create_task(broadcast_trader_count(internal_session_id))
+            # Broadcast market_started via Socket.IO room
+            from api.socketio_server import emit_to_market
+            asyncio.create_task(
+                emit_to_market(internal_session_id, "market_started", {"market_id": internal_session_id})
+            )
     else:
         status_message = "Marked as ready. Waiting for other traders to be ready."
 
@@ -345,208 +350,5 @@ async def start_trading_market(background_tasks: BackgroundTasks, request: Reque
     return success(ready_traders=ready_traders, all_ready=all_ready, message=status_message)
 
 
-# WebSocket support
 
-async def send_to_frontend(websocket: WebSocket, trader_manager):
-    while True:
-        trading_market = trader_manager.trading_market
-        time_update = {
-            "type": "time_update",
-            "data": {
-                "current_time": trading_market.current_time.isoformat(),
-                "is_trading_started": trading_market.trading_started,
-                "remaining_time": max(0, (
-                    trading_market.start_time
-                    + timedelta(minutes=trading_market.duration)
-                    - trading_market.current_time
-                ).total_seconds())
-                if trading_market.trading_started
-                else None,
-                "current_human_traders": len(trader_manager.human_traders),
-                "expected_human_traders": len(trader_manager.params.predefined_goals),
-            },
-        }
-        try:
-            sanitized_update = sanitize_websocket_message(time_update)
-            await websocket.send_json(sanitized_update)
-        except Exception as e:
-            print(f"Error sending time update: {e}")
-        await asyncio.sleep(1)
-
-
-async def receive_from_frontend(websocket: WebSocket, trader):
-    while True:
-        try:
-            message = await asyncio.wait_for(websocket.receive_text(), timeout=0.1)
-            parsed_message = json.loads(message)
-
-            if parsed_message.get('type') == 'order':
-                async with trader_locks[trader.id]:
-                    await trader.on_message_from_client(message)
-            else:
-                await trader.on_message_from_client(message)
-
-        except (asyncio.TimeoutError, WebSocketDisconnect, json.JSONDecodeError):
-            continue
-        except Exception:
-            return
-
-
-async def broadcast_trader_count(market_id: str):
-    """Broadcast current trader count to all traders"""
-    trader_manager = market_handler.trader_managers.get(market_id)
-    if not trader_manager:
-        return
-
-    current_traders = len(market_handler.active_users[market_id])
-    expected_traders = len(trader_manager.params.predefined_goals)
-
-    count_message = {
-        "type": "trader_count_update",
-        "data": {
-            "current_human_traders": current_traders,
-            "expected_human_traders": expected_traders,
-            "market_id": market_id
-        }
-    }
-
-    for trader in trader_manager.human_traders:
-        if hasattr(trader, 'websocket') and trader.websocket:
-            try:
-                sanitized_count_message = sanitize_websocket_message(count_message)
-                await trader.websocket.send_json(sanitized_count_message)
-            except Exception:
-                pass
-
-
-@router.websocket("/trader/{trader_id}")
-async def websocket_trader_endpoint(websocket: WebSocket, trader_id: str):
-    await websocket.accept()
-    internal_session_id = None
-    gmail_username = None
-    trader_manager = None
-
-    try:
-        token = await websocket.receive_text()
-
-        # Check if this is a Lab token
-        is_lab = False
-        if token.startswith('lab_'):
-            from ..lab_auth import validate_lab_token, lab_trader_map
-            is_valid, lab_user = validate_lab_token(token)
-            if is_valid:
-                gmail_username = lab_user['gmail_username']
-                is_lab = True
-                lab_trader_map[lab_user['trader_id']] = lab_user
-            elif trader_id.startswith('HUMAN_'):
-                gmail_username = trader_id[6:]
-                is_lab = True
-
-        if not is_lab and not gmail_username:
-            # Try Firebase (transitional)
-            try:
-                from firebase_admin import auth as firebase_auth
-                decoded_token = firebase_auth.verify_id_token(token, check_revoked=True, clock_skew_seconds=60)
-                email = decoded_token['email']
-                gmail_username = extract_gmail_username(email)
-            except Exception:
-                if trader_id.startswith('HUMAN_'):
-                    gmail_username = trader_id[6:]
-
-        if not gmail_username:
-            await websocket.close(code=1008, reason="Invalid authentication")
-            return
-
-        session_status = market_handler.get_session_status_by_trader_id(trader_id)
-        print(f"[WS] {trader_id} gmail={gmail_username} status={session_status.get('status')}")
-
-        if session_status.get("status") == "not_found":
-            print(f"[WS] {trader_id} NOT IN SESSION - closing")
-            await websocket.close(code=1008, reason="Not in any session")
-            return
-
-        # Wait for market to become active (handles timing between API start and WS connect)
-        if session_status.get("status") == "waiting":
-            waiting_message = {
-                "type": "session_waiting",
-                "data": {"status": "waiting", "message": "Waiting for other traders to join", "isWaitingForOthers": True}
-            }
-            sanitized_waiting = sanitize_websocket_message(waiting_message)
-            await websocket.send_json(sanitized_waiting)
-
-            try:
-                for _ in range(60):  # Wait up to 60 seconds
-                    new_status = market_handler.get_session_status_by_trader_id(trader_id)
-                    if new_status.get("status") == "active":
-                        break
-                    await asyncio.sleep(1)
-                else:
-                    await websocket.close(code=1008, reason="Timeout waiting for market")
-                    return
-            except WebSocketDisconnect:
-                return
-
-        # Wait for trader_manager to be ready (launch() is a background task)
-        trader_manager = None
-        for _ in range(10):
-            trader_manager = market_handler.get_trader_manager_by_trader_id(trader_id)
-            if trader_manager:
-                break
-            await asyncio.sleep(0.5)
-
-        if not trader_manager:
-            await websocket.close(code=1008, reason="No trader manager found")
-            return
-
-        internal_session_id = market_handler.trader_to_market_lookup.get(trader_id)
-        trader = trader_manager.get_trader(trader_id)
-        if not trader:
-            await websocket.close(code=1008, reason="Trader not found")
-            return
-
-        market_handler.add_user_to_market(gmail_username, internal_session_id)
-
-        initial_count = {
-            "type": "trader_count_update",
-            "data": {
-                "current_human_traders": len(market_handler.active_users.get(internal_session_id, set())),
-                "expected_human_traders": len(trader_manager.params.predefined_goals),
-                "market_id": internal_session_id
-            }
-        }
-        sanitized_count = sanitize_websocket_message(initial_count)
-        await websocket.send_json(sanitized_count)
-
-        # Wait for trading to actually start (launch() is a background task)
-        for _ in range(30):
-            if trader_manager.trading_market.trading_started:
-                break
-            await asyncio.sleep(0.5)
-
-        await trader.connect_to_socket(websocket)
-
-        send_task = asyncio.create_task(send_to_frontend(websocket, trader_manager))
-        receive_task = asyncio.create_task(receive_from_frontend(websocket, trader))
-
-        done, pending = await asyncio.wait(
-            [send_task, receive_task],
-            return_when=asyncio.FIRST_COMPLETED
-        )
-        for task in pending:
-            task.cancel()
-
-    except WebSocketDisconnect:
-        if internal_session_id and gmail_username and trader_manager and trader_manager.trading_market.trading_started:
-            if gmail_username not in market_handler.user_historical_markets:
-                market_handler.user_historical_markets[gmail_username] = set()
-            market_handler.user_historical_markets[gmail_username].add(internal_session_id)
-    except Exception:
-        pass
-    finally:
-        if internal_session_id and gmail_username:
-            market_handler.remove_user_from_market(gmail_username, internal_session_id)
-            await broadcast_trader_count(internal_session_id)
-        try:
-            await websocket.close()
-        except RuntimeError:
-            pass
+# Legacy WebSocket handler removed — replaced by Socket.IO events in api/socketio_server.py
