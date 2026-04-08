@@ -185,10 +185,11 @@ async def run_headless_batch(
             params = TradingParameters(**params_dict)
             market_id = f"{session_id}_MARKET_{market_index}"
             manager = TraderManager(params, market_id=market_id)
-            market_handler.trader_managers[market_id] = manager
+            market_handler.session_manager.active_markets[market_id] = manager
             print(f"Starting market {market_index} (treatment {treatment_idx}): {market_id}")
             await manager.launch()
             await manager.cleanup()
+            market_handler.session_manager.active_markets.pop(market_id, None)
             print(f"Completed market {market_index}: {market_id}")
         except Exception as e:
             import traceback
@@ -205,7 +206,7 @@ async def run_headless_batch(
                 if i < num_markets - 1:
                     await asyncio.sleep(delay_seconds)
 
-    background_tasks.add_task(run_batch)
+    asyncio.create_task(run_batch())
 
     return success(
         session_id=session_id, num_markets=num_markets, start_treatment=start_treatment,
