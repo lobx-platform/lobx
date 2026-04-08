@@ -124,12 +124,13 @@ export function connectSocket(traderUuid, { labToken, adminToken, prolificPid } 
  * Join a market room. Call this after /trading/start succeeds.
  */
 export function joinMarket(traderId) {
+  // Always set this so auto-rejoin works when socket connects/reconnects
+  _lastJoinedTrader = traderId
   if (!_socket || !_socket.connected) {
-    console.warn('[Socket.IO] Cannot join market — not connected')
+    console.log('[Socket.IO] Not connected yet — will join market on connect')
     return
   }
   console.log(`[Socket.IO] Joining market for ${traderId}`)
-  _lastJoinedTrader = traderId
   _socket.emit('join_market', { trader_id: traderId })
 }
 
