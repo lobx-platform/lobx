@@ -1,86 +1,65 @@
 <template>
-  <v-card height="100%" elevation="3" class="trading-panel">
-    <!-- Show pause notification overlapping headers -->
-    <div v-if="isHumanTraderPaused" class="pause-overlay">
-      <div class="pause-banner">
-        <v-icon color="orange" small class="mr-1">mdi-pause</v-icon>
-        Trading PAUSED - Buttons disabled
-      </div>
+  <div class="trading-panel">
+    <!-- Show pause notification -->
+    <div v-if="isHumanTraderPaused" class="pause-banner">
+      TRADING PAUSED
     </div>
     <div class="orders-container">
-      <div class="order-column buy-column">
-        <h3 class="order-type-title">
-          <v-icon left color="primary">mdi-arrow-up-bold</v-icon>
-          Buy Orders
-        </h3>
-        <div v-if="buyPrices.length === 0">
+      <div class="order-column">
+        <div class="column-header buy-header">Buy Orders</div>
+        <div v-if="buyPrices.length === 0" class="no-orders">
           No Buy Orders
-          <div v-if="bestAsk !== null">Best Ask Price: {{ formatPrice(bestAsk) }}</div>
+          <div v-if="bestAsk !== null">Best Ask: {{ formatPrice(bestAsk) }}</div>
         </div>
         <div
           v-for="(price, index) in buyPrices"
           :key="'buy-' + index"
-          class="order-item bid"
-          :class="{ 
-            'best-price': price === bestAsk, 
+          class="order-row bid-row"
+          :class="{
+            'best-price': price === bestAsk,
             'locked': !canBuy,
             'paused': isHumanTraderPaused,
-            'ai-suggested': isSuggestedPrice(price, 'BUY')
           }"
         >
-          <div class="order-content">
-            <span class="order-type">BUY</span>
-            <div class="price">{{ formatPrice(price) }}</div>
-            <v-icon v-if="price === bestAsk" color="primary" small>mdi-star</v-icon>
-          </div>
-          <v-btn
+          <span class="price-value">{{ formatPrice(price) }}</span>
+          <button
+            class="order-btn buy-btn"
             @click="sendOrder('BUY', price)"
             :disabled="isBuyButtonDisabled(price) || isGoalAchieved || !canBuy || isHumanTraderPaused"
-            :color="isHumanTraderPaused || isBuyButtonDisabled(price) ? 'grey' : 'primary'"
-            small
           >
             Buy
-          </v-btn>
+          </button>
         </div>
       </div>
 
-      <div class="order-column sell-column">
-        <h3 class="order-type-title">
-          <v-icon left color="error">mdi-arrow-down-bold</v-icon>
-          Sell Orders
-        </h3>
-        <div v-if="sellPrices.length === 0">
+      <div class="order-column">
+        <div class="column-header sell-header">Sell Orders</div>
+        <div v-if="sellPrices.length === 0" class="no-orders">
           No Sell Orders
-          <div v-if="bestBid !== null">Best Bid Price: {{ formatPrice(bestBid) }}</div>
+          <div v-if="bestBid !== null">Best Bid: {{ formatPrice(bestBid) }}</div>
         </div>
         <div
           v-for="(price, index) in sellPrices"
           :key="'sell-' + index"
-          class="order-item ask"
-          :class="{ 
-            'best-price': price === bestBid, 
+          class="order-row ask-row"
+          :class="{
+            'best-price': price === bestBid,
             'locked': !canSell,
             'paused': isHumanTraderPaused,
-            'ai-suggested': isSuggestedPrice(price, 'SELL')
           }"
         >
-          <div class="order-content">
-            <span class="order-type">SELL</span>
-            <div class="price">{{ formatPrice(price) }}</div>
-            <v-icon v-if="price === bestBid" color="error" small>mdi-star</v-icon>
-          </div>
-          <v-btn
+          <span class="price-value">{{ formatPrice(price) }}</span>
+          <button
+            class="order-btn sell-btn"
             @click="sendOrder('SELL', price)"
             :disabled="isSellButtonDisabled() || isGoalAchieved || !canSell || isHumanTraderPaused"
-            :color="isHumanTraderPaused || isSellButtonDisabled() ? 'grey' : 'error'"
-            small
           >
             Sell
-          </v-btn>
+          </button>
         </div>
       </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script setup>
@@ -122,42 +101,29 @@ const orderBookLevels = computed(() => gameParams.value.order_book_levels || 5)
 const buyPrices = computed(() => {
   if (bestAsk.value === null || !orderBookLevels.value) {
     return Array.from(
-      //{ length: orderBookLevels.value },
-      { length: 6 }, // replace 6 with orderBookLevels.value
+      { length: 6 },
       (_, i) => bestBid.value + step.value * 1 - step.value * i
     )
   } else {
     return Array.from(
-      { length: 6},  // replace 6 with orderBookLevels.value
+      { length: 6},
       (_, i) => bestAsk.value - step.value * i)
   }
 })
 
-// const buyPrices = computed(() => {
-//   if (bestAsk.value === null || !orderBookLevels.value) return [];
-//   return Array.from({ length: orderBookLevels.value }, (_, i) => bestAsk.value - step.value * i);
-// });
-
-// const sellPrices = computed(() => {
-//   if (bestBid.value === null || !orderBookLevels.value) return [];
-//   return Array.from({ length: orderBookLevels.value }, (_, i) => bestBid.value + step.value * i);
-// });
-
 const sellPrices = computed(() => {
   if (bestBid.value === null || !orderBookLevels.value) {
     return Array.from(
-      //{ length: orderBookLevels.value },
-      { length: 6 }, // replace 6 with orderBookLevels.value
+      { length: 6 },
       (_, i) => bestAsk.value - step.value * 1 + step.value * i
     )
   } else {
     return Array.from(
-      { length: 6}, // replace 6 with orderBookLevels.value
+      { length: 6},
       (_, i) => bestBid.value + step.value * i)
   }
 })
 
-// const isBuyButtonDisabled = computed(() => !hasAskData.value);
 const canAffordBuy = (price) => {
   return tradingStore.availableCash >= price
 }
@@ -189,33 +155,28 @@ const isNoiseTraderSleeping = computed(() => {
 const isHumanTraderPaused = computed(() => {
   const humanTraderParam = extraParams.value.find(param => param.var_name === 'human_trader_status')
   const noiseTraderParam = extraParams.value.find(param => param.var_name === 'noise_trader_status')
-  
-  // If human trader status exists, use it
+
   if (humanTraderParam) {
     return humanTraderParam.value === 'paused'
   }
-  
-  // If no pausing system is active (no status updates from backend), humans should be active
+
   if (!isPausingSystemActive.value) {
     return false
   }
-  
-  // Fallback: if noise trader is active (not sleeping), human should be paused
+
   if (noiseTraderParam) {
     const isNoiseSleeping = noiseTraderParam.value === 'sleeping'
     return !isNoiseSleeping
   }
-  
+
   return false
 })
 
-// Check if pausing system is active (backend is sending status updates)
+// Check if pausing system is active
 const isPausingSystemActive = computed(() => {
   const noiseTraderParam = extraParams.value.find(param => param.var_name === 'noise_trader_status')
   const humanTraderParam = extraParams.value.find(param => param.var_name === 'human_trader_status')
-  // Only consider pausing active if we've received actual status updates from backend
-  // (i.e., values are not null and not the default)
-  return (noiseTraderParam && noiseTraderParam.value !== null) || 
+  return (noiseTraderParam && noiseTraderParam.value !== null) ||
          (humanTraderParam && humanTraderParam.value !== null)
 })
 
@@ -225,7 +186,6 @@ function sendOrder(orderType, price) {
     !isHumanTraderPaused.value &&
     ((orderType === 'BUY' && canBuy.value) || (orderType === 'SELL' && canSell.value))
   ) {
-    // check if trader has sufficient balance (considering locked balances in active orders)
     if (orderType === 'BUY') {
       if (tradingStore.availableCash < price) {
         uiStore.showMessage('insufficient cash to buy')
@@ -249,14 +209,6 @@ function sendOrder(orderType, price) {
   }
 }
 
-function getButtonColor(price, orderType) {
-  if (orderType === 'buy') {
-    return price === bestAsk.value ? 'primary' : 'grey lighten-3'
-  } else if (orderType === 'sell') {
-    return price === bestBid.value ? 'error' : 'grey lighten-3'
-  }
-}
-
 function formatPrice(price) {
   return Math.round(price).toString()
 }
@@ -267,35 +219,9 @@ function checkMobile() {
   )
 }
 
-// Check if a price is the AI suggested price (uses same clamping logic as AIAdvisor)
+// Check if a price is the AI suggested price
 function isSuggestedPrice(price, side) {
-  // AI advisor removed - never highlight
   return false
-  
-  // Determine expected side based on goal
-  const goal = tradingStore.traderAttributes?.goal || 0
-  const expectedSide = goal > 0 ? 'BUY' : 'SELL'
-  
-  if (expectedSide !== side) return false
-  
-  // Use the same price arrays as this component
-  const availablePrices = goal > 0 ? buyPrices.value : sellPrices.value
-  
-  if (availablePrices.length === 0) return advicePrice === price
-  
-  // Find the closest available price (same logic as AIAdvisor)
-  let closest = availablePrices[0]
-  let minDiff = Math.abs(advicePrice - closest)
-  
-  for (const p of availablePrices) {
-    const diff = Math.abs(advicePrice - p)
-    if (diff < minDiff) {
-      minDiff = diff
-      closest = p
-    }
-  }
-  
-  return closest === price
 }
 
 onMounted(() => {
@@ -311,116 +237,116 @@ onUnmounted(() => {
 <style scoped>
 .trading-panel {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-bg-surface);
   font-family: var(--font-family);
-}
-
-.pause-overlay {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  right: 6px;
-  z-index: 1000;
-  pointer-events: none;
+  background: var(--color-bg-surface);
 }
 
 .pause-banner {
   background: var(--color-error-light);
-  border: var(--border-width) solid rgba(239, 68, 68, 0.4);
+  border-bottom: 1px solid var(--color-ask-border);
   color: var(--color-error);
   font-family: var(--font-mono);
   font-weight: var(--font-bold);
   font-size: var(--text-xs);
-  padding: 6px 10px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
-  pointer-events: auto;
+  padding: 4px 8px;
+  text-align: center;
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
 }
 
 .orders-container {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: var(--space-3);
   display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
+  gap: 8px;
+  padding: 8px;
 }
 
 .order-column {
-  flex: 0 0 48%;
+  flex: 1;
 }
 
-.order-type-title {
+.column-header {
   font-size: var(--text-xs);
   font-weight: var(--font-semibold);
-  margin-bottom: var(--space-2);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
+  padding: 0 0 4px 0;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.order-item {
-  font-size: var(--text-sm);
+.buy-header {
+  border-bottom-color: var(--color-bid-border);
+}
+
+.sell-header {
+  border-bottom-color: var(--color-ask-border);
+}
+
+.no-orders {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  padding: 8px 0;
+}
+
+.order-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-1-5);
-  padding: var(--space-1-5) var(--space-2);
-  border-radius: var(--radius-md);
-  border: var(--border-width) solid transparent;
-  transition: all var(--transition-fast);
+  padding: 3px 6px;
+  margin-bottom: 2px;
+  border-radius: var(--radius-sm);
 }
 
-.order-item.bid {
-  background: var(--color-bid-bg);
-  border-color: var(--color-bid-border);
+.bid-row {
+  border-left: 2px solid var(--color-bid);
 }
 
-.order-item.ask {
-  background: var(--color-ask-bg);
-  border-color: var(--color-ask-border);
+.ask-row {
+  border-left: 2px solid var(--color-ask);
 }
 
-.order-item:hover {
-  border-color: var(--color-border-strong);
-}
-
-.order-type {
+.price-value {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-text-muted);
-}
-
-.price {
-  font-family: var(--font-mono);
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: var(--font-bold);
   color: var(--color-text-primary);
 }
 
-.order-content {
-  display: flex;
-  align-items: center;
+.order-btn {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  padding: 3px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: #fff;
 }
 
-.order-content > * {
-  margin-right: 6px;
+.buy-btn {
+  background: var(--color-bid);
 }
 
-.best-price {
-  font-weight: bold;
+.buy-btn:disabled {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
 }
 
-.best-price .price {
+.sell-btn {
+  background: var(--color-ask);
+}
+
+.sell-btn:disabled {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.best-price .price-value {
   color: var(--color-primary);
 }
 
@@ -430,55 +356,6 @@ onUnmounted(() => {
 
 .paused {
   opacity: 0.2;
-  background: var(--color-bg-elevated) !important;
-  border: var(--border-width) dashed var(--color-border-strong);
   pointer-events: none;
-}
-
-.ai-suggested {
-  border: var(--border-width) solid var(--color-primary) !important;
-  box-shadow: var(--shadow-glow-sm);
-}
-
-.sleep-notification-overlay {
-  position: absolute;
-  top: -6px;
-  left: 6px;
-  right: 6px;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.sleep-notification {
-  background: var(--color-warning-light);
-  border: var(--border-width) solid rgba(245, 158, 11, 0.3);
-  color: var(--color-warning);
-  padding: 6px 10px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
-  pointer-events: auto;
-}
-
-.sleep-notification.active {
-  background: var(--color-success-light);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: var(--color-success);
-}
-
-.sleep-notification.paused {
-  background: var(--color-error-light);
-  border: var(--border-width) solid rgba(239, 68, 68, 0.4);
-  color: var(--color-error);
-  font-family: var(--font-mono);
-  font-weight: var(--font-bold);
-  font-size: var(--text-xs);
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
-  z-index: 1001;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
 }
 </style>

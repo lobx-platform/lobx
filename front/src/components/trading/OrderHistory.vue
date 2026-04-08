@@ -10,8 +10,6 @@ const { executedOrders, traderUuid } = storeToRefs(traderStore)
 const { recentTransactions } = storeToRefs(marketStore)
 
 const filledOrders = computed(() => {
-  // Only use transactions from market store to avoid double counting
-  // The backend handles inventory updates, so we don't need to mix with executedOrders
   const relevantTransactions = recentTransactions.value.filter((t) => {
     const isBidTrader = t.bid_trader_id === traderUuid.value
     const isAskTrader = t.ask_trader_id === traderUuid.value
@@ -26,7 +24,6 @@ const groupedOrders = computed(() => {
   const asks = {}
 
   filledOrders.value.forEach((order) => {
-    // Determine if this is a bid or ask for the current trader
     const isBid =
       order.bid_trader_id === traderUuid.value ||
       (order.trader_id === traderUuid.value &&
@@ -37,12 +34,10 @@ const groupedOrders = computed(() => {
       (order.trader_id === traderUuid.value &&
         ['SELL', 'ASK', -1].includes(order.type || order.order_type))
 
-    // Skip if not the current trader's order
     if (!isBid && !isAsk) return
 
     const group = isBid ? bids : asks
     const price = order.price || order.transaction_price
-    // Use transaction_amount for transactions, amount for regular orders, default to 1
     const amount = order.transaction_amount || order.amount || 1
     const timestamp = new Date(order.timestamp || order.transaction_time).getTime()
 
@@ -83,7 +78,6 @@ const tradingSummary = computed(() => {
         ['BUY', 'BID', 1].includes(order.type || order.order_type))
 
     const price = order.price || order.transaction_price
-    // Use transaction_amount for transactions, amount for regular orders, default to 1
     const amount = order.transaction_amount || order.amount || 1
 
     if (isBid) {
@@ -112,227 +106,172 @@ const formatTime = (timestamp) => {
 </script>
 
 <template>
-  <v-card height="100%" elevation="3" class="order-history-card">
-    <div class="trading-summary pa-2">
-      <div class="vwap-display">
-        <div class="label">Average Price</div>
-        <span class="vwap-item buy"> Buy: {{ tradingSummary.buyVWAP }}</span>
-        <span class="vwap-divider">|</span>
-        <span class="vwap-item sell"> Sell: {{ tradingSummary.sellVWAP }}</span>
-      </div>
-      <!-- <div class="count-display">
-        <div class="label">Count</div>
-        <span class="count-item buy">{{ tradingSummary.buyCount }}</span>
-        <span class="count-divider">|</span>
-        <span class="count-item sell">{{ tradingSummary.sellCount }}</span>
-      </div> -->
+  <div class="order-history">
+    <div class="vwap-row">
+      <span class="vwap-label">Avg Price</span>
+      <span class="vwap-value bid-color">Buy: {{ tradingSummary.buyVWAP }}</span>
+      <span class="vwap-sep">|</span>
+      <span class="vwap-value ask-color">Sell: {{ tradingSummary.sellVWAP }}</span>
     </div>
 
-    <v-divider></v-divider>
+    <div class="divider"></div>
 
-    <div class="order-history-container px-4">
+    <div class="orders-scroll">
       <div v-if="groupedOrders.bids.length || groupedOrders.asks.length" class="order-columns">
-        <div class="order-column">
-          <TransitionGroup name="order-change">
-            <div
-              v-for="order in groupedOrders.bids"
-              :key="order.price"
-              class="order-item bid elevation-1"
-            >
-              <div class="price-amount">
-                <span class="price">{{ Math.round(order.price) }}</span>
-                <span class="amount">{{ order.amount }} shares</span>
-              </div>
-              <div class="time">
-                <v-icon size="12" class="mr-1">mdi-clock-outline</v-icon>
-                {{ formatTime(order.latestTime) }}
-              </div>
+        <div class="order-col">
+          <div
+            v-for="order in groupedOrders.bids"
+            :key="order.price"
+            class="trade-row bid-row"
+          >
+            <div class="trade-main">
+              <span class="trade-price">{{ Math.round(order.price) }}</span>
+              <span class="trade-amount">{{ order.amount }}sh</span>
             </div>
-          </TransitionGroup>
+            <div class="trade-time">{{ formatTime(order.latestTime) }}</div>
+          </div>
         </div>
-        <div class="order-column">
-          <TransitionGroup name="order-change">
-            <div
-              v-for="order in groupedOrders.asks"
-              :key="order.price"
-              class="order-item ask elevation-1"
-            >
-              <div class="price-amount">
-                <span class="price">{{ Math.round(order.price) }}</span>
-                <span class="amount">{{ order.amount }} shares</span>
-              </div>
-              <div class="time">
-                <v-icon size="12" class="mr-1">mdi-clock-outline</v-icon>
-                {{ formatTime(order.latestTime) }}
-              </div>
+        <div class="order-col">
+          <div
+            v-for="order in groupedOrders.asks"
+            :key="order.price"
+            class="trade-row ask-row"
+          >
+            <div class="trade-main">
+              <span class="trade-price">{{ Math.round(order.price) }}</span>
+              <span class="trade-amount">{{ order.amount }}sh</span>
             </div>
-          </TransitionGroup>
+            <div class="trade-time">{{ formatTime(order.latestTime) }}</div>
+          </div>
         </div>
       </div>
-      <div v-else class="no-orders-message">
-        <v-icon color="grey" size="40" class="mb-2">mdi-clipboard-text-outline</v-icon>
-        <div>No executed trades yet</div>
-      </div>
+      <div v-else class="no-trades">No executed trades yet</div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <style scoped>
-.order-history-card {
-  background: var(--color-bg-surface);
+.order-history {
   font-family: var(--font-family);
+  background: var(--color-bg-surface);
 }
 
-.trading-summary {
-  background: var(--color-bg-elevated);
-  padding: 6px var(--space-3);
-}
-
-.vwap-display,
-.count-display {
+.vwap-row {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--color-bg-elevated);
   font-size: var(--text-sm);
-  white-space: nowrap;
-  position: relative;
 }
 
-.label {
-  position: absolute;
-  left: 0;
+.vwap-label {
   font-size: var(--text-xs);
   color: var(--color-text-muted);
   font-weight: var(--font-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
+  margin-right: auto;
 }
 
-.vwap-item,
-.count-item {
+.vwap-value {
   font-family: var(--font-mono);
   font-weight: var(--font-semibold);
 }
 
-.vwap-item.buy,
-.count-item.buy {
+.bid-color {
   color: var(--color-bid);
 }
 
-.vwap-item.sell,
-.count-item.sell {
+.ask-color {
   color: var(--color-ask);
 }
 
-.order-history-container {
+.vwap-sep {
+  color: var(--color-text-muted);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+}
+
+.orders-scroll {
   height: 200px;
   overflow-y: auto;
+  padding: 8px;
 }
 
 .order-columns {
   display: flex;
-  gap: var(--space-2);
+  gap: 8px;
 }
 
-.order-column {
+.order-col {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.order-item {
-  background: var(--color-bg-elevated);
-  border-radius: var(--radius-md);
+.trade-row {
   padding: 3px 8px;
-  margin-bottom: 3px;
-  font-size: var(--text-sm);
-  display: flex;
-  flex-direction: column;
-  transition: border-color var(--transition-fast);
-  border: var(--border-width) solid transparent;
+  margin-bottom: 2px;
+  border-radius: var(--radius-sm);
 }
 
-.order-item:hover {
-  border-color: var(--color-border-strong);
-}
-
-.order-item.bid {
+.bid-row {
   border-left: 2px solid var(--color-bid);
-  background: var(--color-bid-bg);
 }
 
-.order-item.ask {
+.ask-row {
   border-left: 2px solid var(--color-ask);
-  background: var(--color-ask-bg);
 }
 
-.price-amount {
+.trade-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1px;
 }
 
-.price {
+.trade-price {
   font-family: var(--font-mono);
   font-size: var(--text-base);
   font-weight: var(--font-bold);
   color: var(--color-text-primary);
 }
 
-.amount {
+.trade-amount {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  font-weight: var(--font-medium);
   color: var(--color-text-muted);
 }
 
-.time {
+.trade-time {
   font-family: var(--font-mono);
   font-size: 9px;
   color: var(--color-text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  text-align: right;
 }
 
-.no-orders-message {
+.no-trades {
   text-align: center;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   padding: 32px 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.order-change-enter-active,
-.order-change-leave-active {
-  transition: all 0.3s ease;
-}
-
-.order-change-enter-from,
-.order-change-leave-to {
-  opacity: 0;
-  transform: translateY(12px);
 }
 
 /* Scrollbar */
-.order-history-container::-webkit-scrollbar {
+.orders-scroll::-webkit-scrollbar {
   width: 4px;
 }
 
-.order-history-container::-webkit-scrollbar-track {
+.orders-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.order-history-container::-webkit-scrollbar-thumb {
+.orders-scroll::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.12);
   border-radius: 2px;
-}
-
-.order-history-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
 }
 </style>

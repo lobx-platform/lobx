@@ -1,103 +1,67 @@
 <template>
-  <v-card height="100%" elevation="3" class="my-orders-card">
-    <div class="orders-container">
-      <div v-if="Object.keys(sortedOrderLevels).length === 0" class="no-orders-message">
+  <div class="active-orders">
+    <div class="orders-body">
+      <div v-if="Object.keys(sortedOrderLevels).length === 0" class="no-orders">
         No active orders
       </div>
       <div v-else class="orders-columns">
-        <div class="orders-column bid-column">
-          <div class="order-levels-container">
-            <div
-              v-for="[price, level] in sortedOrderLevels.buy"
-              :key="price"
-              class="order-level bid"
-            >
-              <div class="order-header">
-                <span class="order-type">BUY</span>
-                <div class="price">{{ formatPrice(price) }}</div>
+        <div class="orders-col">
+          <div
+            v-for="[price, level] in sortedOrderLevels.buy"
+            :key="price"
+            class="order-level bid-level"
+          >
+            <div class="level-header">
+              <span class="level-type">BUY</span>
+              <span class="level-price">{{ formatPrice(price) }}</span>
+            </div>
+            <div class="level-details">
+              <span class="level-amount">{{ level.amount }}</span>
+              <div class="level-actions">
+                <button
+                  class="action-btn add-btn"
+                  @click="addOrder(level.type, price)"
+                  :disabled="isGoalAchieved"
+                >+</button>
+                <button
+                  class="action-btn cancel-btn"
+                  @click="cancelOrder(level.type, price)"
+                  :disabled="isGoalAchieved"
+                >-</button>
               </div>
-              <div class="order-details">
-                <div class="amount">Amount: {{ level.amount }}</div>
-                <div class="order-actions">
-                  <v-btn
-                    icon
-                    x-small
-                    @click="addOrder(level.type, price)"
-                    :disabled="isGoalAchieved"
-                    color="success"
-                    class="action-btn"
-                  >
-                    <v-icon small>mdi-plus</v-icon>
-                  </v-btn>
-                  <v-btn
-                    icon
-                    x-small
-                    @click="cancelOrder(level.type, price)"
-                    :disabled="isGoalAchieved"
-                    color="error"
-                    class="action-btn"
-                  >
-                    <v-icon small>mdi-minus</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-              <v-progress-linear
-                :value="(level.amount / maxAmount) * 100"
-                color="success"
-                height="2"
-                class="amount-progress"
-              ></v-progress-linear>
             </div>
           </div>
         </div>
-        <div class="orders-column ask-column">
-          <div class="order-levels-container">
-            <div
-              v-for="[price, level] in sortedOrderLevels.sell"
-              :key="price"
-              class="order-level ask"
-            >
-              <div class="order-header">
-                <span class="order-type">SELL</span>
-                <div class="price">{{ formatPrice(price) }}</div>
+        <div class="orders-col">
+          <div
+            v-for="[price, level] in sortedOrderLevels.sell"
+            :key="price"
+            class="order-level ask-level"
+          >
+            <div class="level-header">
+              <span class="level-type">SELL</span>
+              <span class="level-price">{{ formatPrice(price) }}</span>
+            </div>
+            <div class="level-details">
+              <span class="level-amount">{{ level.amount }}</span>
+              <div class="level-actions">
+                <button
+                  class="action-btn add-btn"
+                  @click="addOrder(level.type, price)"
+                  :disabled="isGoalAchieved"
+                >+</button>
+                <button
+                  class="action-btn cancel-btn"
+                  @click="cancelOrder(level.type, price)"
+                  :disabled="isGoalAchieved"
+                >-</button>
               </div>
-              <div class="order-details">
-                <div class="amount">Amount: {{ level.amount }}</div>
-                <div class="order-actions">
-                  <v-btn
-                    icon
-                    x-small
-                    @click="addOrder(level.type, price)"
-                    :disabled="isGoalAchieved"
-                    color="success"
-                    class="action-btn"
-                  >
-                    <v-icon small>mdi-plus</v-icon>
-                  </v-btn>
-                  <v-btn
-                    icon
-                    x-small
-                    @click="cancelOrder(level.type, price)"
-                    :disabled="isGoalAchieved"
-                    color="error"
-                    class="action-btn"
-                  >
-                    <v-icon small>mdi-minus</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-              <v-progress-linear
-                :value="(level.amount / maxAmount) * 100"
-                color="error"
-                height="2"
-                class="amount-progress"
-              ></v-progress-linear>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script setup>
@@ -119,11 +83,9 @@ const { activeOrders, traderUuid } = storeToRefs(traderStore)
 // Initialize active orders from backend on component mount
 onMounted(async () => {
   try {
-    // Get trader market info which includes active orders
     const response = await axios.get(`/trader/${traderUuid.value}/market`)
 
     if (response.data.status === 'success') {
-      // Update store with active orders from backend
       const traderOrders = response.data.data.game_params?.active_orders || []
       activeOrders.value = traderOrders.filter((order) => order.trader_id === traderUuid.value)
     }
@@ -132,13 +94,12 @@ onMounted(async () => {
   }
 })
 
-// Watch for changes in active orders and save them
 watch(
   activeOrders,
   (newOrders) => {
     saveActiveOrders(newOrders)
   },
-  { deep: true }
+  { deep: true },
 )
 
 const sortedOrderLevels = computed(() => {
@@ -169,7 +130,7 @@ const maxAmount = computed(() => {
 })
 
 function formatPrice(price) {
-  return Math.round(price).toString() // Changed to round the price
+  return Math.round(price).toString()
 }
 
 function addOrder(type, price) {
@@ -181,7 +142,7 @@ function addOrder(type, price) {
 function cancelOrder(type, price) {
   if (!props.isGoalAchieved) {
     const orderToCancel = activeOrders.value.find(
-      (order) => order.order_type === type && order.price === Number(price)
+      (order) => order.order_type === type && order.price === Number(price),
     )
     if (orderToCancel) {
       traderStore.cancelOrder(orderToCancel.id)
@@ -189,67 +150,56 @@ function cancelOrder(type, price) {
   }
 }
 
-// Save active orders to localStorage
 const saveActiveOrders = (orders) => {
   localStorage.setItem(`activeOrders_${traderUuid.value}`, JSON.stringify(orders))
 }
 </script>
 
 <style scoped>
-.my-orders-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--color-bg-surface);
+.active-orders {
   font-family: var(--font-family);
+  background: var(--color-bg-surface);
 }
 
-.orders-container {
-  flex-grow: 1;
+.orders-body {
+  padding: 8px;
   overflow-y: auto;
-  padding: var(--space-3);
+  max-height: 300px;
 }
 
 .orders-columns {
   display: flex;
-  gap: var(--space-2);
+  gap: 8px;
 }
 
-.orders-column {
+.orders-col {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 .order-level {
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-2);
-  margin-bottom: var(--space-1-5);
-  font-size: var(--text-sm);
-  transition: border-color var(--transition-fast);
+  padding: 6px 8px;
+  margin-bottom: 3px;
+  border-radius: var(--radius-sm);
 }
 
-.order-level:hover {
-  border-color: var(--color-border-strong);
-}
-
-.order-level.bid {
+.bid-level {
   border-left: 2px solid var(--color-bid);
 }
 
-.order-level.ask {
+.ask-level {
   border-left: 2px solid var(--color-ask);
 }
 
-.order-header {
+.level-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
-.order-type {
+.level-type {
   font-family: var(--font-mono);
   font-weight: var(--font-semibold);
   text-transform: uppercase;
@@ -258,27 +208,26 @@ const saveActiveOrders = (orders) => {
   letter-spacing: var(--tracking-wider);
 }
 
-.price {
+.level-price {
   font-family: var(--font-mono);
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: var(--font-bold);
   color: var(--color-text-primary);
 }
 
-.order-details {
+.level-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3px;
 }
 
-.amount {
+.level-amount {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
 }
 
-.order-actions {
+.level-actions {
   display: flex;
   gap: 3px;
 }
@@ -286,40 +235,51 @@ const saveActiveOrders = (orders) => {
 .action-btn {
   width: 20px;
   height: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  line-height: 1;
 }
 
-.amount-progress {
-  margin-top: 3px;
+.action-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
-.no-orders-message {
+.add-btn {
+  color: var(--color-bid);
+}
+
+.cancel-btn {
+  color: var(--color-ask);
+}
+
+.no-orders {
   text-align: center;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   padding: 20px;
 }
 
-.order-levels-container {
-  max-height: 300px;
-  overflow-y: auto;
-  padding-right: 6px;
-}
-
 /* Scrollbar */
-.order-levels-container::-webkit-scrollbar {
+.orders-body::-webkit-scrollbar {
   width: 4px;
 }
 
-.order-levels-container::-webkit-scrollbar-track {
+.orders-body::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.order-levels-container::-webkit-scrollbar-thumb {
+.orders-body::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.12);
   border-radius: 2px;
-}
-
-.order-levels-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <v-card class="bid-ask-chart-container" elevation="3">
+  <div class="bid-ask-chart">
     <div class="chart-wrapper">
       <canvas ref="chartCanvas"></canvas>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script setup>
@@ -24,11 +24,9 @@ function buildChart() {
   const ctx = chartCanvas.value.getContext('2d')
   if (chart) chart.destroy()
 
-  // Extract bid and ask series from chartData
-  const bidSeries = chartData.value.find(s => s.name === 'Bids') || { data: [] }
-  const askSeries = chartData.value.find(s => s.name === 'Asks') || { data: [] }
+  const bidSeries = chartData.value.find((s) => s.name === 'Bids') || { data: [] }
+  const askSeries = chartData.value.find((s) => s.name === 'Asks') || { data: [] }
 
-  // Merge all price points
   const allPoints = new Map()
   for (const pt of bidSeries.data) allPoints.set(pt.x, { bid: pt.y, ask: 0 })
   for (const pt of askSeries.data) {
@@ -50,15 +48,15 @@ function buildChart() {
         {
           label: 'Bids',
           data: bids,
-          backgroundColor: 'rgba(34, 197, 94, 0.6)',
-          borderColor: 'rgba(34, 197, 94, 0.9)',
+          backgroundColor: 'rgba(34, 134, 58, 0.5)',
+          borderColor: '#22863a',
           borderWidth: 1,
         },
         {
           label: 'Asks',
           data: asks,
-          backgroundColor: 'rgba(239, 68, 68, 0.6)',
-          borderColor: 'rgba(239, 68, 68, 0.9)',
+          backgroundColor: 'rgba(203, 36, 49, 0.5)',
+          borderColor: '#cb2431',
           borderWidth: 1,
         },
       ],
@@ -71,20 +69,36 @@ function buildChart() {
         legend: { display: false },
         tooltip: {
           backgroundColor: '#FFFFFF',
-          titleColor: '#0F172A',
-          bodyColor: '#0F172A',
-          borderColor: '#E2E8F0',
+          titleColor: '#1a1a1a',
+          bodyColor: '#1a1a1a',
+          borderColor: '#E5E5E5',
           borderWidth: 1,
+          padding: 6,
+          titleFont: {
+            family: "'IBM Plex Mono', monospace",
+            size: 10,
+          },
+          bodyFont: {
+            family: "'IBM Plex Mono', monospace",
+            size: 10,
+          },
         },
       },
       scales: {
         x: {
-          ticks: { color: '#64748B', font: { size: 10, family: "'JetBrains Mono', monospace" } },
+          ticks: {
+            color: '#999999',
+            font: { size: 10, family: "'IBM Plex Mono', monospace" },
+          },
           grid: { display: false },
         },
         y: {
-          ticks: { color: '#64748B', font: { size: 10, family: "'JetBrains Mono', monospace" }, precision: 0 },
-          grid: { color: '#F1F5F9' },
+          ticks: {
+            color: '#999999',
+            font: { size: 10, family: "'IBM Plex Mono', monospace" },
+            precision: 0,
+          },
+          grid: { color: '#F0F0F0' },
         },
       },
     },
@@ -94,10 +108,9 @@ function buildChart() {
 onMounted(() => buildChart())
 
 watchEffect(() => {
-  // Trigger on chartData or midPoint changes
   if (chartData.value && chart) {
-    const bidSeries = chartData.value.find(s => s.name === 'Bids') || { data: [] }
-    const askSeries = chartData.value.find(s => s.name === 'Asks') || { data: [] }
+    const bidSeries = chartData.value.find((s) => s.name === 'Bids') || { data: [] }
+    const askSeries = chartData.value.find((s) => s.name === 'Asks') || { data: [] }
 
     const allPoints = new Map()
     for (const pt of bidSeries.data) allPoints.set(pt.x, { bid: pt.y, ask: 0 })
@@ -121,7 +134,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.bid-ask-chart-container {
+.bid-ask-chart {
   width: 100%;
   background: var(--color-bg-surface);
   font-family: var(--font-mono);

@@ -1,9 +1,9 @@
 <template>
-  <v-card class="history-chart-container" elevation="3">
+  <div class="price-chart">
     <div class="chart-wrapper">
       <canvas ref="chartCanvas"></canvas>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script setup>
@@ -14,7 +14,6 @@ import { storeToRefs } from 'pinia'
 import { Chart, registerables } from 'chart.js'
 import 'chartjs-adapter-date-fns'
 
-// Register Chart.js components
 Chart.register(...registerables)
 
 const traderStore = useTraderStore()
@@ -37,11 +36,11 @@ const createChart = (data) => {
         {
           label: 'Price',
           data: data,
-          borderColor: '#0891B2',
-          borderWidth: 2,
-          pointRadius: 3,
-          pointBackgroundColor: '#0891B2',
-          pointBorderColor: '#0891B2',
+          borderColor: '#1a1a1a',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          pointBackgroundColor: '#1a1a1a',
+          pointBorderColor: '#1a1a1a',
           tension: 0,
           fill: false,
         },
@@ -62,25 +61,25 @@ const createChart = (data) => {
         tooltip: {
           enabled: true,
           backgroundColor: '#FFFFFF',
-          titleColor: '#0F172A',
-          bodyColor: '#0F172A',
-          borderColor: '#E2E8F0',
+          titleColor: '#1a1a1a',
+          bodyColor: '#1a1a1a',
+          borderColor: '#E5E5E5',
           borderWidth: 1,
-          padding: 10,
+          padding: 6,
           displayColors: false,
           titleFont: {
-            size: 12,
-            family: "'JetBrains Mono', monospace",
+            size: 10,
+            family: "'IBM Plex Mono', monospace",
             weight: 'normal',
           },
           bodyFont: {
-            size: 13,
-            family: "'JetBrains Mono', monospace",
+            size: 11,
+            family: "'IBM Plex Mono', monospace",
             weight: 'bold',
           },
           callbacks: {
             title: () => '',
-            label: (context) => `Price: $${Math.round(context.raw.y)}`,
+            label: (context) => `${Math.round(context.raw.y)}`,
           },
         },
       },
@@ -99,28 +98,28 @@ const createChart = (data) => {
           ticks: {
             font: {
               size: 10,
-              family: "'JetBrains Mono', monospace",
+              family: "'IBM Plex Mono', monospace",
             },
-            color: '#64748B',
+            color: '#999999',
           },
         },
         y: {
           position: 'left',
           grid: {
-            color: '#F1F5F9',
+            color: '#F0F0F0',
             drawBorder: false,
           },
           ticks: {
             font: {
               size: 10,
-              family: "'JetBrains Mono', monospace",
+              family: "'IBM Plex Mono', monospace",
             },
-            color: '#64748B',
+            color: '#999999',
             callback: (value) => `${Math.round(value)}`,
             maxTicksLimit: 8,
             precision: 0,
             stepSize: Math.ceil(
-              (Math.max(...data.map((d) => d.y)) - Math.min(...data.map((d) => d.y))) / 8
+              (Math.max(...data.map((d) => d.y)) - Math.min(...data.map((d) => d.y))) / 8,
             ),
           },
           beginAtZero: false,
@@ -129,7 +128,7 @@ const createChart = (data) => {
       },
       elements: {
         point: {
-          hoverRadius: 6,
+          hoverRadius: 4,
         },
       },
     },
@@ -153,7 +152,7 @@ watch(
       }
     }
   },
-  { deep: true }
+  { deep: true },
 )
 
 onMounted(() => {
@@ -168,15 +167,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.history-chart-container {
+.price-chart {
   width: 100%;
   background: var(--color-bg-surface);
-  overflow: hidden;
   font-family: var(--font-mono);
 }
 
 .chart-wrapper {
-  padding: var(--space-1);
+  padding: 4px;
   height: 250px;
 }
 </style>
