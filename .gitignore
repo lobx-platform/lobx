@@ -84,3 +84,9 @@ docs/
 # Bun lock
 bun.lock
 front/bun.lock
+
+# Working docs
+CORE.md
+FRONTEND-DESIGN.md
+SKILL.md
+audits/
