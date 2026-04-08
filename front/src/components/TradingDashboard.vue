@@ -285,9 +285,9 @@ onMounted(async () => {
   // Set default user role
   userRole.value = 'trader'
 
-  // Ensure trader is initialized and WebSocket is connected
+  // Always initialize trader on mount (subscribes to wsBus events + connects WS if needed)
   const traderId = store.traderUuid || sessionStore.traderId || authStore.traderId
-  if (traderId && !wsStore.isConnected) {
+  if (traderId) {
     try {
       await store.initializeTrader(traderId)
     } catch (e) {
