@@ -80,143 +80,45 @@
           </v-card>
         </v-col>
 
+        <!-- Interactive Trading Platform Preview -->
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Trading Platform</span>
-              </div>
-              <v-img
-                :src="Intro"
-                alt="Trading Platform Screenshot 1"
-                max-width="850"
-                contain
-                class="mx-auto rounded-lg"
-              ></v-img>
-              <p class="text-body-2 text-center mt-4 font-italic">
-                This demonstration shows the trading platform in action.
-              </p>
-            </v-card-text>
-          </v-card>
+          <span class="text-h6 font-weight-bold">Trading Platform Overview</span>
+          <TradingPreview highlight="all" caption="This is the trading platform. Each panel shows different information about the market." />
         </v-col>
 
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Trading Platform: Panel 1</span>
-              </div>
-              <v-img
-                :src="Timer"
-                alt="Trading Platform Screenshot 2"
-                max-width="850"
-                contain
-                class="mx-auto rounded-lg"
-              ></v-img>
-            </v-card-text>
-          </v-card>
+          <span class="text-h6 font-weight-bold">Status Bar</span>
+          <TradingPreview highlight="header" caption="The top bar shows your role (Speculator), PnL (Profit and Loss), shares held, available cash, number of traders, and remaining time." />
         </v-col>
 
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Trading Platform: Panel 2</span>
-              </div>
-              <v-img
-                :src="Bars"
-                alt="Trading Platform Screenshot 3"
-                max-width="850"
-                contain
-                class="mx-auto rounded-lg"
-              ></v-img>
-            </v-card-text>
-          </v-card>
+          <span class="text-h6 font-weight-bold">Buy-Sell Chart</span>
+          <TradingPreview highlight="chart" caption="This panel shows all buy (bid) and sell (ask) orders in the market. The horizontal axis shows the price and vertical axis shows the number of shares." />
         </v-col>
 
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Trading Platform: Panel 3</span>
-              </div>
-              <v-img
-                :src="Plot"
-                alt="Trading Platform Screenshot 4"
-                max-width="850"
-                contain
-                class="mx-auto rounded-lg"
-              ></v-img>
-            </v-card-text>
-          </v-card>
+          <span class="text-h6 font-weight-bold">Price History</span>
+          <TradingPreview highlight="price-history" caption="This chart plots traded prices on the y-axis against time on the x-axis." />
         </v-col>
 
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Trading Platform: Panel 4</span>
-              </div>
-              <v-img
-                :src="Trades"
-                alt="Trading Platform Screenshot 5"
-                max-width="850"
-                contain
-                class="mx-auto rounded-lg"
-              ></v-img>
-            </v-card-text>
-          </v-card>
+          <span class="text-h6 font-weight-bold">Your Trades</span>
+          <TradingPreview highlight="trades" caption="This panel shows your trades along with the average prices sold and bought. For example, if you bought 4 shares at an average price of 101.25 and sold 4 shares at an average price of 100, you are making a loss." />
         </v-col>
 
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Trading Platform: Panel 5</span>
-              </div>
-              <v-img
-                :src="Messages"
-                alt="Trading Platform Screenshot 6"
-                max-width="850"
-                contain
-                class="mx-auto rounded-lg"
-              ></v-img>
-            </v-card-text>
-          </v-card>
+          <span class="text-h6 font-weight-bold">Market Info</span>
+          <TradingPreview highlight="market-info" caption="This panel shows the Last Traded Price, the Midprice (average between best buy and ask prices), and the Spread (difference between best sell and best buy price). It also provides trading tips." />
         </v-col>
 
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Trading Platform: Panel 6</span>
-              </div>
-              <v-img
-                :src="Buttons"
-                alt="Trading Platform Screenshot 7"
-                max-width="850"
-                contain
-                class="mx-auto rounded-lg"
-              ></v-img>
-            </v-card-text>
-          </v-card>
+          <span class="text-h6 font-weight-bold">Trading Panel</span>
+          <TradingPreview highlight="trading-panel" caption="This panel contains buttons to buy or sell. For example, to buy a share immediately, press the first Buy button at the top price. Similarly, you can sell immediately at the top Sell price. You can also send passive orders at other price levels." />
         </v-col>
 
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Trading Platform: Panel 7</span>
-              </div>
-              <v-img
-                :src="Orders"
-                alt="Trading Platform Screenshot 8"
-                max-width="850"
-                contain
-                class="mx-auto rounded-lg"
-              ></v-img>
-            </v-card-text>
-          </v-card>
+          <span class="text-h6 font-weight-bold">Passive Orders</span>
+          <TradingPreview highlight="orders" caption="This panel shows all passive orders you sent. These orders do not execute immediately — other traders must accept them. You can cancel them by clicking the minus button." />
         </v-col>
       </v-row>
     </v-container>
@@ -224,15 +126,7 @@
 </template>
 
 <script setup>
-import demoGif from '@/assets/demo.gif'
-import Intro from '@/assets/Intro.jpg'
-import Timer from '@/assets/Timer.jpg'
-import Bars from '@/assets/Bars.jpg'
-import Plot from '@/assets/Plot.jpg'
-import Trades from '@/assets/Trades.jpg'
-import Messages from '@/assets/Messages.jpg'
-import Buttons from '@/assets/Buttons.jpg'
-import Orders from '@/assets/Orders.jpg'
+import TradingPreview from '@/components/TradingPreview.vue'
 </script>
 
 <style scoped>
