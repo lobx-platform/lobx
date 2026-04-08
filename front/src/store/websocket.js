@@ -34,12 +34,16 @@ export const useWebSocketStore = defineStore('websocket', {
       // (Socket.IO client uses http(s), not ws(s))
       const baseUrl = import.meta.env.VITE_HTTP_URL || 'http://localhost:8000/'
 
-      this.socket = io(baseUrl, {
+      // Derive Socket.IO path from base URL (handles /api/ prefix from Docker root-path)
+      const url = new URL(baseUrl)
+      const sioPath = (url.pathname.replace(/\/$/, '') || '') + '/socket.io/'
+
+      this.socket = io(url.origin, {
         auth,
+        path: sioPath,
         transports: ['websocket', 'polling'],
         reconnectionAttempts: this.maxReconnectAttempts,
         reconnectionDelay: 3000,
-        // Socket.IO path defaults to /socket.io/ which matches the server
       })
 
       this.socket.on('connect', () => {

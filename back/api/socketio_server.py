@@ -31,12 +31,17 @@ logger = setup_custom_logger(__name__)
 
 # ── Socket.IO server instance ────────────────────────────────────────────────
 
+import os
+
 sio = socketio.AsyncServer(
     async_mode="asgi",
     cors_allowed_origins="*",
     logger=False,
     engineio_logger=False,
 )
+
+# The socketio_path on ASGIApp must account for uvicorn --root-path
+_root_path = os.environ.get("ROOT_PATH", "/api")
 
 # Mapping: sid -> user context
 _sessions: Dict[str, dict] = {}
