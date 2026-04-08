@@ -1,95 +1,92 @@
 <template>
   <div class="page-container">
-    <v-scale-transition>
-      <div class="header-section">
-        <v-icon size="40" :color="iconColor" class="pulse-icon">mdi-rocket-launch</v-icon>
-        <h2 class="text-h4 gradient-text">Ready to Trade</h2>
-      </div>
-    </v-scale-transition>
+    <div class="header-section">
+      <h2 class="text-h4">Ready to Trade</h2>
+    </div>
 
     <v-container class="content-grid">
       <v-row>
         <!-- Duration Card -->
         <v-col cols="12" md="6">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" :color="iconColor" class="mr-2">mdi-clock-outline</v-icon>
-                  <span class="text-h6">Duration</span>
-                </div>
-                <p class="text-body-1">
-                  Trade for <span class="highlight-text">{{ marketDuration }} minutes</span>
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card elevation="2" class="info-card">
+            <v-card-text>
+              <span class="text-h6">Duration</span>
+              <p class="text-body-1 mt-2">
+                Trade for <strong>{{ marketDuration }} minutes</strong>
+              </p>
+            </v-card-text>
+          </v-card>
         </v-col>
 
         <!-- Progress Card -->
         <v-col cols="12" md="6">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" :color="iconColor" class="mr-2">mdi-progress-check</v-icon>
-                  <span class="text-h6">Market Progress</span>
-                </div>
-                <div class="d-flex justify-space-between align-center mb-2">
-                  <span>Markets You Have Played:</span>
-                  <span class="highlight-text">{{ currentMarket }}</span>
-                </div>
-                <div class="d-flex justify-space-between align-center mb-3">
-                  <span>Markets You Can Still Play:</span>
-                  <span class="highlight-text">{{ remainingMarkets }}</span>
-                </div>
-                <v-progress-linear
-                  v-if="!isAdmin"
-                  :value="marketProgress"
-                  height="8"
-                  rounded
-                  striped
-                  color="primary"
-                ></v-progress-linear>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card elevation="2" class="info-card">
+            <v-card-text>
+              <span class="text-h6">Market Progress</span>
+              <div class="d-flex justify-space-between align-center mt-2 mb-1">
+                <span>Markets Played:</span>
+                <strong>{{ currentMarket }}</strong>
+              </div>
+              <div class="d-flex justify-space-between align-center mb-3">
+                <span>Markets Remaining:</span>
+                <strong>{{ remainingMarkets }}</strong>
+              </div>
+              <v-progress-linear
+                v-if="!isAdmin"
+                :model-value="marketProgress"
+                height="8"
+                rounded
+                color="primary"
+              ></v-progress-linear>
+            </v-card-text>
+          </v-card>
         </v-col>
 
-        <!-- Parameters Table Card -->
+        <!-- Trading Parameters -->
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" :color="iconColor" class="mr-2">mdi-table</v-icon>
-                  <span class="text-h6">Trading Parameters</span>
-                </div>
-
-                <v-data-table
-                  :headers="headers"
-                  :items="items"
-                  hide-default-footer
-                  disable-pagination
-                  class="parameters-table"
-                ></v-data-table>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card elevation="2" class="info-card">
+            <v-card-text>
+              <span class="text-h6">Trading Parameters</span>
+              <v-table density="compact" class="mt-2">
+                <tbody>
+                  <tr v-for="item in items" :key="item.parameter">
+                    <td>{{ item.parameter }}</td>
+                    <td><strong>{{ item.value }}</strong></td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
 
-      <!-- Action Buttons -->
-      <div class="action-buttons mt-6">
+      <!-- Waiting Room Status (multi-participant) -->
+      <div v-if="waitingRoom.needed > 1" class="waiting-status mt-4">
+        <v-card elevation="2" class="info-card">
+          <v-card-text class="text-center">
+            <span class="text-h6">Participants</span>
+            <p class="text-h4 mt-2 mb-1">{{ waitingRoom.joined }} / {{ waitingRoom.needed }}</p>
+            <p v-if="waitingRoom.joined < waitingRoom.needed" class="text-body-2 text--secondary">
+              Waiting for {{ waitingRoom.needed - waitingRoom.joined }} more...
+            </p>
+            <p v-else class="text-body-2" style="color: var(--color-success)">
+              All participants joined. Click Start Trading when ready.
+            </p>
+          </v-card-text>
+        </v-card>
+      </div>
+
+      <!-- Start Trading Button -->
+      <div class="action-section mt-6 text-center">
         <v-btn
           @click="startTrading"
           :loading="isLoading"
           :disabled="!canStartTrading"
-          class="start-button"
+          color="primary"
           size="x-large"
           elevation="2"
+          class="start-button"
         >
-          <v-icon left class="mr-2">mdi-play-circle-outline</v-icon>
           {{ startButtonText }}
         </v-btn>
 
@@ -97,10 +94,9 @@
           @click="handleLogout"
           color="error"
           variant="text"
-          class="logout-button mt-2"
+          class="mt-2"
           :disabled="isLoading"
         >
-          <v-icon left class="mr-1">mdi-logout</v-icon>
           Logout
         </v-btn>
       </div>
@@ -109,18 +105,16 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted, reactive } from 'vue'
 import { useTraderStore } from '@/store/app'
 import { useSessionStore } from '@/store/session'
 import { useAuthStore } from '@/store/auth'
-import { storeToRefs } from 'pinia'
+import { wsBus } from '@/socket'
 import NavigationService from '@/services/navigation'
 
 const traderStore = useTraderStore()
 const sessionStore = useSessionStore()
 const authStore = useAuthStore()
-
-const { goalMessage } = storeToRefs(traderStore)
 
 const props = defineProps({
   traderAttributes: Object,
@@ -129,7 +123,34 @@ const props = defineProps({
 
 const isLoading = ref(false)
 
-// Watch for market started signal from WebSocket
+// Waiting room state (for multi-participant sessions)
+const waitingRoom = reactive({
+  joined: 1,
+  needed: 1,
+  readyCount: 0,
+})
+
+// Listen for waiting room updates from Socket.IO
+const onWaitingRoomUpdate = (data) => {
+  waitingRoom.joined = data.current_users || data.joined || 1
+  waitingRoom.needed = data.total_needed || data.needed || 1
+  waitingRoom.readyCount = data.ready_count || 0
+}
+
+onMounted(() => {
+  wsBus.on('waiting_room_update', onWaitingRoomUpdate)
+
+  // Set initial needed count from predefined_goals
+  const goals = traderStore.gameParams?.predefined_goals ||
+    props.traderAttributes?.all_attributes?.params?.predefined_goals || [0]
+  waitingRoom.needed = goals.length
+})
+
+onUnmounted(() => {
+  wsBus.off('waiting_room_update', onWaitingRoomUpdate)
+})
+
+// Watch for market started signal
 watch(
   () => traderStore.shouldRedirectToTrading,
   (shouldRedirect) => {
@@ -140,7 +161,6 @@ watch(
   }
 )
 
-// Also watch isTradingStarted as a backup
 watch(
   () => traderStore.isTradingStarted,
   (started) => {
@@ -153,36 +173,40 @@ watch(
 const marketDuration = computed(() => {
   return (
     traderStore.gameParams?.trading_day_duration ||
-    traderStore.traderAttributes?.all_attributes?.params?.trading_day_duration ||
-    'Loading...'
+    props.traderAttributes?.all_attributes?.params?.trading_day_duration ||
+    '...'
   )
 })
 
-const initialShares = computed(() => props.traderAttributes?.shares ?? 'Loading...')
-const initialCash = computed(() => props.traderAttributes?.cash ?? 'Loading...')
+const initialShares = computed(() => props.traderAttributes?.shares ?? '...')
+const initialCash = computed(() => props.traderAttributes?.cash ?? '...')
 
 const canStartTrading = computed(() => {
-  return !!props.traderAttributes
+  if (!props.traderAttributes) return false
+  // Multi-participant: need all participants joined
+  if (waitingRoom.needed > 1 && waitingRoom.joined < waitingRoom.needed) return false
+  return true
 })
 
 const startButtonText = computed(() => {
   if (isLoading.value) return 'Starting...'
-  if (traderStore.isWaitingForOthers) return 'Waiting for other traders...'
+  if (traderStore.isWaitingForOthers) return 'Waiting for others...'
+  if (waitingRoom.needed > 1 && waitingRoom.joined < waitingRoom.needed) {
+    return `Waiting for ${waitingRoom.needed - waitingRoom.joined} more...`
+  }
   return 'Start Trading'
 })
 
-const headers = [
-  { text: 'Parameter', value: 'parameter', align: 'left' },
-  { text: 'Value', value: 'value', align: 'left' },
-]
+const isAdmin = computed(() => authStore.isAdmin)
+const maxMarkets = computed(() => props.traderAttributes?.all_attributes?.params?.max_markets_per_human || 6)
+const currentMarket = computed(() => props.traderAttributes?.all_attributes?.historical_markets_count || 0)
+const remainingMarkets = computed(() => Math.max(0, maxMarkets.value - currentMarket.value))
+const marketProgress = computed(() => (currentMarket.value / maxMarkets.value) * 100)
 
 const items = computed(() => {
   const baseItems = [
     { parameter: 'Initial Shares', value: initialShares.value },
-    {
-      parameter: 'Initial Cash',
-      value: initialCash.value ? `${initialCash.value} Liras` : 'Loading...',
-    },
+    { parameter: 'Initial Cash', value: initialCash.value ? `${initialCash.value} Liras` : '...' },
   ]
 
   const goalValue = props.traderAttributes?.goal
@@ -198,29 +222,19 @@ const items = computed(() => {
 })
 
 const startTrading = async () => {
-  if (!canStartTrading.value || isLoading.value) {
-    return
-  }
+  if (!canStartTrading.value || isLoading.value) return
 
   isLoading.value = true
-  
+
   try {
     await NavigationService.startTrading()
-    
-    // Give WebSocket time to respond
-    // Navigation will happen via the watcher when shouldRedirectToTrading becomes true
-    // or when isTradingStarted becomes true
-    
+
     // Fallback: check after a delay if we should navigate
     setTimeout(() => {
       if (traderStore.isTradingStarted && !traderStore.isWaitingForOthers) {
         NavigationService.onMarketStarted()
       }
-      // Keep loading state if still waiting for others
-      if (!traderStore.isWaitingForOthers) {
-        isLoading.value = false
-      }
-    }, 500)
+    }, 5000)
   } catch (error) {
     console.error('Failed to start trading:', error)
     isLoading.value = false
@@ -230,68 +244,29 @@ const startTrading = async () => {
 const handleLogout = async () => {
   await NavigationService.logout()
 }
-
-const currentMarket = computed(() => {
-  return props.traderAttributes?.all_attributes?.historical_markets_count || 
-         sessionStore.marketsCompleted || 
-         0
-})
-
-const maxMarketsPerHuman = computed(() => {
-  return props.traderAttributes?.all_attributes?.params?.max_markets_per_human || 
-         sessionStore.maxMarkets || 
-         4
-})
-
-const isAdmin = computed(() => {
-  return props.traderAttributes?.all_attributes?.is_admin || authStore.isAdmin || false
-})
-
-const remainingMarkets = computed(() => {
-  if (isAdmin.value) return '∞'
-  return maxMarketsPerHuman.value - currentMarket.value
-})
-
-const marketProgress = computed(() => {
-  if (isAdmin.value) return 100
-  return (currentMarket.value / maxMarketsPerHuman.value) * 100
-})
 </script>
 
 <style scoped>
-/* Page-specific styles only - shared styles are in components.css */
-.parameters-table {
-  border-radius: 8px;
-  overflow: hidden;
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.info-card {
+  background: var(--color-bg-surface);
 }
 
 .start-button {
-  width: 100%;
-  max-width: 400px;
-  height: 56px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.5px;
-  background: var(--color-primary) !important;
-  color: var(--color-text-inverse) !important;
-  transition: all 0.3s ease;
+  min-width: 240px;
 }
 
-.start-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
-}
-
-.action-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 2rem;
-}
-
-.logout-button {
-  font-size: 0.9rem;
-  text-transform: none;
+.waiting-status .text-h4 {
+  font-family: var(--font-mono);
+  color: var(--color-primary);
 }
 </style>
