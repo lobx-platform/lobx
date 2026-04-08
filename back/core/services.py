@@ -246,14 +246,15 @@ class TraderService:
 
 class BroadcastService:
     """Service for managing broadcasts and notifications."""
-    
-    def __init__(self, order_book_manager: OrderBookManager, 
+
+    def __init__(self, order_book_manager: OrderBookManager,
                  transaction_manager: TransactionManager, pricing_service: PricingService):
         self.order_book = order_book_manager
         self.transaction_manager = transaction_manager
         self.pricing = pricing_service
         self.websockets = set()
         self.connected_traders: Dict[str, Dict] = {}
+        self._market_id: Optional[str] = None  # set by MarketOrchestrator for SIO room emit
     
     def register_websocket(self, websocket):
         """Register a WebSocket connection."""
@@ -268,16 +269,23 @@ class BroadcastService:
         self.connected_traders = connected_traders
     
     async def broadcast_to_websockets(self, message: Dict[str, Any]):
-        """Broadcast message to all WebSocket connections."""
-        if not self.websockets:
-            return
-        
-        # Sanitize message to ensure JSON compatibility
+        """Broadcast message to all WebSocket connections and Socket.IO room."""
         from utils.websocket_utils import sanitize_websocket_message
         sanitized_message = sanitize_websocket_message(message)
-        
-        # The sanitization function already ensures JSON compatibility
-        
+
+        # Socket.IO room broadcast (if a market_id is set)
+        if self._market_id:
+            try:
+                from api.socketio_server import emit_to_market
+                msg_type = sanitized_message.get("type", "update")
+                await emit_to_market(self._market_id, msg_type.lower(), sanitized_message)
+            except Exception as e:
+                print(f"Error emitting Socket.IO broadcast: {e}")
+
+        # Legacy raw-WebSocket broadcast
+        if not self.websockets:
+            return
+
         disconnected = set()
         for websocket in self.websockets.copy():
             try:
@@ -285,8 +293,7 @@ class BroadcastService:
             except Exception as e:
                 print(f"Error sending WebSocket message: {e}")
                 disconnected.add(websocket)
-        
-        # Remove disconnected WebSockets
+
         for websocket in disconnected:
             self.websockets.discard(websocket)
     
