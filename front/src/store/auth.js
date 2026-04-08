@@ -125,12 +125,6 @@ export const useAuthStore = defineStore('auth', {
     isLabUser: (state) => !!state.user?.isLab,
   },
   persist: {
-    enabled: true,
-    strategies: [
-      {
-        storage: localStorage,
-        paths: ['isAdmin', 'traderId', 'marketId', 'labToken', 'adminToken'],
-      },
-    ],
+    pick: ['isAdmin', 'traderId', 'marketId', 'labToken', 'adminToken', 'user'],
   },
 })

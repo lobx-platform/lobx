@@ -2233,6 +2233,13 @@ picomatch@^4.0.2:
   resolved "https://registry.npmjs.org/picomatch/-/picomatch-4.0.2.tgz"
   integrity sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==
 
+pinia-plugin-persistedstate@^4.7.1:
+  version "4.7.1"
+  resolved "https://registry.npmjs.org/pinia-plugin-persistedstate/-/pinia-plugin-persistedstate-4.7.1.tgz#d13880e0b7efdafd1b73fca3d73cd64ae34bde84"
+  integrity sha512-WHOqh2esDlR3eAaknPbqXrkkj0D24h8shrDPqysgCFR6ghqP/fpFfJmMPJp0gETHsvrh9YNNg6dQfo2OEtDnIQ==
+  dependencies:
+    defu "^6.1.4"
+
 pinia@^3.0.3:
   version "3.0.3"
   resolved "https://registry.npmjs.org/pinia/-/pinia-3.0.3.tgz"

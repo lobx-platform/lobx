@@ -199,22 +199,16 @@ export const useSessionStore = defineStore('session', {
     },
   },
 
-  // Note: If pinia-plugin-persistedstate is installed, this will work automatically
-  // Otherwise, call saveToLocalStorage() manually after state changes
   persist: {
-    enabled: true,
-    strategies: [{
-      storage: localStorage,
-      paths: [
-        'traderId',
-        'marketId', 
-        'status',
-        'onboardingStep',
-        'hasCompletedOnboarding',
-        'marketsCompleted',
-        'maxMarkets',
-        'labToken',
-      ]
-    }]
+    pick: [
+      'traderId',
+      'marketId',
+      'status',
+      'onboardingStep',
+      'hasCompletedOnboarding',
+      'marketsCompleted',
+      'maxMarkets',
+      'labToken',
+    ],
   }
 })
