@@ -5,6 +5,8 @@
  */
 import { defineStore } from 'pinia'
 import { emitSocket } from '@/socket'
+import { useTraderCoreStore } from './trader'
+import { useUIStore } from './ui'
 
 export const useOrderStore = defineStore('orders', {
   state: () => ({
@@ -18,8 +20,6 @@ export const useOrderStore = defineStore('orders', {
     pendingOrders: (state) => state.placedOrders.filter((o) => o.status === 'pending'),
 
     availableCash() {
-      // Needs trader store for cash — called from components
-      const { useTraderCoreStore } = require('./trader')
       const trader = useTraderCoreStore()
       const lockedCash = this.activeOrders
         .filter((o) => o.order_type === 'BUY' || o.order_type === 1)
@@ -28,7 +28,6 @@ export const useOrderStore = defineStore('orders', {
     },
 
     availableShares() {
-      const { useTraderCoreStore } = require('./trader')
       const trader = useTraderCoreStore()
       const lockedShares = this.activeOrders
         .filter((o) => o.order_type === 'SELL' || o.order_type === -1)
@@ -37,7 +36,6 @@ export const useOrderStore = defineStore('orders', {
     },
 
     hasExceededMaxShortShares() {
-      const { useTraderCoreStore } = require('./trader')
       const trader = useTraderCoreStore()
       if (trader.gameParams.max_short_shares < 0) return false
       return (
@@ -47,14 +45,12 @@ export const useOrderStore = defineStore('orders', {
     },
 
     hasExceededMaxShortCash() {
-      const { useTraderCoreStore } = require('./trader')
       const trader = useTraderCoreStore()
       if (trader.gameParams.max_short_cash < 0) return false
       return trader.trader.cash < 0 && Math.abs(trader.trader.cash) >= trader.gameParams.max_short_cash
     },
 
     hasReachedMaxActiveOrders() {
-      const { useTraderCoreStore } = require('./trader')
       const trader = useTraderCoreStore()
       return this.activeOrders.length >= trader.gameParams.max_active_orders
     },
@@ -127,9 +123,7 @@ export const useOrderStore = defineStore('orders', {
     },
 
     checkLimits() {
-      const { useTraderCoreStore } = require('./trader')
       const trader = useTraderCoreStore()
-      const { useUIStore } = require('./ui')
       useUIStore().showLimitMessage(
         trader.gameParams,
         this.hasReachedMaxActiveOrders,

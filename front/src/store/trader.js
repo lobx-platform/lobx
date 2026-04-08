@@ -10,6 +10,7 @@ import axios from '@/api/axios'
 import { wsBus } from '@/socket'
 import { useMarketStore } from './market'
 import { useUIStore } from './ui'
+import { useOrderStore } from './orders'
 
 export const useTraderCoreStore = defineStore('traderCore', {
   state: () => ({
@@ -344,7 +345,6 @@ export const useTraderCoreStore = defineStore('traderCore', {
 
         // Update trader orders
         if (trader_orders) {
-          const { useOrderStore } = require('./orders')
           useOrderStore().syncPlacedOrders(trader_orders)
         }
 
@@ -371,7 +371,6 @@ export const useTraderCoreStore = defineStore('traderCore', {
     },
 
     _handleFilledOrder(matched_orders, transaction_price) {
-      const { useOrderStore } = require('./orders')
       const orderStore = useOrderStore()
 
       useMarketStore().addTransaction({
@@ -407,8 +406,9 @@ export const useTraderCoreStore = defineStore('traderCore', {
       try {
         useMarketStore().$reset()
         useUIStore().$reset()
-        const { useWebSocketStore } = require('./websocket')
-        useWebSocketStore().disconnect()
+        import('./websocket').then(({ useWebSocketStore }) => {
+          useWebSocketStore().disconnect()
+        })
       } catch (e) {
         // Stores might not be initialized yet
       }
