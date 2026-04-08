@@ -1,6 +1,5 @@
 treatments:
-  - name: Test Market - Quick
-    num_noise_traders: 1
-    num_informed_traders: 1
-    num_spoofing_traders: 0
-    num_manipulator_traders: 0
+- name: Low
+  informed_trade_intensity: 0.36
+- name: High
+  informed_trade_intensity: 0.69

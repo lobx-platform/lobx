@@ -36,32 +36,18 @@ async def update_base_settings(settings: BaseSettings):
 
     logger.log_parameter_state(current_state=base_settings, source='admin_update')
 
-    if 'market_sizes' in settings.settings:
+    # Store treatments in base_settings if provided, and sync to treatment_manager
+    if 'treatments' in settings.settings:
         try:
-            market_sizes = settings.settings['market_sizes']
-            if isinstance(market_sizes, str):
-                market_sizes = [int(x.strip()) for x in market_sizes.split(',') if x.strip()]
-            market_handler.session_manager.update_market_sizes(market_sizes)
-            logger.log_parameter_state(
-                current_state={'action': 'market_sizes_update', 'market_sizes': market_sizes},
-                source='admin_update_market_sizes'
-            )
+            treatments_list = settings.settings['treatments']
+            if isinstance(treatments_list, list):
+                treatment_manager.set_treatments(treatments_list)
+                logger.log_parameter_state(
+                    current_state={'action': 'treatments_update', 'count': len(treatments_list)},
+                    source='admin_update_treatments'
+                )
         except Exception as e:
-            print(f"Error updating market_sizes: {str(e)}")
-
-    if 'predefined_goals' in settings.settings:
-        try:
-            updated_params = TradingParameters(**(base_settings or {}))
-            market_handler.session_manager.update_session_pool_goals(updated_params)
-            logger = ParameterLogger()
-            logger.log_parameter_state(
-                current_state={'action': 'goal_update', 'new_goals': settings.settings['predefined_goals']},
-                source='admin_update_goals'
-            )
-            return success(message="Persistent settings updated and waiting sessions refreshed with new goals")
-        except Exception as e:
-            print(f"Error updating session pool goals: {str(e)}")
-            return {"status": "partial_success", "message": f"Settings updated but failed to update waiting sessions: {str(e)}"}
+            print(f"Error updating treatments: {str(e)}")
 
     return success(message="Persistent settings updated")
 
@@ -105,24 +91,6 @@ async def get_treatment_for_user(username: str):
     )
 
 
-@router.post("/admin/treatment-overrides")
-async def set_treatment_overrides(request: Request, current_user: dict = Depends(get_current_admin_user)):
-    try:
-        body = await request.json()
-        overrides = body.get("overrides", {})
-        for cohort_id_str, params in overrides.items():
-            cohort_id = int(cohort_id_str)
-            market_handler.session_manager.cohort_treatment_overrides[cohort_id] = params
-        return success(message="Treatment overrides updated", data={"overrides": overrides})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/admin/treatment-overrides")
-async def get_treatment_overrides(current_user: dict = Depends(get_current_admin_user)):
-    return success(data={"overrides": market_handler.session_manager.cohort_treatment_overrides})
-
-
 # --- Lab links ---
 
 @router.post("/admin/generate-lab-links")
@@ -132,7 +100,7 @@ async def generate_lab_links(request: Request, current_user: dict = Depends(get_
         body = await request.json()
         count = body.get("count", 10)
         num_treatments = body.get("num_treatments", 1)
-        treatment_overrides = body.get("treatment_overrides", None)
+        treatments_list = body.get("treatments", None)
 
         LAB_TOKENS.clear()
         sm = market_handler.session_manager
@@ -140,15 +108,8 @@ async def generate_lab_links(request: Request, current_user: dict = Depends(get_
         for u in lab_usernames:
             sm.user_historical_markets.pop(u, None)
             sm.user_sessions.pop(u, None)
-            sm.user_cohorts.pop(u, None)
             sm.user_ready_status.pop(u, None)
             sm.user_treatment_groups.pop(u, None)
-            sm.permanent_speculators.discard(u)
-            sm.permanent_informed_goals.pop(u, None)
-        sm.cohort_members.clear()
-        sm.cohort_sessions.clear()
-        sm.cohort_treatment_overrides.clear()
-        sm.cohort_persistent_session_ids.clear()
         lab_trader_map.clear()
         lab_trader_ids = [t for t in accumulated_rewards if t.startswith("HUMAN_LAB_")]
         for t in lab_trader_ids:
@@ -162,12 +123,9 @@ async def generate_lab_links(request: Request, current_user: dict = Depends(get_
         origin = request.headers.get("origin", str(request.base_url).rstrip("/"))
         links = generate_lab_tokens(count, base_url=origin, num_treatments=num_treatments)
 
-        sm.update_market_sizes([1] * count)
-
-        if treatment_overrides and isinstance(treatment_overrides, dict):
-            for cohort_id_str, overrides in treatment_overrides.items():
-                cohort_id = int(cohort_id_str)
-                sm.cohort_treatment_overrides[cohort_id] = overrides
+        # Store treatments directly via treatment_manager
+        if treatments_list and isinstance(treatments_list, list):
+            treatment_manager.set_treatments(treatments_list)
 
         return success(message=f"Generated {count} lab links ({num_treatments} treatments)", data={"links": links})
     except Exception as e:
@@ -195,8 +153,6 @@ async def test_reset_state():
         current_settings = base_settings.copy()
         await market_handler.reset_state()
         market_handler.session_manager.user_historical_markets.clear()
-        market_handler.session_manager.permanent_speculators.clear()
-        market_handler.session_manager.permanent_informed_goals.clear()
         base_settings.update(current_settings)
         accumulated_rewards.clear()
         return success(message="Test reset completed (including historical markets)")

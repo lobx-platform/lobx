@@ -1,8 +1,8 @@
 """
 Session Manager - Simplified for lab-first, single-user sessions.
 
-Each user gets their own independent session. No cohorts, no permanent roles,
-no market_sizes logic. Treatment overrides looked up by user_treatment_groups.
+Each user gets their own independent session. Treatment is determined by
+the user's treatment_group index into treatment_manager's treatments list.
 """
 
 import time
@@ -63,17 +63,6 @@ class SessionManager:
 
         # Treatment groups: lab users can be assigned specific treatment groups
         self.user_treatment_groups: Dict[str, int] = {}          # username -> treatment_group
-        # Per-treatment-group parameter overrides
-        self.cohort_treatment_overrides: Dict[int, dict] = {}    # treatment_group -> param overrides
-
-        # Vestigial fields (kept for compatibility, not used in logic)
-        self.market_sizes: List[int] = []
-        self.user_cohorts: Dict[str, int] = {}
-        self.cohort_members: Dict[int, Set[str]] = {}
-        self.cohort_sessions: Dict[int, str] = {}
-        self.cohort_persistent_session_ids: Dict[int, str] = {}
-        self.permanent_speculators: Set[str] = set()
-        self.permanent_informed_goals: Dict[str, int] = {}
 
         # Concurrency control
         self._session_join_lock = asyncio.Lock()
@@ -133,15 +122,23 @@ class SessionManager:
         first_user = users[0].username
         market_count = len(self.user_historical_markets.get(first_user, set()))
 
-        # Build merged params: base -> treatment -> treatment_group overrides
+        # Build merged params: base -> treatment (by treatment_group index)
         base_params_dict = users[0].params.model_dump()
-        merged = treatment_manager.get_merged_params(market_count, base_params_dict)
-
         treatment_group = self.user_treatment_groups.get(first_user)
-        if treatment_group is not None and treatment_group in self.cohort_treatment_overrides:
-            overrides = self.cohort_treatment_overrides[treatment_group]
-            merged.update(overrides)
-            logger.info(f"Applied treatment_group {treatment_group} overrides: {overrides}")
+
+        if treatment_group is not None:
+            # Use treatment_group as index into treatments list
+            treatment_settings = treatment_manager.get_treatment_for_market(treatment_group)
+            if treatment_settings:
+                merged = base_params_dict.copy()
+                merged.update(treatment_settings)
+                logger.info(f"Applied treatment_group {treatment_group}: {treatment_settings}")
+            else:
+                merged = base_params_dict.copy()
+                logger.warning(f"No treatment found for treatment_group {treatment_group}")
+        else:
+            # No treatment_group: fall back to market_count-based treatment
+            merged = treatment_manager.get_merged_params(market_count, base_params_dict)
 
         params = TradingParameters(**merged)
         trader_manager = TraderManager(params, market_id=session_id)
@@ -248,10 +245,6 @@ class SessionManager:
         self.active_markets.clear()
         self.user_sessions.clear()
         self.user_ready_status.clear()
-        self.user_cohorts.clear()
-        self.cohort_sessions.clear()
-        self.cohort_members.clear()
-        self.cohort_persistent_session_ids.clear()
         logger.info("Session manager state reset")
 
     async def remove_user_from_session(self, username: str):
@@ -267,23 +260,6 @@ class SessionManager:
 
         self.user_sessions.pop(username, None)
         self.user_ready_status.pop(username, None)
-
-    def update_market_sizes(self, market_sizes: List[int]):
-        """Vestigial: kept for API compatibility."""
-        self.market_sizes = market_sizes
-
-    def update_session_pool_goals(self, new_params: TradingParameters):
-        """Update goals in waiting sessions after admin settings change."""
-        self.permanent_speculators.clear()
-        self.permanent_informed_goals.clear()
-        for session_id, users in list(self.session_pools.items()):
-            goals = new_params.predefined_goals.copy()
-            random.shuffle(goals)
-            for i, user in enumerate(users):
-                if i < len(goals):
-                    user.goal = goals[i]
-                    user.role = TraderRole.INFORMED if goals[i] != 0 else TraderRole.SPECULATOR
-                    user.params = new_params
 
     # --- Private helpers ---
 

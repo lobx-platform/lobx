@@ -310,9 +310,6 @@
                     />
                   </div>
                 </div>
-                <button class="tp-btn tp-btn-secondary" @click="saveTreatmentOverrides" style="width: 100%">
-                  Save Treatment Overrides
-                </button>
               </div>
 
               <!-- Generated Links Output -->
@@ -567,17 +564,17 @@ const generateLabLinks = async () => {
       count: parseInt(numLabLinks.value) || 10,
       num_treatments: nt,
     }
-    // Include treatment overrides if using multiple treatments
+    // Build treatments list from UI
     if (nt > 1) {
-      const overrides = {}
+      const treatments = []
       for (let i = 0; i < nt; i++) {
-        const o = {}
         const t = treatmentOverrides.value[i]
-        if (t.informed_trade_intensity !== '') o.informed_trade_intensity = parseFloat(t.informed_trade_intensity)
-        if (t.informed_share_passive !== '') o.informed_share_passive = parseFloat(t.informed_share_passive)
-        if (Object.keys(o).length > 0) overrides[i] = o
+        const treatment = { name: `T${i + 1}` }
+        if (t.informed_trade_intensity !== '') treatment.informed_trade_intensity = parseFloat(t.informed_trade_intensity)
+        if (t.informed_share_passive !== '') treatment.informed_share_passive = parseFloat(t.informed_share_passive)
+        treatments.push(treatment)
       }
-      if (Object.keys(overrides).length > 0) payload.treatment_overrides = overrides
+      payload.treatments = treatments
     }
     const response = await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/generate-lab-links`, payload)
     labLinks.value = (response.data.data?.links || []).join('\n')
@@ -589,23 +586,7 @@ const generateLabLinks = async () => {
   }
 }
 
-const saveTreatmentOverrides = async () => {
-  try {
-    const nt = parseInt(numTreatments.value) || 1
-    const overrides = {}
-    for (let i = 0; i < nt; i++) {
-      const o = {}
-      const t = treatmentOverrides.value[i]
-      if (t.informed_trade_intensity !== '') o.informed_trade_intensity = parseFloat(t.informed_trade_intensity)
-      if (t.informed_share_passive !== '') o.informed_share_passive = parseFloat(t.informed_share_passive)
-      if (Object.keys(o).length > 0) overrides[i] = o
-    }
-    await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/treatment-overrides`, { overrides })
-    uiStore.showSuccess('Treatment overrides saved')
-  } catch (error) {
-    uiStore.showError('Failed to save treatment overrides')
-  }
-}
+// saveTreatmentOverrides removed — treatments are sent with Generate Links
 
 const copyLabLinks = () => {
   navigator.clipboard.writeText(labLinks.value)
