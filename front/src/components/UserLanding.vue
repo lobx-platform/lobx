@@ -17,18 +17,12 @@
               <span class="progress-text"> {{ currentPageIndex + 1 }} of {{ pages.length }} </span>
             </div>
 
-            <!-- Header section with enhanced styling -->
+            <!-- Header -->
             <div class="modern-header">
-              <div v-motion-pop-visible-once :delay="400" class="icon-container">
-                <component :is="getCurrentIcon()" :size="40" class="page-icon" />
-              </div>
-              <h1 v-motion-slide-visible-once-right :delay="600" class="page-title">
-                {{ currentPageTitle }}
-              </h1>
+              <h1 class="page-title">{{ currentPageTitle }}</h1>
             </div>
 
-            <!-- Content area with enhanced spacing -->
-            <div v-motion-fade-visible-once :delay="800" class="content-area">
+            <div class="content-area">
               <router-view
                 :traderAttributes="traderAttributes"
                 :iconColor="deepBlueColor"

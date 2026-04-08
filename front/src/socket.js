@@ -83,8 +83,11 @@ export function connectSocket(traderUuid, { labToken, adminToken, prolificPid } 
   _socket.on('connect', () => {
     console.log(`[Socket.IO] Connected! sid=${_socket.id}`)
     socketState.connected = true
-    // Don't auto-join market here — wait until trading actually starts
-    // Components call joinMarket() explicitly when ready
+    // Auto-rejoin market if we were in one (handles reconnect + re-init)
+    if (_lastJoinedTrader) {
+      console.log(`[Socket.IO] Auto-rejoining market for ${_lastJoinedTrader}`)
+      _socket.emit('join_market', { trader_id: _lastJoinedTrader })
+    }
   })
 
   _socket.on('disconnect', () => {

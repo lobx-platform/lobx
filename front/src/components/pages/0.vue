@@ -2,9 +2,6 @@
   <div class="consent-page">
     <!-- Animated header -->
     <div v-motion-slide-visible-once-bottom :delay="200" class="page-header">
-      <div class="icon-wrapper">
-        
-      </div>
       <h2 class="header-title">Research Participant Consent Form</h2>
       <p class="header-subtitle">Please read this information carefully before proceeding</p>
     </div>
