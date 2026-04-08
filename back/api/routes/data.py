@@ -58,6 +58,8 @@ async def list_files_grouped():
         multi_market_pattern = re.compile(r'^(?:COHORT\d+_)?SESSION_(\d+_[a-f0-9]+)_MARKET_(\d+)\.log$', re.IGNORECASE)
         single_market_pattern = re.compile(r'^(?:COHORT\d+_)?SESSION_(\d+_[a-f0-9]+)_trading\.log$', re.IGNORECASE)
         cohort_market_pattern = re.compile(r'^COHORT\d+_SESSION_(\d+_[a-f0-9]+)_trading_market(\d+)\.log$', re.IGNORECASE)
+        # New format: T{treatment}_M{market}_{timestamp}.log
+        new_format_pattern = re.compile(r'^T(\d+)_M(\d+)_(\d+)\.log$')
 
         sessions = {}
         ungrouped = []
@@ -69,20 +71,26 @@ async def list_files_grouped():
             filename = item.name
             session_id = None
             market_num = None
-            match = multi_market_pattern.match(filename)
+            match = new_format_pattern.match(filename)
             if match:
-                session_id = match.group(1)
+                # T0_M0_1775690467.log → session_id="T0", market_num=0
+                session_id = f"T{match.group(1)}"
                 market_num = int(match.group(2))
             else:
-                match = cohort_market_pattern.match(filename)
+                match = multi_market_pattern.match(filename)
                 if match:
                     session_id = match.group(1)
                     market_num = int(match.group(2))
                 else:
-                    match = single_market_pattern.match(filename)
+                    match = cohort_market_pattern.match(filename)
                     if match:
                         session_id = match.group(1)
-                        market_num = 1
+                        market_num = int(match.group(2))
+                    else:
+                        match = single_market_pattern.match(filename)
+                        if match:
+                            session_id = match.group(1)
+                            market_num = 1
             if session_id is not None:
                 max_market = max(max_market, market_num)
                 if session_id not in sessions:
