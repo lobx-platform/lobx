@@ -76,3 +76,11 @@ papers/
 analysis/
 designs/
 docs/
+
+# Temporary screenshots
+*.png
+!front/src/assets/*.png
+
+# Bun lock
+bun.lock
+front/bun.lock
