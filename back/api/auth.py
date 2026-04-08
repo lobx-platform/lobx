@@ -5,8 +5,8 @@ from .lab_auth import LAB_TOKENS, lab_trader_map
 
 security = HTTPBearer(auto_error=False)
 
-# Admin password from environment
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "lobxrhul")
+# Admin password from environment (MUST be set in .env or docker-compose)
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 # Store authenticated users
 authenticated_users = {}
