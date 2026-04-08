@@ -126,7 +126,7 @@ const formatTime = (timestamp) => {
           >
             <div class="trade-main">
               <span class="trade-price">{{ Math.round(order.price) }}</span>
-              <span class="trade-amount">{{ order.amount }}sh</span>
+              <span class="trade-amount">{{ order.amount }} shares</span>
             </div>
             <div class="trade-time">{{ formatTime(order.latestTime) }}</div>
           </div>
@@ -139,7 +139,7 @@ const formatTime = (timestamp) => {
           >
             <div class="trade-main">
               <span class="trade-price">{{ Math.round(order.price) }}</span>
-              <span class="trade-amount">{{ order.amount }}sh</span>
+              <span class="trade-amount">{{ order.amount }} shares</span>
             </div>
             <div class="trade-time">{{ formatTime(order.latestTime) }}</div>
           </div>
