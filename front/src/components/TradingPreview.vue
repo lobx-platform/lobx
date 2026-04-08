@@ -308,7 +308,7 @@ defineProps({
   border-radius: 1px 1px 0 0;
 }
 
-.bid-bar { background: rgba(34, 134, 58, 0.5); border: 1px solid #22863a; }
+.bid-bar { background: rgba(37, 99, 235, 0.5); border: 1px solid #2563EB; }
 .ask-bar { background: rgba(203, 36, 49, 0.5); border: 1px solid #cb2431; }
 
 .mock-axis {

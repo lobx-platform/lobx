@@ -48,8 +48,8 @@ function buildChart() {
         {
           label: 'Bids',
           data: bids,
-          backgroundColor: 'rgba(34, 134, 58, 0.5)',
-          borderColor: '#22863a',
+          backgroundColor: 'rgba(37, 99, 235, 0.5)',
+          borderColor: '#2563EB',
           borderWidth: 1,
         },
         {

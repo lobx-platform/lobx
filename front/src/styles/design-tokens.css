@@ -38,9 +38,9 @@
   --color-border-strong: #D4D4D4;
 
   /* Trading semantic colors — green/red only */
-  --color-bid: #22863a;
-  --color-bid-bg: rgba(34, 134, 58, 0.06);
-  --color-bid-border: rgba(34, 134, 58, 0.20);
+  --color-bid: #2563EB;
+  --color-bid-bg: rgba(37, 99, 235, 0.06);
+  --color-bid-border: rgba(37, 99, 235, 0.20);
   --color-ask: #cb2431;
   --color-ask-bg: rgba(203, 36, 49, 0.06);
   --color-ask-border: rgba(203, 36, 49, 0.20);
