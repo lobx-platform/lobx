@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import { registerPlugins } from '@/plugins'
-import VueApexCharts from 'vue3-apexcharts'
+// ApexCharts removed — unused
 import VueCountdown from '@chenfengyuan/vue-countdown'
 
 // Design System - Import order matters
@@ -19,7 +19,6 @@ const app = createApp(App)
 app.config.devtools = true
 
 // Use additional plugins not handled by registerPlugins
-app.use(VueApexCharts)
 app.component(VueCountdown.name, VueCountdown)
 app.component('Toaster', Toaster)
 

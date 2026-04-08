@@ -67,7 +67,7 @@ async def admin_login(request: Request):
 
     password = body.get("password")
     if password and password == ADMIN_PASSWORD:
-        return success(message="Admin login successful", data={"username": "admin", "is_admin": True, "token": ADMIN_PASSWORD})
+        return success(message="Admin login successful", data={"username": "admin", "is_admin": True})
 
     raise HTTPException(status_code=401, detail="Invalid authentication method")
 

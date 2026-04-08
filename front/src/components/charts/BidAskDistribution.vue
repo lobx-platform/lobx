@@ -1,125 +1,122 @@
 <template>
   <v-card class="bid-ask-chart-container" elevation="3">
     <div class="chart-wrapper">
-      <highcharts-chart
-        :constructor-type="'chart'"
-        :options="chartOptions"
-        :deepCopyOnUpdate="true"
-      ></highcharts-chart>
+      <canvas ref="chartCanvas"></canvas>
     </div>
   </v-card>
 </template>
 
 <script setup>
-import { reactive, watchEffect } from 'vue'
+import { ref, onMounted, watchEffect, onBeforeUnmount } from 'vue'
 import { useMarketStore } from '@/store/market'
 import { storeToRefs } from 'pinia'
-import { Chart as HighchartsChart } from 'highcharts-vue'
-import Highcharts from 'highcharts'
+import { Chart, registerables } from 'chart.js'
+
+Chart.register(...registerables)
 
 const { chartData, midPoint } = storeToRefs(useMarketStore())
+const chartCanvas = ref(null)
+let chart = null
 
-const chartOptions = reactive({
-  chart: {
-    type: 'column',
-    animation: false,
-    backgroundColor: 'transparent',
-    style: {
-      fontFamily: "'JetBrains Mono', monospace",
+function buildChart() {
+  if (!chartCanvas.value) return
+
+  const ctx = chartCanvas.value.getContext('2d')
+  if (chart) chart.destroy()
+
+  // Extract bid and ask series from chartData
+  const bidSeries = chartData.value.find(s => s.name === 'Bids') || { data: [] }
+  const askSeries = chartData.value.find(s => s.name === 'Asks') || { data: [] }
+
+  // Merge all price points
+  const allPoints = new Map()
+  for (const pt of bidSeries.data) allPoints.set(pt.x, { bid: pt.y, ask: 0 })
+  for (const pt of askSeries.data) {
+    const entry = allPoints.get(pt.x) || { bid: 0, ask: 0 }
+    entry.ask = pt.y
+    allPoints.set(pt.x, entry)
+  }
+
+  const sorted = [...allPoints.entries()].sort((a, b) => a[0] - b[0])
+  const labels = sorted.map(([x]) => x)
+  const bids = sorted.map(([, v]) => v.bid)
+  const asks = sorted.map(([, v]) => v.ask)
+
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Bids',
+          data: bids,
+          backgroundColor: 'rgba(34, 197, 94, 0.6)',
+          borderColor: 'rgba(34, 197, 94, 0.9)',
+          borderWidth: 1,
+        },
+        {
+          label: 'Asks',
+          data: asks,
+          backgroundColor: 'rgba(239, 68, 68, 0.6)',
+          borderColor: 'rgba(239, 68, 68, 0.9)',
+          borderWidth: 1,
+        },
+      ],
     },
-    height: 250,
-    marginTop: 10,
-    marginBottom: 30,
-  },
-  accessibility: {
-    enabled: false,
-  },
-  title: {
-    text: null,
-  },
-  xAxis: {
-    allowDecimals: false,
-    tickInterval: 1,
-    minPadding: 0.1,
-    maxPadding: 0.1,
-    labels: {
-      formatter: function () {
-        return this.value.toString()
-      },
-      style: {
-        color: '#64748B',
-        fontSize: '10px',
-      },
-    },
-    lineColor: '#E2E8F0',
-    tickColor: '#E2E8F0',
-  },
-  yAxis: {
-    title: null,
-    labels: {
-      format: '{value:.0f}',
-      style: {
-        color: '#64748B',
-        fontSize: '10px',
-      },
-    },
-    gridLineColor: '#F1F5F9',
-  },
-  credits: {
-    enabled: false,
-  },
-  legend: {
-    enabled: false,
-  },
-  tooltip: {
-    shared: true,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadow: true,
-    useHTML: true,
-    headerFormat: '<table><tr><th colspan="2" style="color:#0F172A">{point.key:.2f}</th></tr>',
-    pointFormat:
-      '<tr><td style="color: {series.color}">{series.name}: </td>' +
-      '<td style="text-align: right; color:#0F172A"><b>{point.y:.0f}</b></td></tr>',
-    footerFormat: '</table>',
-    style: {
-      fontSize: '11px',
-      color: '#0F172A',
-    },
-  },
-  plotOptions: {
-    column: {
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
       animation: false,
-      pointPadding: 0.01,
-      groupPadding: 0,
-      borderWidth: 1,
-      grouping: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#FFFFFF',
+          titleColor: '#0F172A',
+          bodyColor: '#0F172A',
+          borderColor: '#E2E8F0',
+          borderWidth: 1,
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: '#64748B', font: { size: 10, family: "'JetBrains Mono', monospace" } },
+          grid: { display: false },
+        },
+        y: {
+          ticks: { color: '#64748B', font: { size: 10, family: "'JetBrains Mono', monospace" }, precision: 0 },
+          grid: { color: '#F1F5F9' },
+        },
+      },
     },
-  },
-  series: chartData.value,
-})
+  })
+}
+
+onMounted(() => buildChart())
 
 watchEffect(() => {
-  chartOptions.series = chartData.value.map((series) => ({
-    ...series,
-    pointPlacement: 0,
-    color: series.name === 'Bids' ? 'rgba(34, 197, 94, 0.7)' : 'rgba(239, 68, 68, 0.7)',
-    borderColor: series.name === 'Bids' ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)',
-  }))
+  // Trigger on chartData or midPoint changes
+  if (chartData.value && chart) {
+    const bidSeries = chartData.value.find(s => s.name === 'Bids') || { data: [] }
+    const askSeries = chartData.value.find(s => s.name === 'Asks') || { data: [] }
 
-  chartOptions.xAxis.plotBands = [
-    {
-      from: -Infinity,
-      to: midPoint.value,
-      color: 'rgba(34, 197, 94, 0.05)',
-    },
-    {
-      from: midPoint.value,
-      to: Infinity,
-      color: 'rgba(239, 68, 68, 0.05)',
-    },
-  ]
+    const allPoints = new Map()
+    for (const pt of bidSeries.data) allPoints.set(pt.x, { bid: pt.y, ask: 0 })
+    for (const pt of askSeries.data) {
+      const entry = allPoints.get(pt.x) || { bid: 0, ask: 0 }
+      entry.ask = pt.y
+      allPoints.set(pt.x, entry)
+    }
+
+    const sorted = [...allPoints.entries()].sort((a, b) => a[0] - b[0])
+    chart.data.labels = sorted.map(([x]) => x)
+    chart.data.datasets[0].data = sorted.map(([, v]) => v.bid)
+    chart.data.datasets[1].data = sorted.map(([, v]) => v.ask)
+    chart.update('none')
+  }
+})
+
+onBeforeUnmount(() => {
+  if (chart) chart.destroy()
 })
 </script>
 
@@ -131,24 +128,7 @@ watchEffect(() => {
 }
 
 .chart-wrapper {
-  padding: 0;
-}
-
-:deep(.highcharts-container) {
-  font-family: 'JetBrains Mono', monospace !important;
-}
-
-:deep(.highcharts-axis-labels),
-:deep(.highcharts-axis-title) {
-  font-size: 10px !important;
-  font-weight: 400 !important;
-}
-
-:deep(.highcharts-tooltip) {
-  font-size: 11px !important;
-}
-
-:deep(.highcharts-background) {
-  fill: transparent;
+  padding: 4px;
+  height: 250px;
 }
 </style>
