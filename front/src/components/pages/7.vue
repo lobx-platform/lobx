@@ -1,21 +1,17 @@
 <template>
   <div class="questions-container">
-    <v-scale-transition>
-      <div class="header-section">
-        <v-icon size="36" :color="iconColor">mdi-brain</v-icon>
-        <h2 class="text-h4 page-heading">Knowledge Check</h2>
-        <div class="progress-indicator">
-          <div class="progress-text">{{ correctCount }}/{{ questions.length }} Correct</div>
-          <v-progress-linear
-            :model-value="(correctCount / questions.length) * 100"
-            color="success"
-            height="8"
-            rounded
-            striped
-          ></v-progress-linear>
-        </div>
+    <div class="header-section">
+      <h2 class="text-h4 page-heading">Knowledge Check</h2>
+      <div class="progress-indicator">
+        <div class="progress-text">{{ correctCount }}/{{ questions.length }} Correct</div>
+        <v-progress-linear
+          :model-value="(correctCount / questions.length) * 100"
+          color="success"
+          height="8"
+          rounded
+        ></v-progress-linear>
       </div>
-    </v-scale-transition>
+    </div>
 
     <v-container class="questions-grid">
       <v-row>
@@ -26,59 +22,49 @@
           :md="questions.length <= 2 ? 12 : 6"
           class="question-col"
         >
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              :class="[
-                'question-card',
-                {
-                  correct: question.isCorrect,
-                  incorrect: question.showFeedback && !question.isCorrect,
-                },
-              ]"
-              :color="getCardColor(question)"
-              transition="scale-transition"
-            >
-              <v-slide-y-transition>
-                <v-card-text>
-                  <div class="question-number">#{{ index + 1 }}</div>
-                  <div class="question-text">{{ question.text }}</div>
+          <v-card
+            :class="[
+              'question-card',
+              {
+                correct: question.isCorrect,
+                incorrect: question.showFeedback && !question.isCorrect,
+              },
+            ]"
+            :color="getCardColor(question)"
+            flat
+          >
+            <v-card-text>
+              <div class="question-number">#{{ index + 1 }}</div>
+              <div class="question-text">{{ question.text }}</div>
 
-                  <v-fade-transition group>
-                    <v-radio-group
-                      v-model="question.userAnswer"
-                      @change="checkAnswer(index)"
-                      :disabled="question.isCorrect"
-                      class="options-group"
-                      density="compact"
-                    >
-                      <v-radio
-                        v-for="option in question.options"
-                        :key="option"
-                        :label="option"
-                        :value="option"
-                        :color="getRadioColor(question, option)"
-                        class="option-radio"
-                      ></v-radio>
-                    </v-radio-group>
-                  </v-fade-transition>
+              <v-radio-group
+                v-model="question.userAnswer"
+                @change="checkAnswer(index)"
+                :disabled="question.isCorrect"
+                class="options-group"
+                density="compact"
+              >
+                <v-radio
+                  v-for="option in question.options"
+                  :key="option"
+                  :label="option"
+                  :value="option"
+                  :color="getRadioColor(question, option)"
+                  class="option-radio"
+                ></v-radio>
+              </v-radio-group>
 
-                  <v-expand-transition>
-                    <div v-if="question.showFeedback" class="feedback-section">
-                      <v-alert
-                        :type="question.isCorrect ? 'success' : 'error'"
-                        :text="question.isCorrect ? 'Correct!' : question.explanation"
-                        class="feedback-alert"
-                        variant="tonal"
-                        density="compact"
-                      ></v-alert>
-                    </div>
-                  </v-expand-transition>
-                </v-card-text>
-              </v-slide-y-transition>
-            </v-card>
-          </v-hover>
+              <div v-if="question.showFeedback" class="feedback-section">
+                <v-alert
+                  :type="question.isCorrect ? 'success' : 'error'"
+                  :text="question.isCorrect ? 'Correct!' : question.explanation"
+                  class="feedback-alert"
+                  variant="tonal"
+                  density="compact"
+                ></v-alert>
+              </div>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
     </v-container>
@@ -174,27 +160,6 @@ const questions = ref([
     isCorrect: false,
     showFeedback: false,
   },
-  /*
-  {
-    text: 'Let assume that you bought 3 shares at an average price of 101 Liras, and you sold all of them at an average price of 104 Liras. The initial midprice is 100 liras. What is the generated profit?',
-    options: ['0', '5', '9'],
-    correctAnswer: '9',
-    explanation:
-      'In this scenario, the profit is 3*104 - 3*101 = 9',
-    userAnswer: null,
-    isCorrect: false,
-    showFeedback: false,
-  },
-  {
-    text: 'Let assume that you bought 3 shares at an average price of 101 Liras, and you sold only 2 of them at an average price of 104 Liras. The final midprice is 105 liras. What is the generated profit?',
-    options: ['0', '5', '9'],
-    correctAnswer: '5',
-    explanation:
-      'In this scenario, the profit is 2*104 + 100 - 3*101 = 5, as the last unsold share will be sold at the final midprice - 5.',
-    userAnswer: null,
-    isCorrect: false,
-    showFeedback: false,
-  },*/
 ])
 
 const correctCount = computed(() => {
@@ -277,7 +242,6 @@ const getCardColor = (question) => {
 
 .question-card {
   height: 100%;
-  transition: all 0.3s ease;
   border-radius: var(--radius-md);
   overflow: hidden;
 }
@@ -306,11 +270,6 @@ const getCardColor = (question) => {
 
 .option-radio {
   margin-bottom: 0.5rem;
-  transition: all 0.3s ease;
-}
-
-.option-radio:hover {
-  transform: translateX(5px);
 }
 
 .feedback-section {
@@ -319,11 +278,6 @@ const getCardColor = (question) => {
 
 .feedback-alert {
   margin: 0;
-  transition: all 0.3s ease;
-}
-
-.question-col {
-  transition: all 0.3s ease;
 }
 
 @media (max-width: 960px) {
