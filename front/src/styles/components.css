@@ -578,7 +578,7 @@ body,
   margin-bottom: 3rem;
 }
 
-.gradient-text {
+.page-heading {
   color: var(--color-text-primary);
   font-weight: bold;
   margin: 1rem 0;
@@ -591,17 +591,17 @@ body,
   border: var(--border-width) solid var(--color-border) !important;
 }
 
-.success-gradient {
+.success-tint {
   background: var(--color-success-light) !important;
   border: var(--border-width) solid var(--color-bid-border) !important;
 }
 
-.info-gradient {
+.info-tint {
   background: var(--color-info-light) !important;
   border: var(--border-width) solid rgba(0, 102, 255, 0.2) !important;
 }
 
-.warning-gradient {
+.warning-tint {
   background: var(--color-warning-light) !important;
   border: var(--border-width) solid rgba(176, 136, 0, 0.2) !important;
 }

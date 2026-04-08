@@ -2,8 +2,8 @@
   <div class="page-container">
     <v-scale-transition>
       <div class="header-section">
-        <v-icon size="40" :color="iconColor" class="pulse-icon">mdi-chart-box</v-icon>
-        <h2 class="text-h4 gradient-text">Market Mechanics</h2>
+        <v-icon size="40" :color="iconColor">mdi-chart-box</v-icon>
+        <h2 class="text-h4 page-heading">Market Mechanics</h2>
       </div>
     </v-scale-transition>
 
@@ -15,7 +15,7 @@
             <v-card
               v-bind="props"
               :elevation="isHovering ? 8 : 2"
-              class="info-card warning-gradient"
+              class="info-card warning-tint"
             >
               <v-card-text>
                 <div class="d-flex align-center mb-4">
@@ -37,7 +37,7 @@
             <v-card
               v-bind="props"
               :elevation="isHovering ? 8 : 2"
-              class="info-card success-gradient"
+              class="info-card success-tint"
             >
               <v-card-text>
                 <div class="d-flex align-center mb-4">
@@ -73,7 +73,7 @@
         <!-- Trading Dynamics Card -->
         <v-col cols="12" md="6">
           <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card info-gradient">
+            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card info-tint">
               <v-card-text>
                 <div class="d-flex align-center mb-4">
                   <v-icon size="28" color="info" class="mr-2">
@@ -476,7 +476,7 @@ const goalDescription = computed(() => {
 .strategy-hint-box {
   background: rgba(245, 158, 11, 0.06);
   border-left: 4px solid var(--color-warning);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 14px 18px;
   color: var(--color-text-primary);
 }

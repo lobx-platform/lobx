@@ -1,20 +1,19 @@
 <template>
   <div class="consent-page">
-    <!-- Animated header -->
-    <div v-motion-slide-visible-once-bottom :delay="200" class="page-header">
+    <!-- Header -->
+    <div class="page-header">
       <h2 class="header-title">Research Participant Consent Form</h2>
       <p class="header-subtitle">Please read this information carefully before proceeding</p>
     </div>
 
-    <!-- Content with smooth animations -->
-    <div v-motion-fade-visible-once :delay="400" class="content-container">
+    <!-- Content -->
+    <div class="content-container">
       <div class="consent-content prose prose-slate max-w-none">
         <div class="project-info">
           <h3>Project Title: Information Dissemination in Electronic Financial Markets</h3>
 
           <div class="info-grid">
             <div class="info-item">
-              <Building2 :size="20" />
               <div>
                 <strong>Institution:</strong>
                 <span>Royal Holloway, University of London -- Department of Economics</span>
@@ -22,7 +21,6 @@
             </div>
 
             <div class="info-item">
-              <Users :size="20" />
               <div>
                 <strong>Researchers:</strong>
                 <span
@@ -33,7 +31,6 @@
             </div>
 
             <div class="info-item">
-              <CreditCard :size="20" />
               <div>
                 <strong>Funding Body:</strong>
                 <span>The Leverhulme Trust</span>
@@ -57,7 +54,7 @@
             </p>
           </section>
 
-          <section class="content-section highlight-section">
+          <section class="content-section">
             <h4>Summary</h4>
             <p>
               The purpose of this study is to investigate the interaction between human and machines
@@ -145,7 +142,7 @@
             </div>
           </section>
 
-          <section class="content-section earnings-section">
+          <section class="content-section">
             <h4>Compensation</h4>
             <p>
               For your time and effort, you will receive compensation through the Prolific platform
@@ -164,7 +161,7 @@
             </p>
           </section>
 
-          <section class="content-section consent-section">
+          <section class="content-section">
             <h4>Statement of Consent</h4>
             <p><strong>I confirm that:</strong></p>
             <ul class="consent-list">
@@ -187,7 +184,7 @@
     </div>
 
     <!-- Consent checkbox and button -->
-    <div v-motion-slide-visible-once-bottom :delay="600" class="consent-footer">
+    <div class="consent-footer">
       <div class="checkbox-container">
         <input
           id="consent-checkbox"
@@ -198,7 +195,7 @@
         />
         <label for="consent-checkbox" class="checkbox-label">
           <div class="checkbox-indicator">
-            <Check v-if="consentGiven" :size="16" class="check-icon" />
+            <span v-if="consentGiven" class="check-mark">&#10003;</span>
           </div>
           <span>I consent to participate in this research study</span>
         </label>
@@ -211,10 +208,7 @@
         :class="{ disabled: !consentGiven }"
       >
         <span v-if="!consentGiven">Please review and consent above</span>
-        <span v-else>
-          Continue to Study
-          <ArrowRight :size="20" />
-        </span>
+        <span v-else>Continue to Study</span>
       </button>
     </div>
   </div>
@@ -228,23 +222,6 @@ import { useAuthStore } from '@/store/auth'
 import { useSessionStore } from '@/store/session'
 import NavigationService from '@/services/navigation'
 import axios from '@/api/axios'
-import {
-  ClipboardCheck,
-  Building2,
-  Users,
-  CreditCard,
-  Info,
-  Target,
-  Shield,
-  Database,
-  Lock,
-  FileText,
-  DollarSign,
-  MessageSquare,
-  CheckSquare,
-  Check,
-  ArrowRight,
-} from 'lucide-vue-next'
 
 const router = useRouter()
 const traderStore = useTraderStore()
@@ -347,41 +324,24 @@ const submitConsent = async () => {
   margin-bottom: 2rem;
 }
 
-.icon-wrapper {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, var(--color-primary), #A855F7);
-  border-radius: 16px;
-  margin-bottom: 1rem;
-  box-shadow: 0 8px 25px rgba(34, 211, 238, 0.2);
-}
-
-.header-icon {
-  color: var(--color-text-inverse);
-}
-
 .header-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--color-text-bright);
+  color: var(--color-text-primary);
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
 }
 
 .header-subtitle {
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   font-size: 1rem;
   margin: 0;
 }
 
 .content-container {
   background: var(--color-bg-surface);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   padding: 2rem;
-  box-shadow: var(--shadow-md);
   border: var(--border-width) solid var(--color-border);
   margin-bottom: 2rem;
 }
@@ -394,8 +354,8 @@ const submitConsent = async () => {
 
 .project-info h3 {
   font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text-bright);
+  font-weight: 700;
+  color: var(--color-text-primary);
   margin-bottom: 1.5rem;
   text-align: center;
 }
@@ -406,19 +366,10 @@ const submitConsent = async () => {
 }
 
 .info-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
   padding: 1rem;
   background: var(--color-bg-elevated);
-  border-radius: 8px;
-  border-left: 4px solid var(--color-primary);
-}
-
-.info-item svg {
-  color: var(--color-primary);
-  flex-shrink: 0;
-  margin-top: 2px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .info-item strong {
@@ -438,23 +389,16 @@ const submitConsent = async () => {
 
 .content-section {
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: var(--border-width) solid var(--color-border);
   background: var(--color-bg-elevated);
 }
 
 .content-section h4 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-text-primary);
   margin: 0 0 1rem 0;
-}
-
-.content-section h4 svg {
-  color: var(--color-primary);
 }
 
 .content-section p {
@@ -467,37 +411,11 @@ const submitConsent = async () => {
   margin-bottom: 0;
 }
 
-.highlight-section {
-  background: rgba(34, 211, 238, 0.04);
-  border-color: rgba(34, 211, 238, 0.15);
-  border-width: 2px;
-}
-
-.earnings-section {
-  background: rgba(34, 197, 94, 0.04);
-  border-color: rgba(34, 197, 94, 0.15);
-  border-width: 2px;
-}
-
-.earnings-section h4 svg {
-  color: var(--color-success);
-}
-
-.consent-section {
-  background: rgba(245, 158, 11, 0.04);
-  border-color: rgba(245, 158, 11, 0.15);
-  border-width: 2px;
-}
-
-.consent-section h4 svg {
-  color: var(--color-warning);
-}
-
 .gdpr-content {
   background: var(--color-bg-subtle);
   padding: 1rem;
-  border-radius: 8px;
-  border-left: 4px solid var(--color-info);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .consent-list {
@@ -513,7 +431,7 @@ const submitConsent = async () => {
   margin-bottom: 0.5rem;
   padding: 0.5rem;
   background: var(--color-bg-subtle);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   color: var(--color-text-secondary);
 }
 
@@ -527,20 +445,12 @@ const submitConsent = async () => {
 .external-link {
   color: var(--color-primary);
   text-decoration: underline;
-  text-decoration-color: rgba(34, 211, 238, 0.3);
-  transition: all 0.2s;
-}
-
-.external-link:hover {
-  color: var(--color-primary-hover);
-  text-decoration-color: var(--color-primary-hover);
 }
 
 .consent-footer {
   background: var(--color-bg-surface);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   padding: 2rem;
-  box-shadow: var(--shadow-md);
   border: var(--border-width) solid var(--color-border);
   text-align: center;
 }
@@ -557,11 +467,6 @@ const submitConsent = async () => {
   cursor: pointer;
   font-weight: 500;
   color: var(--color-text-primary);
-  transition: color 0.2s;
-}
-
-.checkbox-label:hover {
-  color: var(--color-text-bright);
 }
 
 .consent-checkbox {
@@ -575,9 +480,8 @@ const submitConsent = async () => {
   width: 24px;
   height: 24px;
   border: 2px solid var(--color-border-strong);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   background: var(--color-bg-elevated);
-  transition: all 0.2s;
 }
 
 .consent-checkbox:checked + .checkbox-label .checkbox-indicator {
@@ -585,8 +489,10 @@ const submitConsent = async () => {
   border-color: var(--color-primary);
 }
 
-.check-icon {
+.check-mark {
   color: var(--color-text-inverse);
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .consent-btn {
@@ -598,26 +504,17 @@ const submitConsent = async () => {
   background: var(--color-primary);
   color: var(--color-text-inverse);
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-glow);
   min-width: 200px;
-}
-
-.consent-btn:hover:not(.disabled) {
-  box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
-  transform: translateY(-2px);
 }
 
 .consent-btn.disabled {
   background: var(--color-text-muted);
   color: var(--color-bg-elevated);
   cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
 }
 
 /* Responsive design */
@@ -655,13 +552,13 @@ const submitConsent = async () => {
 }
 
 .prose strong {
-  color: var(--color-text-bright);
+  color: var(--color-text-primary);
   font-weight: 600;
 }
 
 .prose h3 {
-  color: var(--color-text-bright);
-  font-weight: 600;
+  color: var(--color-text-primary);
+  font-weight: 700;
   margin-bottom: 1rem;
 }
 

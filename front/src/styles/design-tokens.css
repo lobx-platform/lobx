@@ -128,8 +128,7 @@
   --shadow-sm: none;
   --shadow-md: none;
   --shadow-lg: none;
-  --shadow-glow: none;
-  --shadow-glow-sm: none;
+  /* glow shadows removed */
 
   /* ========================================
    * TRANSITIONS — Instant, no animation

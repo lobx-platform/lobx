@@ -2,8 +2,8 @@
   <div class="page-container">
     <v-scale-transition>
       <div class="header-section">
-        <v-icon size="40" :color="iconColor" class="pulse-icon">mdi-robot-industrial</v-icon>
-        <h2 class="text-h4 gradient-text">Market Participants</h2>
+        <v-icon size="40" :color="iconColor">mdi-robot-industrial</v-icon>
+        <h2 class="text-h4 page-heading">Market Participants</h2>
       </div>
     </v-scale-transition>
 
@@ -42,7 +42,7 @@
             <v-card
               v-bind="props"
               :elevation="isHovering ? 8 : 2"
-              class="info-card success-gradient"
+              class="info-card success-tint"
             >
               <v-card-text>
                 <div class="d-flex align-center mb-4">
@@ -62,7 +62,7 @@
             <v-card
               v-bind="props"
               :elevation="isHovering ? 8 : 2"
-              class="info-card info-gradient"
+              class="info-card info-tint"
             >
               <v-card-text>
                 <div class="d-flex align-center mb-4">
@@ -83,7 +83,7 @@
             <v-card
               v-bind="props"
               :elevation="isHovering ? 8 : 2"
-              class="info-card warning-gradient"
+              class="info-card warning-tint"
             >
               <v-card-text>
                 <div class="d-flex align-center mb-4">

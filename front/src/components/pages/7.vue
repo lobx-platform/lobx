@@ -2,8 +2,8 @@
   <div class="questions-container">
     <v-scale-transition>
       <div class="header-section">
-        <v-icon size="36" :color="iconColor" class="pulse-icon">mdi-brain</v-icon>
-        <h2 class="text-h4 gradient-text">Knowledge Check</h2>
+        <v-icon size="36" :color="iconColor">mdi-brain</v-icon>
+        <h2 class="text-h4 page-heading">Knowledge Check</h2>
         <div class="progress-indicator">
           <div class="progress-text">{{ correctCount }}/{{ questions.length }} Correct</div>
           <v-progress-linear
@@ -257,28 +257,10 @@ const getCardColor = (question) => {
   position: relative;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-bid));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.page-heading {
+  color: var(--color-text-primary);
   font-weight: bold;
   margin: 1rem 0;
-}
-
-.pulse-icon {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 
 .progress-indicator {
@@ -296,7 +278,7 @@ const getCardColor = (question) => {
 .question-card {
   height: 100%;
   transition: all 0.3s ease;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 

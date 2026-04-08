@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main class="fill-height gradient-background">
+    <v-main class="fill-height app-background">
       <router-view></router-view>
       <!-- This will render the matched component -->
     </v-main>
@@ -33,7 +33,7 @@ const uiStore = useUIStore()
 </script>
 
 <style>
-.gradient-background {
+.app-background {
   background: var(--color-bg-page);
 }
 
