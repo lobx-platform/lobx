@@ -15,7 +15,7 @@
 
       <header class="dashboard-header">
         <div class="header-inner">
-          <h1 class="dashboard-title">Trading Dashboard</h1>
+          <h1 class="dashboard-title">LOBX</h1>
           <div class="dashboard-stats">
             <span class="role-label">{{ roleDisplay.text }}</span>
             <div class="stats-row">
@@ -128,7 +128,6 @@ import ActiveOrders from '@trading/ActiveOrders.vue'
 import MarketMessages from '@trading/MarketMessages.vue'
 import { computed, watch, ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useFormatNumber } from '@/composables/utils'
 import { storeToRefs } from 'pinia'
 import { useTraderStore } from '@/store/app'
 import { useWebSocketStore } from '@/store/websocket'
@@ -137,7 +136,6 @@ import { useAuthStore } from '@/store/auth'
 import axios from '@/api/axios'
 import NavigationService from '@/services/navigation'
 
-const { formatNumber } = useFormatNumber()
 const router = useRouter()
 const store = useTraderStore()
 const wsStore = useWebSocketStore()

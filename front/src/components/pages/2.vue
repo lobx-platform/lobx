@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="header-section">
-      <h2 class="text-h4 page-heading">Trading Platform Guide</h2>
+      <h2 class="text-h4 page-heading">LOBX Platform Guide</h2>
     </div>
 
     <v-container class="content-grid">
@@ -11,7 +11,7 @@
           <v-card class="info-card" flat>
             <v-card-text>
               <div class="mb-4">
-                <span class="text-h6 font-weight-bold">What is the Trading Platform?</span>
+                <span class="text-h6 font-weight-bold">What is LOBX?</span>
               </div>
               <p class="text-body-1">
                 The trading platform is software that allows participants to trade with one
@@ -82,8 +82,8 @@
 
         <!-- Interactive Trading Platform Preview -->
         <v-col cols="12">
-          <span class="text-h6 font-weight-bold">Trading Platform Overview</span>
-          <TradingPreview highlight="all" caption="This is the trading platform. Each panel shows different information about the market." />
+          <span class="text-h6 font-weight-bold">LOBX Overview</span>
+          <TradingPreview highlight="all" caption="This is the LOBX trading interface. Each panel shows different information about the market." />
         </v-col>
 
         <v-col cols="12">

@@ -3,7 +3,7 @@
     <v-row align="center" justify="center" class="fill-height">
       <v-col cols="12" sm="10" md="8" lg="6">
         <div class="summary-card">
-          <div class="summary-header">Trading Market Summary</div>
+          <div class="summary-header">Market Summary</div>
           <div class="summary-body">
             <!-- Your Statistics -->
             <div v-if="traderSpecificMetrics" class="stat-section">

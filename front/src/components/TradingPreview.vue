@@ -13,7 +13,7 @@
     <div class="preview-frame" :class="{ 'no-highlight': highlight === 'all' }">
       <!-- Mock Header -->
       <div class="mock-header" :class="{ highlighted: highlight === 'header', dimmed: highlight !== 'header' && highlight !== 'all' }">
-        <span class="mock-title">Trading Dashboard</span>
+        <span class="mock-title">LOBX</span>
         <div class="mock-stats">
           <span>SPECULATOR</span>
           <span>PnL: -5</span>

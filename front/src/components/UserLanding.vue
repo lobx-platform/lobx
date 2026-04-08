@@ -73,7 +73,7 @@ const { traderAttributes } = storeToRefs(traderStore)
 const pages = [
   { name: 'consent', title: 'Research Participant Consent Form' },
   { name: 'welcome', title: 'Welcome' },
-  { name: 'platform', title: 'Trading Platform' },
+  { name: 'platform', title: 'LOBX Platform' },
   { name: 'setup', title: 'Setup' },
   { name: 'earnings', title: 'Your Earnings' },
   { name: 'participants', title: 'Other Participants' },

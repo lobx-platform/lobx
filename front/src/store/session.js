@@ -21,7 +21,6 @@ export const useSessionStore = defineStore('session', {
     maxMarkets: 4,
     
     // Flags
-    isRecovering: false,
     isSyncing: false,
     lastSyncTime: null,
 
@@ -161,7 +160,6 @@ export const useSessionStore = defineStore('session', {
         onboardingStep: 0,
         hasCompletedOnboarding: false,
         marketsCompleted: 0,
-        isRecovering: false,
         isSyncing: false,
         lastSyncTime: null,
         labToken: null,
