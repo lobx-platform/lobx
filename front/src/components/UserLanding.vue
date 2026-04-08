@@ -2,66 +2,53 @@
   <div class="landing-container">
     <Toaster position="top-center" theme="light" :visibleToasts="3" />
 
-    <v-container fluid class="fill-height pa-0 relative">
-      <v-row justify="center" align="center" class="fill-height">
-        <v-col cols="12" md="10" lg="8">
-          <div v-motion-slide-visible-once-bottom :delay="200" class="modern-card">
-            <!-- Progress indicator -->
-            <div class="progress-indicator">
-              <div class="progress-bar">
-                <div
-                  class="progress-fill"
-                  :style="{ width: `${((currentPageIndex + 1) / pages.length) * 100}%` }"
-                ></div>
-              </div>
-              <span class="progress-text"> {{ currentPageIndex + 1 }} of {{ pages.length }} </span>
-            </div>
+    <div class="landing-content">
+      <!-- Progress indicator -->
+      <div class="progress-indicator">
+        <span class="progress-text">{{ currentPageIndex + 1 }} / {{ pages.length }}</span>
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            :style="{ width: `${((currentPageIndex + 1) / pages.length) * 100}%` }"
+          ></div>
+        </div>
+      </div>
 
-            <!-- Header -->
-            <div class="modern-header">
-              <h1 class="page-title">{{ currentPageTitle }}</h1>
-            </div>
+      <!-- Header -->
+      <div class="page-header">
+        <h1 class="page-title">{{ currentPageTitle }}</h1>
+      </div>
 
-            <div class="content-area">
-              <router-view
-                :traderAttributes="traderAttributes"
-                :iconColor="deepBlueColor"
-                @update:canProgress="handleProgress"
-              />
-            </div>
+      <div class="content-area">
+        <router-view
+          :traderAttributes="traderAttributes"
+          :iconColor="deepBlueColor"
+          @update:canProgress="handleProgress"
+        />
+      </div>
 
-            <!-- Enhanced navigation -->
-            <div
-              v-if="currentRouteName !== 'consent'"
-              v-motion-fade
-              :initial="{ opacity: 0 }"
-              :enter="{ opacity: 1, transition: { delay: 500 } }"
-              class="navigation-area"
-            >
-              <button
-                @click="prevPage"
-                :disabled="isFirstPage"
-                class="nav-btn nav-btn-secondary"
-                :class="{ disabled: isFirstPage }"
-              >
-                <ChevronLeft :size="20" />
-                Previous
-              </button>
+      <!-- Navigation -->
+      <div
+        v-if="currentRouteName !== 'consent'"
+        class="navigation-area"
+      >
+        <button
+          @click="prevPage"
+          :disabled="isFirstPage"
+          class="nav-btn nav-btn-secondary"
+        >
+          Previous
+        </button>
 
-              <button
-                @click="nextPage"
-                :disabled="isLastPage || shouldDisableNext"
-                class="nav-btn nav-btn-primary"
-                :class="{ disabled: isLastPage || shouldDisableNext }"
-              >
-                Next
-                <ChevronRight :size="20" />
-              </button>
-            </div>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
+        <button
+          @click="nextPage"
+          :disabled="isLastPage || shouldDisableNext"
+          class="nav-btn nav-btn-primary"
+        >
+          Next
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -74,18 +61,6 @@ import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 import NavigationService from '@/services/navigation'
 import { Toaster } from 'vue-sonner'
-import {
-  ClipboardCheck,
-  Handshake,
-  Monitor,
-  Settings,
-  DollarSign,
-  Users,
-  HelpCircle,
-  GraduationCap,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
@@ -96,32 +71,15 @@ const traderStore = useTraderStore()
 const { traderAttributes } = storeToRefs(traderStore)
 
 const pages = [
-  { name: 'consent', title: 'Research Participant Consent Form', icon: 'ClipboardCheck' },
-  { name: 'welcome', title: 'Welcome', icon: 'Handshake' },
-  { name: 'platform', title: 'Trading Platform', icon: 'Monitor' },
-  { name: 'setup', title: 'Setup', icon: 'Settings' },
-  { name: 'earnings', title: 'Your Earnings', icon: 'DollarSign' },
-  { name: 'participants', title: 'Other Participants', icon: 'Users' },
-  { name: 'questions', title: 'Control Questions', icon: 'HelpCircle' },
-  { name: 'ready', title: 'Ready to Trade', icon: 'GraduationCap' },
+  { name: 'consent', title: 'Research Participant Consent Form' },
+  { name: 'welcome', title: 'Welcome' },
+  { name: 'platform', title: 'Trading Platform' },
+  { name: 'setup', title: 'Setup' },
+  { name: 'earnings', title: 'Your Earnings' },
+  { name: 'participants', title: 'Other Participants' },
+  { name: 'questions', title: 'Control Questions' },
+  { name: 'ready', title: 'Ready to Trade' },
 ]
-
-// Icon mapping
-const iconComponents = {
-  ClipboardCheck,
-  Handshake,
-  Monitor,
-  Settings,
-  DollarSign,
-  Users,
-  HelpCircle,
-  GraduationCap,
-}
-
-const getCurrentIcon = () => {
-  const iconName = pages[currentPageIndex.value]?.icon
-  return iconComponents[iconName] || ClipboardCheck
-}
 
 const currentPageIndex = computed(() => {
   const index = pages.findIndex((page) => page.name === route.name)
@@ -171,7 +129,7 @@ const shouldDisableNext = computed(() => {
 // Initialize trader data
 onMounted(async () => {
   const traderId = sessionStore.traderId || authStore.traderId
-  
+
   if (traderId) {
     try {
       await traderStore.initializeTrader(traderId)
@@ -203,30 +161,15 @@ const deepBlueColor = ref('deep-blue')
 <style scoped>
 .landing-container {
   min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
   background: var(--color-bg-page);
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1.5rem;
 }
 
-.modern-card {
-  background: var(--color-bg-surface);
-  border-radius: var(--radius-xl);
-  border: var(--border-width) solid var(--color-border);
-  box-shadow: var(--shadow-lg);
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.modern-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), #7C3AED, var(--color-bid));
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+.landing-content {
+  width: 100%;
+  max-width: 720px;
 }
 
 .progress-indicator {
@@ -238,64 +181,41 @@ const deepBlueColor = ref('deep-blue')
 
 .progress-bar {
   flex: 1;
-  height: 4px;
-  background: var(--color-bg-elevated);
-  border-radius: 2px;
+  height: 2px;
+  background: var(--color-border);
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), #7C3AED);
-  border-radius: 2px;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--color-text-primary);
+  transition: width 0.3s ease;
 }
 
 .progress-text {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-muted);
-  font-weight: var(--font-medium);
   min-width: fit-content;
   letter-spacing: var(--tracking-wide);
 }
 
-.modern-header {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+.page-header {
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
   border-bottom: var(--border-width) solid var(--color-border);
 }
 
-.icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  background: var(--color-primary-light);
-  border: var(--border-width) solid var(--color-primary-muted);
-  border-radius: var(--radius-xl);
-}
-
-.page-icon {
-  color: var(--color-primary);
-}
-
 .page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-text-bright);
-  line-height: 1.2;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
   margin: 0;
-  -webkit-text-fill-color: unset;
-  background: none;
 }
 
 .content-area {
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
   min-height: 300px;
 }
 
@@ -308,92 +228,58 @@ const deepBlueColor = ref('deep-blue')
 }
 
 .nav-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: var(--radius-lg);
-  font-weight: var(--font-semibold);
+  padding: 0.625rem 1.25rem;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-medium);
   font-size: var(--text-sm);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
   font-family: var(--font-family);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .nav-btn-primary {
   background: var(--color-primary);
   color: var(--color-text-inverse);
+  border-color: var(--color-primary);
 }
 
-.nav-btn-primary:hover:not(.disabled) {
+.nav-btn-primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  border-color: var(--color-primary-hover);
 }
 
 .nav-btn-secondary {
   background: var(--color-bg-surface);
   color: var(--color-text-secondary);
-  border: var(--border-width) solid var(--color-border-strong);
+  border-color: var(--color-border);
 }
 
-.nav-btn-secondary:hover:not(.disabled) {
-  background: var(--color-bg-hover);
+.nav-btn-secondary:hover:not(:disabled) {
   color: var(--color-text-primary);
-  transform: translateY(-1px);
+  border-color: var(--color-border-strong);
 }
 
-.nav-btn.disabled {
-  opacity: 0.4;
+.nav-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
 }
 
-.nav-btn-skip {
-  background: var(--color-warning);
-  color: var(--color-text-inverse);
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-}
-
-.nav-btn-skip:hover {
-  transform: translateY(-1px);
-}
-
-.relative {
-  position: relative;
-}
-
-/* Responsive design */
 @media (max-width: 768px) {
-  .modern-card {
-    margin: 1rem;
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-  }
-
-  .modern-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
+  .landing-container {
+    padding: 2rem 1rem;
   }
 
   .page-title {
-    font-size: 1.5rem;
+    font-size: var(--text-xl);
   }
 
   .navigation-area {
-    flex-direction: column;
     gap: 1rem;
-  }
-
-  .nav-btn {
-    width: 100%;
-    justify-content: center;
   }
 }
 </style>

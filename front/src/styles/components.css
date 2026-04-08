@@ -1,5 +1,5 @@
 /**
- * Trading Platform Component Styles — Light Theme
+ * Trading Platform Component Styles — Refined Minimalist
  *
  * Reusable component classes + Vuetify overrides.
  * Import after design-tokens.css
@@ -53,20 +53,19 @@ html, body, #app {
 .uppercase { text-transform: uppercase; }
 
 /* ========================================
- * CARD COMPONENT — Light Panel
+ * CARD COMPONENT — 1px border, no shadow
  * ======================================== */
 
 .tp-card {
   background: var(--color-bg-surface);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
 .tp-card-header {
   padding: var(--space-2) var(--space-3);
   border-bottom: var(--border-width) solid var(--color-border);
-  background: var(--color-bg-elevated);
 }
 
 .tp-card-title {
@@ -88,7 +87,6 @@ html, body, #app {
 .tp-card-footer {
   padding: var(--space-2) var(--space-3);
   border-top: var(--border-width) solid var(--color-border);
-  background: var(--color-bg-elevated);
   display: flex;
   justify-content: flex-end;
   gap: var(--space-2);
@@ -97,7 +95,6 @@ html, body, #app {
 .tp-card-header-collapsible {
   cursor: pointer;
   user-select: none;
-  transition: background var(--transition-fast);
 }
 
 .tp-card-header-collapsible:hover {
@@ -105,7 +102,7 @@ html, body, #app {
 }
 
 /* ========================================
- * BUTTON COMPONENT
+ * BUTTON COMPONENT — Flat, no hover animation
  * ======================================== */
 
 .tp-btn {
@@ -121,7 +118,6 @@ html, body, #app {
   border-radius: var(--radius-md);
   border: var(--border-width) solid transparent;
   cursor: pointer;
-  transition: all var(--transition-fast);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -140,7 +136,6 @@ html, body, #app {
 .tp-btn-primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
-  box-shadow: var(--shadow-glow-sm);
 }
 
 .tp-btn-secondary {
@@ -152,7 +147,6 @@ html, body, #app {
 .tp-btn-secondary:hover:not(:disabled) {
   background: var(--color-bg-hover);
   color: var(--color-text-primary);
-  border-color: var(--color-text-muted);
 }
 
 .tp-btn-ghost {
@@ -162,7 +156,6 @@ html, body, #app {
 }
 
 .tp-btn-ghost:hover:not(:disabled) {
-  background: var(--color-bg-subtle);
   color: var(--color-text-primary);
 }
 
@@ -189,13 +182,11 @@ html, body, #app {
   background: var(--color-bg-surface);
   border: var(--border-width) solid var(--color-border-strong);
   border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .tp-input:focus {
   outline: none;
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .tp-input::placeholder {
@@ -244,25 +235,25 @@ html, body, #app {
 .tp-badge-success {
   background: var(--color-success-light);
   color: var(--color-success);
-  border-color: rgba(22, 163, 74, 0.2);
+  border-color: rgba(34, 134, 58, 0.2);
 }
 
 .tp-badge-warning {
   background: var(--color-warning-light);
   color: var(--color-warning);
-  border-color: rgba(217, 119, 6, 0.2);
+  border-color: rgba(176, 136, 0, 0.2);
 }
 
 .tp-badge-error {
   background: var(--color-error-light);
   color: var(--color-error);
-  border-color: rgba(220, 38, 38, 0.2);
+  border-color: rgba(203, 36, 49, 0.2);
 }
 
 .tp-badge-info {
   background: var(--color-info-light);
   color: var(--color-info);
-  border-color: rgba(37, 99, 235, 0.2);
+  border-color: rgba(0, 102, 255, 0.2);
 }
 
 /* ========================================
@@ -297,7 +288,7 @@ html, body, #app {
 }
 
 /* ========================================
- * TABLE STYLES — Data table
+ * TABLE STYLES
  * ======================================== */
 
 .tp-table {
@@ -316,7 +307,6 @@ html, body, #app {
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
   border-bottom: var(--border-width) solid var(--color-border-strong);
-  background: var(--color-bg-elevated);
 }
 
 .tp-table td {
@@ -379,7 +369,7 @@ html, body, #app {
 }
 
 /* ========================================
- * SCROLLBAR — Minimal light
+ * SCROLLBAR — Minimal
  * ======================================== */
 
 ::-webkit-scrollbar {
@@ -401,10 +391,10 @@ html, body, #app {
 }
 
 /* ========================================
- * VUETIFY OVERRIDES — Light Theme
+ * VUETIFY OVERRIDES — Stripped to minimum
  * ======================================== */
 
-/* Force DM Sans globally */
+/* Force Instrument Sans globally */
 html,
 body,
 #app,
@@ -427,7 +417,7 @@ body,
 .v-application h4,
 .v-application h5,
 .v-application h6 {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: 'Instrument Sans', sans-serif !important;
 }
 
 .v-application .text-body-1,
@@ -442,15 +432,15 @@ body,
 .v-application .text-h4,
 .v-application .text-h5,
 .v-application .text-h6 {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: 'Instrument Sans', sans-serif !important;
 }
 
-/* Light Vuetify cards */
+/* Vuetify cards — 1px border, no shadow, no rounded corners */
 .v-card {
   background: var(--color-bg-surface) !important;
   border: var(--border-width) solid var(--color-border) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-sm) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
   color: var(--color-text-primary) !important;
 }
 
@@ -460,7 +450,6 @@ body,
   color: var(--color-text-secondary) !important;
   padding: var(--space-2) var(--space-3) !important;
   border-bottom: var(--border-width) solid var(--color-border);
-  background: var(--color-bg-elevated);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
 }
@@ -469,15 +458,16 @@ body,
   color: var(--color-text-primary) !important;
 }
 
-/* Vuetify buttons */
+/* Vuetify buttons — flat, no effects */
 .v-btn {
   text-transform: none !important;
   font-weight: var(--font-medium) !important;
   letter-spacing: 0 !important;
   border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
 }
 
-/* Vuetify inputs - light */
+/* Vuetify inputs */
 .v-field {
   border-radius: var(--radius-md) !important;
   color: var(--color-text-primary) !important;
@@ -541,10 +531,10 @@ body,
   padding: 6px 10px !important;
   border-radius: var(--radius-md) !important;
   border: var(--border-width) solid var(--color-border-strong) !important;
-  box-shadow: var(--shadow-md) !important;
+  box-shadow: none !important;
 }
 
-/* Vuetify dialogs/overlays */
+/* Vuetify dialogs */
 .v-dialog > .v-overlay__content > .v-card {
   background: var(--color-bg-surface) !important;
 }
@@ -575,7 +565,6 @@ body,
 
 /* ========================================
  * ONBOARDING PAGE SHARED STYLES
- * Light theme for pages 0-8
  * ======================================== */
 
 .page-container {
@@ -590,44 +579,31 @@ body,
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-bid));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-text-primary);
   font-weight: bold;
   margin: 1rem 0;
 }
 
-.pulse-icon {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
 .info-card {
   height: 100%;
-  border-radius: var(--radius-lg);
-  transition: all 0.3s ease;
+  border-radius: var(--radius-md);
   background: var(--color-bg-surface) !important;
   border: var(--border-width) solid var(--color-border) !important;
 }
 
 .success-gradient {
-  background: linear-gradient(135deg, rgba(22, 163, 74, 0.06), rgba(22, 163, 74, 0.02)) !important;
+  background: var(--color-success-light) !important;
   border: var(--border-width) solid var(--color-bid-border) !important;
 }
 
 .info-gradient {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(37, 99, 235, 0.02)) !important;
-  border: var(--border-width) solid rgba(37, 99, 235, 0.2) !important;
+  background: var(--color-info-light) !important;
+  border: var(--border-width) solid rgba(0, 102, 255, 0.2) !important;
 }
 
 .warning-gradient {
-  background: linear-gradient(135deg, rgba(217, 119, 6, 0.06), rgba(217, 119, 6, 0.02)) !important;
-  border: var(--border-width) solid rgba(217, 119, 6, 0.2) !important;
+  background: var(--color-warning-light) !important;
+  border: var(--border-width) solid rgba(176, 136, 0, 0.2) !important;
 }
 
 .highlight-text {
@@ -649,9 +625,8 @@ body,
 }
 
 .rules-list li::before {
-  content: '\25B8';
-  color: var(--color-primary);
-  font-weight: bold;
+  content: '\2014';
+  color: var(--color-text-muted);
   position: absolute;
   left: 0;
 }
@@ -663,13 +638,7 @@ body,
 .improvement-list .v-list-item {
   min-height: 44px;
   padding: 0.5rem;
-  transition: all 0.3s ease;
   color: var(--color-text-primary);
-}
-
-.improvement-list .v-list-item:hover {
-  background: var(--color-bg-hover);
-  transform: translateX(5px);
 }
 
 @media (max-width: 960px) {

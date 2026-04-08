@@ -1,14 +1,9 @@
 <template>
   <div class="auth-page">
     <div class="auth-container">
-      <!-- Logo and Title -->
+      <!-- Title -->
       <div class="auth-header">
-        <div class="logo-glow">
-          <img :src="logo" alt="Trading Platform" class="auth-logo" />
-        </div>
         <h1 class="auth-title">LOBX</h1>
-        <p class="auth-subtitle">Experimental Market Research Platform</p>
-        <div class="auth-divider"></div>
       </div>
 
       <!-- Loading State -->
@@ -19,7 +14,6 @@
 
       <!-- Admin Password Form (no LAB_TOKEN in URL) -->
       <div v-else class="auth-form">
-        <h2 class="form-title">Admin Access</h2>
         <form @submit.prevent="handleAdminLogin">
           <div class="input-group">
             <label class="input-label">Password</label>
@@ -33,10 +27,7 @@
             />
           </div>
           <button type="submit" class="btn btn-primary" :disabled="loginLoading">
-            <span v-if="loginLoading" class="btn-loading">
-              <span class="btn-spinner"></span>
-              Authenticating...
-            </span>
+            <span v-if="loginLoading">Authenticating...</span>
             <span v-else>Sign In</span>
           </button>
         </form>
@@ -62,7 +53,6 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { useSessionStore } from '@/store/session'
 import NavigationService from '@/services/navigation'
-import logo from '@/assets/lobx_logo.svg'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -136,72 +126,25 @@ const handleAdminLogin = async () => {
   justify-content: center;
   background: var(--color-bg-page);
   padding: var(--space-4);
-  position: relative;
-  overflow: hidden;
 }
 
 .auth-container {
   width: 100%;
-  max-width: 420px;
-  background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-8) var(--space-6);
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  z-index: 1;
-  animation: slideUp 0.4s ease-out;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  max-width: 360px;
 }
 
 .auth-header {
   text-align: center;
-  margin-bottom: var(--space-6);
-}
-
-.logo-glow {
-  display: inline-block;
-  padding: var(--space-3);
-  border-radius: var(--radius-xl);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  margin-bottom: var(--space-4);
-}
-
-.auth-logo {
-  width: 56px;
-  height: 56px;
-  display: block;
+  margin-bottom: 4rem;
 }
 
 .auth-title {
   font-family: var(--font-mono);
   font-size: var(--text-4xl);
   font-weight: var(--font-bold);
-  color: var(--color-text-bright);
-  margin: 0 0 var(--space-1) 0;
-  letter-spacing: var(--tracking-widest);
-}
-
-.auth-subtitle {
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
   margin: 0;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-
-.auth-divider {
-  width: 40px;
-  height: 2px;
-  background: var(--color-primary);
-  opacity: 0.3;
-  margin: var(--space-4) auto 0;
-  border-radius: 1px;
+  letter-spacing: 0.2em;
 }
 
 .auth-loading {
@@ -210,10 +153,10 @@ const handleAdminLogin = async () => {
 }
 
 .spinner {
-  width: 36px;
-  height: 36px;
-  border: 2px solid var(--color-border-strong);
-  border-top-color: var(--color-primary);
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-text-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto var(--space-4);
@@ -231,21 +174,11 @@ const handleAdminLogin = async () => {
 }
 
 .auth-form {
-  text-align: center;
-}
-
-.form-title {
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-muted);
-  margin: 0 0 var(--space-4) 0;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-widest);
+  text-align: left;
 }
 
 .input-group {
   margin-bottom: var(--space-4);
-  text-align: left;
 }
 
 .input-label {
@@ -253,7 +186,7 @@ const handleAdminLogin = async () => {
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
   color: var(--color-text-muted);
-  margin-bottom: var(--space-1-5);
+  margin-bottom: var(--space-2);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
 }
@@ -265,15 +198,13 @@ const handleAdminLogin = async () => {
   font-family: var(--font-mono);
   color: var(--color-text-primary);
   background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border-strong);
+  border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .input-field:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .input-field::placeholder {
@@ -288,18 +219,17 @@ const handleAdminLogin = async () => {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
+  font-weight: var(--font-medium);
   font-family: var(--font-family);
   border-radius: var(--radius-md);
   border: var(--border-width) solid transparent;
   cursor: pointer;
-  transition: all var(--transition-smooth);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -311,22 +241,7 @@ const handleAdminLogin = async () => {
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
-  box-shadow: var(--shadow-glow);
-}
-
-.btn-loading {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.btn-spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: var(--color-text-inverse);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
+  border-color: var(--color-primary-hover);
 }
 
 .error-message {
@@ -340,7 +255,7 @@ const handleAdminLogin = async () => {
   color: var(--color-error);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
-  border: var(--border-width) solid rgba(220, 38, 38, 0.2);
+  border: var(--border-width) solid rgba(203, 36, 49, 0.2);
 }
 
 .error-close {
@@ -355,9 +270,7 @@ const handleAdminLogin = async () => {
 
 .auth-footer {
   text-align: center;
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
-  border-top: var(--border-width) solid var(--color-border-light);
+  margin-top: 4rem;
 }
 
 .auth-footer span {
@@ -367,15 +280,14 @@ const handleAdminLogin = async () => {
 }
 
 @media (max-width: 480px) {
-  .auth-container {
-    padding: var(--space-6) var(--space-4);
-  }
-  .auth-logo {
-    width: 48px;
-    height: 48px;
+  .auth-header {
+    margin-bottom: 3rem;
   }
   .auth-title {
     font-size: var(--text-3xl);
+  }
+  .auth-footer {
+    margin-top: 3rem;
   }
 }
 </style>
