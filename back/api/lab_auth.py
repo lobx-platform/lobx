@@ -1,6 +1,5 @@
 import json
 import time
-import uuid
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -17,10 +16,10 @@ def _persist_tokens():
         serializable = {}
         for token, data in LAB_TOKENS.items():
             serializable[token] = {
-                "participant_index": data["participant_index"],
-                "treatment_group": data.get("treatment_group"),
-                "created_at": data["created_at"],
-                "used": data["used"],
+                "treatment_group": data.get("treatment_group", 0),
+                "group_index": data.get("group_index", 0),
+                "created_at": data.get("created_at", 0),
+                "used": data.get("used", False),
             }
         with open(_LAB_TOKENS_FILE, "w") as f:
             json.dump(serializable, f, indent=2)
@@ -46,26 +45,32 @@ _load_tokens()
 
 
 def generate_lab_tokens(count: int, base_url: str = "", num_treatments: int = 1) -> list:
-    """Generate lab tokens, distributing across treatment groups in blocks.
+    """Generate lab tokens with human-readable format T{treatment}_P{participant}.
 
-    If num_treatments > 1, tokens are assigned in sequential blocks.
-    E.g. count=100, num_treatments=4 → first 25 get T0, next 25 get T1, etc.
+    Tokens are distributed across treatment groups in blocks.
+    E.g. count=6, num_treatments=2 → T1_P1, T1_P2, T1_P3, T2_P1, T2_P2, T2_P3
+    Treatment numbers are 1-based in the token string.
     """
     links = []
     block_size = count // num_treatments if num_treatments > 1 else count
     for i in range(count):
-        token = f"lab_{uuid.uuid4().hex}"
-        treatment_group = i // block_size if num_treatments > 1 else None
-        if treatment_group is not None and treatment_group >= num_treatments:
+        treatment_group = i // block_size if num_treatments > 1 else 0
+        if treatment_group >= num_treatments:
             treatment_group = num_treatments - 1
+        # group_index is 0-based position within the treatment group
+        group_index = i - (treatment_group * block_size)
+
+        # Token format: T{treatment+1}_P{group_index+1} (1-based for readability)
+        token = f"T{treatment_group + 1}_P{group_index + 1}"
+
         LAB_TOKENS[token] = {
-            "participant_index": i + 1,
             "treatment_group": treatment_group,
+            "group_index": group_index,
             "created_at": time.time(),
             "used": False,
         }
         if base_url:
-            links.append(f"{base_url}?LAB_TOKEN={token}")
+            links.append(f"{base_url}?LAB={token}")
         else:
             links.append(token)
     _persist_tokens()
@@ -86,19 +91,21 @@ def validate_lab_token(token: str) -> Tuple[bool, Optional[dict]]:
         info["used"] = True
         _persist_tokens()
 
-    participant_index = info["participant_index"]
-    trader_id = f"HUMAN_LAB_{participant_index}"
+    treatment_group = info["treatment_group"]
+    group_index = info["group_index"]
+    # Use the token itself as the readable username/trader suffix
+    trader_id = f"HUMAN_LAB_{token}"
 
-    treatment_group = info.get("treatment_group")
     user = {
-        "uid": f"lab_{participant_index}",
-        "email": f"lab_{participant_index}@lab.local",
-        "gmail_username": f"LAB_{participant_index}",
+        "uid": f"lab_{token}",
+        "email": f"lab_{token}@lab.local",
+        "gmail_username": f"LAB_{token}",
         "is_admin": False,
         "is_lab": True,
         "lab_token": token,
         "trader_id": trader_id,
         "treatment_group": treatment_group,
+        "group_index": group_index,
     }
     return True, user
 

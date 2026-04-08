@@ -75,8 +75,8 @@ const loginLoading = ref(false)
 const password = ref('')
 
 onMounted(async () => {
-  // Auto-detect LAB_TOKEN in URL or localStorage
-  const labToken = route.query.LAB_TOKEN || sessionStore.labToken || sessionStore.loadLabToken()
+  // Auto-detect LAB token in URL (prefer ?LAB=, fallback to legacy ?LAB_TOKEN=)
+  const labToken = route.query.LAB || route.query.LAB_TOKEN || sessionStore.labToken || sessionStore.loadLabToken()
   if (labToken) {
     isLoading.value = true
     loadingMessage.value = 'Signing in with lab token...'

@@ -77,9 +77,10 @@ export function setupGuards(router) {
       sessionStore._restored = true
     }
 
-    // 1. Handle Lab token in URL — store for auto-login
-    if (to.query.LAB_TOKEN) {
-      sessionStore.setLabToken(to.query.LAB_TOKEN)
+    // 1. Handle Lab token in URL — store for auto-login (prefer ?LAB=, fallback ?LAB_TOKEN=)
+    const labParam = to.query.LAB || to.query.LAB_TOKEN
+    if (labParam) {
+      sessionStore.setLabToken(labParam)
     }
 
     // 2. Guest-only routes — redirect authenticated users

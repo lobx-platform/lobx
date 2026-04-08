@@ -21,7 +21,7 @@ async def get_current_user(request: Request):
     # Check for lab token in Authorization header
     auth_header = request.headers.get('Authorization', '')
     if auth_header.startswith('Lab '):
-        lab_token = auth_header.split('Lab ')[1]
+        lab_token = auth_header.split('Lab ', 1)[1]
         if lab_token in LAB_TOKENS:
             from .lab_auth import validate_lab_token
             is_valid, lab_user = validate_lab_token(lab_token)

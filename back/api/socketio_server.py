@@ -46,6 +46,9 @@ _root_path = os.environ.get("ROOT_PATH", "/api")
 # Mapping: sid -> user context
 _sessions: Dict[str, dict] = {}
 
+# Mapping: username -> sid (for broadcasting waiting room updates)
+_username_to_sid: Dict[str, str] = {}
+
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -54,9 +57,9 @@ def _authenticate(auth: dict) -> dict | None:
     if not auth:
         return None
 
-    # Lab token
+    # Lab token (new format: T1_P3)
     lab_token = auth.get("lab_token")
-    if lab_token and lab_token.startswith("lab_"):
+    if lab_token:
         is_valid, lab_user = validate_lab_token(lab_token)
         if is_valid:
             lab_trader_map[lab_user["trader_id"]] = lab_user
@@ -99,6 +102,41 @@ async def _get_or_create_trader_lock(trader_id: str) -> asyncio.Lock:
     return trader_locks[trader_id]
 
 
+async def _broadcast_waiting_room_update(session_id: str):
+    """Broadcast waiting room status to all users in a waiting room."""
+    users = market_handler.session_manager.session_pools.get(session_id, [])
+    if not users:
+        return
+
+    params = users[0].params
+    required = len(params.predefined_goals)
+    ready_count = sum(
+        1 for u in users
+        if market_handler.session_manager.user_ready_status.get(u.username, False)
+    )
+
+    payload = {
+        "session_id": session_id,
+        "current_users": len(users),
+        "ready_count": ready_count,
+        "total_needed": required,
+        "can_start": ready_count >= required,
+        "users": [
+            {
+                "username": u.username,
+                "ready": market_handler.session_manager.user_ready_status.get(u.username, False),
+            }
+            for u in users
+        ],
+    }
+
+    # Send to each user in the waiting room
+    for u in users:
+        sid = _username_to_sid.get(u.username)
+        if sid:
+            await sio.emit("waiting_room_update", payload, to=sid)
+
+
 # ── Event handlers ───────────────────────────────────────────────────────────
 
 @sio.event
@@ -109,13 +147,15 @@ async def connect(sid, environ, auth):
         logger.warning(f"[SIO] connection refused for sid={sid}")
         raise socketio.exceptions.ConnectionRefusedError("authentication failed")
 
+    gmail_username = user["gmail_username"]
     _sessions[sid] = {
-        "gmail_username": user["gmail_username"],
-        "trader_id": user.get("trader_id", f"HUMAN_{user['gmail_username']}"),
+        "gmail_username": gmail_username,
+        "trader_id": user.get("trader_id", f"HUMAN_{gmail_username}"),
         "is_admin": user.get("is_admin", False),
         "market_id": None,
     }
-    print(f"[SIO] connected sid={sid} user={user['gmail_username']}", flush=True)
+    _username_to_sid[gmail_username] = sid
+    print(f"[SIO] connected sid={sid} user={gmail_username}", flush=True)
 
 
 @sio.event
@@ -125,6 +165,7 @@ async def disconnect(sid):
         return
     market_id = ctx.get("market_id")
     gmail_username = ctx["gmail_username"]
+    _username_to_sid.pop(gmail_username, None)
     if market_id:
         await sio.leave_room(sid, market_id)
         # broadcast updated trader count to the room
@@ -154,23 +195,21 @@ async def join_market(sid, data):
         await sio.emit("error", {"message": "Not in any session"}, to=sid)
         return
 
-    # If still waiting, send waiting status and poll until active
+    # If still waiting, send waiting room update and return — don't poll
     if status == "waiting":
+        session_id = session_status.get("session_id")
         await sio.emit("session_waiting", {
             "status": "waiting",
-            "message": "Waiting for other traders to join",
+            "message": "Waiting for other participants",
             "isWaitingForOthers": True,
+            "current_users": session_status.get("current_users", 1),
+            "total_needed": session_status.get("total_needed", 1),
+            "ready_count": session_status.get("ready_count", 0),
         }, to=sid)
-
-        # Poll for up to 60 s
-        for _ in range(60):
-            new_status = market_handler.get_session_status_by_trader_id(trader_id)
-            if new_status.get("status") == "active":
-                break
-            await asyncio.sleep(1)
-        else:
-            await sio.emit("error", {"message": "Timeout waiting for market"}, to=sid)
-            return
+        # Broadcast updated waiting room to all participants
+        if session_id:
+            await _broadcast_waiting_room_update(session_id)
+        return
 
     # Resolve trader manager
     trader_manager = None
@@ -276,6 +315,11 @@ async def mark_ready(sid, data=None):
         return
 
     trader_id = ctx["trader_id"]
+    gmail_username = ctx["gmail_username"]
+
+    # Get the session_id before marking ready (for broadcasting)
+    session_id = market_handler.session_manager.user_sessions.get(gmail_username)
+
     all_ready = await market_handler.mark_trader_ready_by_trader_id(trader_id)
 
     if all_ready:
@@ -283,8 +327,12 @@ async def mark_ready(sid, data=None):
         if trader_manager:
             market_id = market_handler.trader_to_market_lookup.get(trader_id)
             asyncio.create_task(trader_manager.launch())
+            # Notify all participants in the room that market is starting
             await sio.emit("market_started", {"market_id": market_id}, room=market_id)
     else:
+        # Broadcast updated waiting room status to all participants
+        if session_id:
+            await _broadcast_waiting_room_update(session_id)
         await sio.emit("ready_ack", {"status": "waiting"}, to=sid)
 
 

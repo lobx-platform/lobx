@@ -32,6 +32,7 @@ const ROUTED_EVENTS = [
   'time_update',
   'trader_count_update',
   'session_waiting',
+  'waiting_room_update',
   'market_started',
   'market_status_update',
   'trader_status_update',

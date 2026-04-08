@@ -12,8 +12,8 @@ router = APIRouter()
 
 @router.post("/user/login")
 async def user_login(request: Request):
-    # Check for lab token first
-    lab_token = request.query_params.get('LAB_TOKEN')
+    # Check for lab token first (accept both ?LAB= and legacy ?LAB_TOKEN=)
+    lab_token = request.query_params.get('LAB') or request.query_params.get('LAB_TOKEN')
     if lab_token:
         from ..lab_auth import validate_lab_token, lab_trader_map
         is_valid, lab_user = validate_lab_token(lab_token)
@@ -22,15 +22,19 @@ async def user_login(request: Request):
         gmail_username = lab_user['gmail_username']
         trader_id = lab_user['trader_id']
         treatment_group = lab_user.get('treatment_group')
+        group_index = lab_user.get('group_index', 0)
         lab_trader_map[trader_id] = lab_user
         await market_handler.remove_user_from_session(gmail_username)
         # Register forced cohort assignment if treatment_group is set
         if treatment_group is not None:
             market_handler.session_manager.user_treatment_groups[gmail_username] = treatment_group
+        # Register group_index for deterministic goal assignment
+        market_handler.session_manager.user_group_index[gmail_username] = group_index
         return success(
             message="Lab login successful",
             data={"trader_id": trader_id, "username": gmail_username, "is_admin": False,
-                  "is_lab": True, "lab_token": lab_token, "treatment_group": treatment_group}
+                  "is_lab": True, "lab_token": lab_token, "treatment_group": treatment_group,
+                  "group_index": group_index}
         )
 
     # Check for Prolific params

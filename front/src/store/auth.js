@@ -31,7 +31,7 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         this.loginInProgress = true
-        const response = await axios.post(`/user/login?LAB_TOKEN=${labToken}`)
+        const response = await axios.post(`/user/login?LAB=${encodeURIComponent(labToken)}`)
 
         if (!response.data.data || !response.data.data.trader_id) {
           throw new Error('No trader ID received')

@@ -1,8 +1,9 @@
 """
-Session Manager - Simplified for lab-first, single-user sessions.
+Session Manager - Multi-participant lab sessions.
 
-Each user gets their own independent session. Treatment is determined by
-the user's treatment_group index into treatment_manager's treatments list.
+Users in the same treatment group share a waiting room.
+Markets start when all N participants (defined by predefined_goals) are ready.
+Role assignment is deterministic: P1→goals[0], P2→goals[1], etc.
 """
 
 import time
@@ -47,41 +48,66 @@ class SessionStatus(Enum):
 
 class SessionManager:
     """
-    Simplified session management: one user = one session.
+    Multi-participant session management.
 
-    No cohort system, no permanent roles. Each user joins independently,
-    gets a fresh session, and trades through N markets sequentially.
+    Users in the same treatment group are placed in a shared waiting room.
+    The waiting room key is T{treatment_group}_M{market_number}, so the same
+    group plays sequential markets together.
     """
 
     def __init__(self):
         # Core state
-        self.session_pools: Dict[str, List[WaitingUser]] = {}    # session_id -> waiting users
+        self.session_pools: Dict[str, List[WaitingUser]] = {}    # room_key -> waiting users
         self.active_markets: Dict[str, TraderManager] = {}       # market_id -> trader manager
-        self.user_sessions: Dict[str, str] = {}                  # username -> session_id
+        self.user_sessions: Dict[str, str] = {}                  # username -> room_key or market_id
         self.user_historical_markets: Dict[str, Set[str]] = {}   # username -> set of market_ids
         self.user_ready_status: Dict[str, bool] = {}             # username -> ready flag
 
         # Treatment groups: lab users can be assigned specific treatment groups
         self.user_treatment_groups: Dict[str, int] = {}          # username -> treatment_group
 
+        # Multi-participant: deterministic goal assignment
+        self.user_group_index: Dict[str, int] = {}               # username -> index into predefined_goals
+        self.user_market_count: Dict[str, int] = {}              # username -> markets completed in current sequence
+
         # Concurrency control
         self._session_join_lock = asyncio.Lock()
 
     async def join_session(self, username: str, params: TradingParameters) -> Tuple[str, str, TraderRole, int]:
-        """User joins a session. Returns (session_id, trader_id, role, goal)."""
+        """User joins a session. Returns (session_id, trader_id, role, goal).
+
+        Multi-participant: users in the same treatment_group share a waiting room.
+        The room key is T{treatment_group}_M{market_count} so the same group
+        progresses through sequential markets together.
+        """
         if not await self._can_user_join(username, params):
             raise Exception("Maximum number of allowed markets reached")
 
         await self.remove_user_from_session(username)
 
         async with self._session_join_lock:
-            session_id = self._create_session(username, params)
-            role, goal = self._assign_role(username, session_id, params)
-            self.user_sessions[username] = session_id
+            treatment_group = self.user_treatment_groups.get(username)
+            group_index = self.user_group_index.get(username, 0)
+            market_count = self.user_market_count.get(username, 0)
+
+            if treatment_group is not None:
+                # Multi-participant: find/create shared waiting room
+                room_key = f"T{treatment_group}_M{market_count}"
+            else:
+                # Non-lab users: create individual session
+                ts = int(time.time())
+                uid = uuid.uuid4().hex[:8]
+                room_key = f"SESSION_{ts}_{uid}_{username}_MARKET_{market_count}"
+
+            if room_key not in self.session_pools:
+                self.session_pools[room_key] = []
+
+            role, goal = self._assign_role(username, room_key, params, group_index)
+            self.user_sessions[username] = room_key
 
         trader_id = f"HUMAN_{username}"
-        logger.info(f"User {username} joined session {session_id} role={role} goal={goal}")
-        return session_id, trader_id, role, goal
+        logger.info(f"User {username} joined room {room_key} role={role} goal={goal} group_index={group_index}")
+        return room_key, trader_id, role, goal
 
     async def mark_user_ready(self, username: str) -> Tuple[bool, Dict]:
         """Mark user ready. Returns (all_ready, status_info)."""
@@ -103,6 +129,7 @@ class SessionManager:
         return can_start, {
             "session_id": session_id, "ready_count": ready,
             "total_needed": required, "can_start": can_start,
+            "users": [u.username for u in users],
             "status": SessionStatus.READY.value if can_start else SessionStatus.WAITING.value
         }
 
@@ -120,7 +147,7 @@ class SessionManager:
             raise Exception(f"Session {session_id} not found")
 
         first_user = users[0].username
-        market_count = len(self.user_historical_markets.get(first_user, set()))
+        market_count = self.user_market_count.get(first_user, 0)
 
         # Build merged params: base -> treatment (by treatment_group index)
         base_params_dict = users[0].params.model_dump()
@@ -149,6 +176,8 @@ class SessionManager:
             if wu.username not in self.user_historical_markets:
                 self.user_historical_markets[wu.username] = set()
             self.user_historical_markets[wu.username].add(market_id)
+            # Increment market count for sequential markets
+            self.user_market_count[wu.username] = self.user_market_count.get(wu.username, 0) + 1
 
         self.active_markets[market_id] = trader_manager
 
@@ -170,7 +199,7 @@ class SessionManager:
             parameters=merged
         )
 
-        logger.info(f"Created market {market_id} from session {session_id}")
+        logger.info(f"Created market {market_id} from room {session_id} with {len(users)} participants")
         return market_id, trader_manager
 
     def get_session_status(self, username: str) -> Dict:
@@ -196,7 +225,8 @@ class SessionManager:
         ready = sum(1 for u in users if self.user_ready_status.get(u.username, False))
 
         result = {"status": SessionStatus.WAITING.value, "session_id": session_id,
-                  "current_users": len(users), "ready_count": ready, "total_needed": required}
+                  "current_users": len(users), "ready_count": ready, "total_needed": required,
+                  "users": [u.username for u in users]}
         if user_info:
             result.update({"role": user_info.role, "goal": user_info.goal,
                            "cash": params.initial_cash, "shares": params.initial_stocks})
@@ -245,6 +275,8 @@ class SessionManager:
         self.active_markets.clear()
         self.user_sessions.clear()
         self.user_ready_status.clear()
+        self.user_group_index.clear()
+        self.user_market_count.clear()
         logger.info("Session manager state reset")
 
     async def remove_user_from_session(self, username: str):
@@ -269,29 +301,22 @@ class SessionManager:
             return True
         return len(self.user_historical_markets.get(username, set())) < params.max_markets_per_human
 
-    def _create_session(self, username: str, params: TradingParameters) -> str:
-        """Create a new session for user. Lab users include username in session ID."""
-        ts = int(time.time())
-        uid = uuid.uuid4().hex[:8]
-        if username.startswith("LAB_"):
-            session_id = f"SESSION_{ts}_{uid}_{username}_MARKET_{len(self.user_historical_markets.get(username, set()))}"
+    def _assign_role(self, username: str, session_id: str, params: TradingParameters,
+                     group_index: int = 0) -> Tuple[TraderRole, int]:
+        """Assign role and goal deterministically by group_index.
+
+        group_index maps directly into predefined_goals:
+          P1 (group_index=0) → goals[0]
+          P2 (group_index=1) → goals[1]
+          P3 (group_index=2) → goals[2]
+        """
+        goals = params.predefined_goals
+
+        if group_index < len(goals):
+            goal = goals[group_index]
         else:
-            session_id = f"SESSION_{ts}_{uid}_MARKET_{len(self.user_historical_markets.get(username, set()))}"
-        self.session_pools[session_id] = []
-        return session_id
-
-    def _assign_role(self, username: str, session_id: str, params: TradingParameters) -> Tuple[TraderRole, int]:
-        """Assign role and goal to user from predefined_goals."""
-        goals = params.predefined_goals.copy()
-        random.shuffle(goals)
-
-        # For single-user sessions, use first goal
-        already_taken = [u.goal for u in self.session_pools.get(session_id, [])]
-        goal = 0
-        for g in goals:
-            if g not in already_taken:
-                goal = g
-                break
+            # Fallback: wrap around or use 0
+            goal = goals[group_index % len(goals)] if goals else 0
 
         if goal != 0 and params.allow_random_goals:
             goal = abs(goal) * random.choice([-1, 1])
@@ -304,5 +329,5 @@ class SessionManager:
             session_id=session_id, params=params
         ))
 
-        logger.info(f"Assigned {username} role={role.value} goal={goal}")
+        logger.info(f"Assigned {username} role={role.value} goal={goal} (group_index={group_index})")
         return role, goal
