@@ -2,53 +2,36 @@
   <div class="admin-dashboard">
     <!-- Header Bar -->
     <header class="admin-header">
-      <div class="admin-header-left">
-        <div class="admin-logo-mark"></div>
-        <div class="admin-title-block">
-          <h1 class="admin-title">Control Panel</h1>
-          <span class="admin-subtitle">London Trader Experiment Platform</span>
-        </div>
-      </div>
-      <div class="admin-header-right">
-        <div class="admin-indicator">
-          <span class="admin-indicator-dot" :class="serverActive ? 'dot-live' : 'dot-off'"></span>
-          <span class="admin-indicator-label">{{ serverActive ? 'Server Online' : 'Disconnected' }}</span>
-        </div>
-      </div>
+      <h1 class="admin-title">Control Panel</h1>
+      <span class="admin-status" :class="serverActive ? 'status-on' : 'status-off'">
+        {{ serverActive ? 'Online' : 'Offline' }}
+      </span>
     </header>
 
-    <!-- Navigation + Content -->
-    <div class="admin-body">
-      <!-- Tab Rail -->
-      <nav class="admin-rail">
-        <button
-          v-for="tab in tabs"
-          :key="tab.value"
-          class="rail-tab"
-          :class="{ 'rail-tab-active': activeTab === tab.value }"
-          @click="activeTab = tab.value"
-        >
-          <span class="rail-tab-icon">{{ tab.icon }}</span>
-          <span class="rail-tab-label">{{ tab.label }}</span>
-        </button>
-        <div class="rail-spacer"></div>
-        <div class="rail-footer">
-          <span class="rail-footer-text">v2.0</span>
-        </div>
-      </nav>
+    <!-- Tab Navigation -->
+    <nav class="admin-tabs">
+      <button
+        v-for="tab in tabs"
+        :key="tab.value"
+        class="admin-tab"
+        :class="{ 'admin-tab-active': activeTab === tab.value }"
+        @click="activeTab = tab.value"
+      >
+        {{ tab.label }}
+      </button>
+    </nav>
 
-      <!-- Main Content -->
-      <main class="admin-content">
-        <ConfigTab
-          v-if="activeTab === 'config'"
-          :formState="formState"
-          :formFields="formFields"
-          :serverActive="serverActive"
-          @update:formState="updateFormState"
-        />
-        <MarketsTab v-else-if="activeTab === 'markets'" :serverActive="serverActive" />
-      </main>
-    </div>
+    <!-- Main Content -->
+    <main class="admin-content">
+      <ConfigTab
+        v-if="activeTab === 'config'"
+        :formState="formState"
+        :formFields="formFields"
+        :serverActive="serverActive"
+        @update:formState="updateFormState"
+      />
+      <MarketsTab v-else-if="activeTab === 'markets'" :serverActive="serverActive" />
+    </main>
   </div>
 </template>
 
@@ -59,8 +42,8 @@ import ConfigTab from './admin/ConfigTab.vue'
 import MarketsTab from './admin/MarketsTab.vue'
 
 const tabs = [
-  { value: 'config', label: 'Configuration', icon: '\u2699' },
-  { value: 'markets', label: 'Markets', icon: '\u25CE' },
+  { value: 'config', label: 'Config' },
+  { value: 'markets', label: 'Markets' },
 ]
 
 const activeTab = ref('config')
@@ -133,42 +116,8 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-3) var(--space-5);
-  background: var(--color-bg-surface);
-  border-bottom: var(--border-width) solid var(--color-border);
-  box-shadow: var(--shadow-xs);
-  position: sticky;
-  top: 0;
-  z-index: var(--z-sticky);
-}
-
-.admin-header-left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.admin-logo-mark {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
-  box-shadow: 0 2px 8px rgba(8, 145, 178, 0.25);
-  position: relative;
-}
-
-.admin-logo-mark::after {
-  content: '';
-  position: absolute;
-  inset: 5px;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  border-radius: 2px;
-}
-
-.admin-title-block {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .admin-title {
@@ -177,175 +126,58 @@ onMounted(() => {
   color: var(--color-text-primary);
   margin: 0;
   letter-spacing: var(--tracking-tight);
-  line-height: 1.2;
 }
 
-.admin-subtitle {
-  font-size: var(--text-xs);
+.admin-status {
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-wide);
+}
+
+.admin-status.status-on {
+  color: var(--color-success);
+}
+
+.admin-status.status-off {
   color: var(--color-text-muted);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  font-weight: var(--font-medium);
 }
 
-.admin-header-right {
+/* ---- Tab Navigation ---- */
+.admin-tabs {
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--space-5);
 }
 
-.admin-indicator {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1-5) var(--space-3);
-  background: var(--color-bg-elevated);
-  border-radius: var(--radius-full);
-  border: var(--border-width) solid var(--color-border);
-}
-
-.admin-indicator-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: var(--radius-full);
-  background: var(--color-text-muted);
-  transition: background var(--transition-base);
-}
-
-.admin-indicator-dot.dot-live {
-  background: var(--color-success);
-  box-shadow: 0 0 6px rgba(22, 163, 74, 0.4);
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-.admin-indicator-dot.dot-off {
-  background: var(--color-error);
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.admin-indicator-label {
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-secondary);
-  letter-spacing: var(--tracking-wide);
-}
-
-/* ---- Body Layout ---- */
-.admin-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* ---- Rail Navigation ---- */
-.admin-rail {
-  width: 180px;
-  min-width: 180px;
-  background: var(--color-bg-surface);
-  border-right: var(--border-width) solid var(--color-border);
-  padding: var(--space-4) var(--space-3);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.rail-tab {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+.admin-tab {
+  padding: var(--space-3) var(--space-4);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  color: var(--color-text-secondary);
-  background: transparent;
-  border: var(--border-width) solid transparent;
-  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  text-align: left;
   font-family: var(--font-family);
+  transition: color var(--transition-fast);
+  margin-bottom: -1px;
 }
 
-.rail-tab:hover {
-  background: var(--color-bg-subtle);
+.admin-tab:hover {
   color: var(--color-text-primary);
 }
 
-.rail-tab-active {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  border-color: rgba(8, 145, 178, 0.15);
+.admin-tab-active {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-text-primary);
   font-weight: var(--font-semibold);
-}
-
-.rail-tab-active:hover {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-}
-
-.rail-tab-icon {
-  font-size: var(--text-lg);
-  line-height: 1;
-  width: 20px;
-  text-align: center;
-}
-
-.rail-tab-label {
-  letter-spacing: var(--tracking-wide);
-}
-
-.rail-spacer {
-  flex: 1;
-}
-
-.rail-footer {
-  padding: var(--space-2) var(--space-3);
-  border-top: var(--border-width) solid var(--color-border-light);
-}
-
-.rail-footer-text {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  letter-spacing: var(--tracking-wide);
 }
 
 /* ---- Main Content ---- */
 .admin-content {
   flex: 1;
-  overflow-y: auto;
   padding: var(--space-5);
   background: var(--color-bg-page);
-}
-
-/* ---- Responsive ---- */
-@media (max-width: 960px) {
-  .admin-body {
-    flex-direction: column;
-  }
-
-  .admin-rail {
-    width: 100%;
-    min-width: auto;
-    border-right: none;
-    border-bottom: var(--border-width) solid var(--color-border);
-    padding: var(--space-2) var(--space-3);
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
-  }
-
-  .rail-spacer,
-  .rail-footer {
-    display: none;
-  }
-
-  .admin-content {
-    padding: var(--space-3);
-  }
 }
 </style>

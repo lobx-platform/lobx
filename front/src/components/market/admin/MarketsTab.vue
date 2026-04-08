@@ -4,55 +4,41 @@
     <!-- ===== Active Markets ===== -->
     <div class="config-section">
       <div class="section-header">
-        <div class="section-header-line"></div>
         <h2 class="section-title">Active Markets</h2>
-        <span class="market-count" :class="{ 'market-count-live': activeSessions.length > 0 }">
-          {{ activeSessions.length }}
-        </span>
+        <span class="market-count">{{ activeSessions.length }}</span>
       </div>
 
       <div class="config-card">
         <div class="config-card-body" v-if="activeSessions.length === 0">
-          <div class="empty-state">
-            <span class="empty-state-icon">&#x25CB;</span>
-            <span class="empty-state-text">No active markets</span>
-          </div>
+          <p class="empty-text">No active markets</p>
         </div>
-        <div v-else class="markets-table-wrap">
-          <v-data-table
-            :headers="marketHeaders"
-            :items="activeSessions"
-            :items-per-page="5"
-            density="compact"
-            no-data-text="No active markets"
-          >
-            <template v-slot:item.market_id="{ item }">
-              <span class="market-id">{{ formatMarketId(item.market_id) }}</span>
-            </template>
-
-            <template v-slot:item.status="{ item }">
-              <span class="status-pill" :class="getStatusClass(item.status)">
-                <span class="status-dot"></span>
-                {{ item.status }}
-              </span>
-            </template>
-
-            <template v-slot:item.member_ids="{ item }">
-              <span class="member-count">
-                {{ item.member_ids?.length || 0 }}
-              </span>
-            </template>
-
-            <template v-slot:item.actions="{ item }">
-              <button
-                class="tp-btn tp-btn-sm tp-btn-secondary"
-                :disabled="item.status === 'active' || !item.member_ids?.length"
-                @click="forceStartSession(item.market_id)"
-              >
-                Start
-              </button>
-            </template>
-          </v-data-table>
+        <div v-else class="config-card-body">
+          <table class="plain-table">
+            <thead>
+              <tr>
+                <th>Market ID</th>
+                <th>Status</th>
+                <th>Members</th>
+                <th style="width: 80px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in activeSessions" :key="item.market_id">
+                <td class="font-mono">{{ formatMarketId(item.market_id) }}</td>
+                <td>{{ item.status }}</td>
+                <td class="font-mono">{{ item.member_ids?.length || 0 }}</td>
+                <td>
+                  <button
+                    class="tp-btn tp-btn-sm tp-btn-secondary"
+                    :disabled="item.status === 'active' || !item.member_ids?.length"
+                    @click="forceStartSession(item.market_id)"
+                  >
+                    Start
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -60,7 +46,6 @@
     <!-- ===== AI-Only Market Runner ===== -->
     <div class="config-section">
       <div class="section-header">
-        <div class="section-header-line"></div>
         <h2 class="section-title">AI-Only Market Runner</h2>
       </div>
 
@@ -120,9 +105,10 @@
           </div>
 
           <button
-            class="tp-btn tp-btn-primary tp-btn-lg batch-start-btn"
+            class="tp-btn tp-btn-primary"
             @click="startHeadlessBatch"
             :disabled="!serverActive || startingBatch"
+            style="width: 100%"
           >
             {{ startingBatch ? 'Starting...' : `Start ${batchConfig.numMarkets} AI-Only Market${batchConfig.numMarkets > 1 ? 's' : ''}` }}
           </button>
@@ -134,9 +120,8 @@
               <span
                 v-for="session in runningSessions"
                 :key="session"
-                class="session-chip session-chip-running"
+                class="session-id"
               >
-                <span class="session-chip-dot"></span>
                 {{ formatSessionId(session) }}
               </span>
             </div>
@@ -149,7 +134,7 @@
               <span
                 v-for="session in completedSessions.slice(0, 5)"
                 :key="session"
-                class="session-chip session-chip-done"
+                class="session-id session-id-done"
               >
                 {{ formatSessionId(session) }}
               </span>
@@ -184,13 +169,6 @@ const batchConfig = ref({
   delaySeconds: 5,
 })
 
-const marketHeaders = [
-  { title: 'Market ID', key: 'market_id' },
-  { title: 'Status', key: 'status' },
-  { title: 'Members', key: 'member_ids' },
-  { title: '', key: 'actions', sortable: false, width: '80px' },
-]
-
 let pollingInterval = null
 
 const formatMarketId = (id) => {
@@ -206,15 +184,6 @@ const formatSessionId = (id) => {
     return `${parts[0].slice(-6)}_${parts[1].slice(0, 6)}`
   }
   return id.slice(-12)
-}
-
-const getStatusClass = (status) => {
-  const classes = {
-    pending: 'status-pending',
-    active: 'status-active',
-    completed: 'status-completed',
-  }
-  return classes[status] || ''
 }
 
 const fetchActiveSessions = async () => {
@@ -283,7 +252,7 @@ onUnmounted(() => {
   gap: var(--space-8);
 }
 
-/* ===== Section Layout (shared with ConfigTab) ===== */
+/* ===== Section Layout ===== */
 .config-section {
   display: flex;
   flex-direction: column;
@@ -296,14 +265,6 @@ onUnmounted(() => {
   gap: var(--space-3);
 }
 
-.section-header-line {
-  width: 3px;
-  height: 18px;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-
 .section-title {
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
@@ -312,46 +273,24 @@ onUnmounted(() => {
   letter-spacing: var(--tracking-tight);
 }
 
-/* ===== Market Count Badge ===== */
+/* ===== Market Count ===== */
 .market-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  font-weight: var(--font-bold);
+  font-size: var(--text-sm);
   font-family: var(--font-mono);
-  background: var(--color-bg-elevated);
   color: var(--color-text-muted);
-  border: var(--border-width) solid var(--color-border);
 }
 
-.market-count-live {
-  background: var(--color-success-light);
-  color: var(--color-success);
-  border-color: rgba(22, 163, 74, 0.25);
-}
-
-/* ===== Config Card (shared pattern) ===== */
+/* ===== Config Card ===== */
 .config-card {
   background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  transition: box-shadow var(--transition-base);
-}
-
-.config-card:hover {
-  box-shadow: var(--shadow-sm);
 }
 
 .config-card-header {
   padding: var(--space-2) var(--space-3);
-  border-bottom: var(--border-width) solid var(--color-border-light);
-  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .config-card-tag {
@@ -377,94 +316,46 @@ onUnmounted(() => {
 }
 
 /* ===== Empty State ===== */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-6) 0;
-}
-
-.empty-state-icon {
-  font-size: var(--text-3xl);
-  color: var(--color-text-muted);
-  opacity: 0.4;
-}
-
-.empty-state-text {
+.empty-text {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
+  text-align: center;
+  padding: var(--space-4) 0;
+  margin: 0;
 }
 
-/* ===== Markets Table ===== */
-.markets-table-wrap {
-  padding: var(--space-2);
+/* ===== Plain Table ===== */
+.plain-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
 }
 
-.market-id {
-  font-family: var(--font-mono);
+.plain-table th {
+  text-align: left;
   font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
   color: var(--color-text-muted);
-  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  padding: var(--space-1) var(--space-2) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.member-count {
-  font-family: var(--font-mono);
+.plain-table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
+  vertical-align: middle;
   font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
   color: var(--color-text-primary);
 }
 
-/* ===== Status Pill ===== */
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  padding: var(--space-0-5) var(--space-2);
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  border-radius: var(--radius-full);
-  letter-spacing: var(--tracking-wide);
-  text-transform: capitalize;
+.plain-table tr:last-child td {
+  border-bottom: none;
 }
 
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-}
-
-.status-pending {
-  background: var(--color-warning-light);
-  color: var(--color-warning);
-}
-
-.status-pending .status-dot {
-  background: var(--color-warning);
-}
-
-.status-active {
-  background: var(--color-success-light);
-  color: var(--color-success);
-}
-
-.status-active .status-dot {
-  background: var(--color-success);
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-.status-completed {
-  background: var(--color-bg-elevated);
-  color: var(--color-text-muted);
-}
-
-.status-completed .status-dot {
-  background: var(--color-text-muted);
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+.font-mono {
+  font-family: var(--font-mono);
 }
 
 /* ===== Batch Controls ===== */
@@ -480,14 +371,10 @@ onUnmounted(() => {
   gap: var(--space-4);
 }
 
-.batch-start-btn {
-  width: 100%;
-}
-
 /* ===== Session Groups ===== */
 .sessions-group {
   padding-top: var(--space-3);
-  border-top: var(--border-width) solid var(--color-border-light);
+  border-top: 1px solid var(--color-border-light);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -504,40 +391,18 @@ onUnmounted(() => {
 .sessions-list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
 }
 
-.session-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
+.session-id {
   font-size: var(--text-xs);
-  font-weight: var(--font-medium);
   font-family: var(--font-mono);
-  border-radius: var(--radius-md);
-  border: var(--border-width) solid transparent;
+  color: var(--color-text-secondary);
   letter-spacing: var(--tracking-wide);
 }
 
-.session-chip-running {
-  background: var(--color-info-light);
-  color: var(--color-info);
-  border-color: rgba(37, 99, 235, 0.15);
-}
-
-.session-chip-running .session-chip-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: var(--radius-full);
-  background: var(--color-info);
-  animation: pulse-dot 1.5s ease-in-out infinite;
-}
-
-.session-chip-done {
-  background: var(--color-success-light);
-  color: var(--color-success);
-  border-color: rgba(22, 163, 74, 0.15);
+.session-id-done {
+  color: var(--color-text-muted);
 }
 
 /* ===== Responsive ===== */

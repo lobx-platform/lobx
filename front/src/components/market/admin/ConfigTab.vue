@@ -4,36 +4,35 @@
     <!-- ===== SECTION 1: Market Settings ===== -->
     <div class="config-section">
       <div class="section-header">
-        <div class="section-header-line"></div>
         <h2 class="section-title">Market Settings</h2>
-        <div class="section-header-actions">
-          <button
-            class="tp-btn tp-btn-primary"
-            @click="saveSettings"
-            :disabled="!serverActive"
-          >
-            Save &amp; Apply
-          </button>
-        </div>
+        <button
+          class="tp-btn tp-btn-primary"
+          @click="saveSettings"
+          :disabled="!serverActive"
+        >
+          Save &amp; Apply
+        </button>
       </div>
 
       <div class="cards-grid">
-        <!-- Order Throttling Card -->
+        <!-- Order Throttling -->
         <div class="config-card">
           <div class="config-card-header">
             <span class="config-card-tag">Throttling</span>
           </div>
           <div class="config-card-body">
-            <div class="throttle-table">
-              <div class="throttle-table-head">
-                <span class="throttle-col-label">Trader Type</span>
-                <span class="throttle-col-value">Delay (ms)</span>
-                <span class="throttle-col-value">Max Orders</span>
-              </div>
-              <template v-for="traderType in traderTypes" :key="traderType">
-                <div class="throttle-table-row">
-                  <span class="throttle-col-label font-mono">{{ formatTraderType(traderType) }}</span>
-                  <div class="throttle-col-value">
+            <table class="plain-table">
+              <thead>
+                <tr>
+                  <th>Trader Type</th>
+                  <th>Delay (ms)</th>
+                  <th>Max Orders</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="traderType in traderTypes" :key="traderType">
+                  <td class="font-mono">{{ formatTraderType(traderType) }}</td>
+                  <td>
                     <v-text-field
                       v-model.number="formState.throttle_settings[traderType].order_throttle_ms"
                       type="number"
@@ -43,8 +42,8 @@
                       variant="outlined"
                       @input="updatePersistentSettings"
                     />
-                  </div>
-                  <div class="throttle-col-value">
+                  </td>
+                  <td>
                     <v-text-field
                       v-model.number="formState.throttle_settings[traderType].max_orders_per_window"
                       type="number"
@@ -54,10 +53,10 @@
                       variant="outlined"
                       @input="updatePersistentSettings"
                     />
-                  </div>
-                </div>
-              </template>
-            </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -118,220 +117,224 @@
     <!-- ===== SECTION 2: Treatment Sequence ===== -->
     <div class="config-section">
       <div class="section-header section-header-toggle" @click="showTreatments = !showTreatments">
-        <div class="section-header-line"></div>
         <h2 class="section-title">Treatment Sequence</h2>
-        <v-icon size="18" class="toggle-chevron" :class="{ 'toggle-open': showTreatments }">mdi-chevron-down</v-icon>
+        <span class="toggle-indicator">{{ showTreatments ? '\u2212' : '+' }}</span>
       </div>
 
-      <v-expand-transition>
-        <div v-show="showTreatments" class="section-body">
-          <div class="config-card">
-            <div class="config-card-body">
-              <p class="helper-text">
-                Define different trader compositions for each market in YAML format.
-              </p>
+      <div v-show="showTreatments" class="section-body">
+        <div class="config-card">
+          <div class="config-card-body">
+            <p class="helper-text">
+              Define different trader compositions for each market in YAML format.
+            </p>
 
-              <v-textarea
-                v-model="treatmentYaml"
-                label="Treatment YAML"
-                rows="10"
-                variant="outlined"
-                class="yaml-editor"
-                :error="yamlError !== ''"
-                :error-messages="yamlError"
-              />
+            <v-textarea
+              v-model="treatmentYaml"
+              label="Treatment YAML"
+              rows="10"
+              variant="outlined"
+              class="yaml-editor"
+              :error="yamlError !== ''"
+              :error-messages="yamlError"
+            />
 
-              <div v-if="treatments.length > 0" class="treatment-tags">
-                <span
-                  v-for="(t, i) in treatments"
-                  :key="i"
-                  class="treatment-tag"
-                >
-                  <span class="treatment-tag-index">{{ i }}</span>
-                  {{ t.name || `Treatment ${i}` }}
-                </span>
-              </div>
+            <div v-if="treatments.length > 0" class="treatment-list">
+              <span
+                v-for="(t, i) in treatments"
+                :key="i"
+                class="treatment-item"
+              >
+                {{ i }}: {{ t.name || `Treatment ${i}` }}
+              </span>
+            </div>
 
-              <div class="card-actions">
-                <button class="tp-btn tp-btn-secondary" @click="loadTreatments" :disabled="!serverActive">
-                  Load from Server
-                </button>
-                <button class="tp-btn tp-btn-primary" @click="saveTreatments" :disabled="!serverActive">
-                  Save Treatments
-                </button>
-              </div>
+            <div class="card-actions">
+              <button class="tp-btn tp-btn-secondary" @click="loadTreatments" :disabled="!serverActive">
+                Load from Server
+              </button>
+              <button class="tp-btn tp-btn-primary" @click="saveTreatments" :disabled="!serverActive">
+                Save Treatments
+              </button>
             </div>
           </div>
         </div>
-      </v-expand-transition>
+      </div>
     </div>
 
     <!-- ===== SECTION 3: Session & Lab Settings ===== -->
     <div class="config-section">
       <div class="section-header section-header-toggle" @click="showProlific = !showProlific">
-        <div class="section-header-line"></div>
         <h2 class="section-title">Session &amp; Lab Settings</h2>
-        <v-icon size="18" class="toggle-chevron" :class="{ 'toggle-open': showProlific }">mdi-chevron-down</v-icon>
+        <span class="toggle-indicator">{{ showProlific ? '\u2212' : '+' }}</span>
       </div>
 
-      <v-expand-transition>
-        <div v-show="showProlific" class="section-body">
+      <div v-show="showProlific" class="section-body">
 
-          <!-- Session Type + Credentials -->
-          <div class="config-card">
-            <div class="config-card-header">
-              <span class="config-card-tag">Credentials &amp; Session</span>
-            </div>
-            <div class="config-card-body">
-              <div class="form-row-2">
-                <v-select
-                  v-model="formState.session_type"
-                  :items="['prolific', 'lab']"
-                  label="Session Type"
-                  hide-details
-                  density="compact"
-                  variant="outlined"
-                  @update:model-value="updatePersistentSettings"
-                />
-                <v-text-field
-                  v-model="prolificSettings.studyId"
-                  label="Study ID"
-                  hide-details
-                  density="compact"
-                  variant="outlined"
-                />
-              </div>
-
-              <v-textarea
-                v-model="prolificSettings.credentials"
-                label="Participant Credentials"
+        <!-- Session Type + Credentials -->
+        <div class="config-card">
+          <div class="config-card-header">
+            <span class="config-card-tag">Credentials &amp; Session</span>
+          </div>
+          <div class="config-card-body">
+            <div class="form-row-2">
+              <v-select
+                v-model="formState.session_type"
+                :items="['prolific', 'lab']"
+                label="Session Type"
                 hide-details
+                density="compact"
                 variant="outlined"
-                placeholder="username1,password1&#10;username2,password2"
-                rows="3"
-                class="credentials-field"
+                @update:model-value="updatePersistentSettings"
               />
-
-              <div class="form-row-inline">
-                <v-text-field
-                  v-model="numCredentials"
-                  label="Count"
-                  type="number"
-                  min="1"
-                  max="20"
-                  hide-details
-                  density="compact"
-                  variant="outlined"
-                  style="max-width: 100px"
-                />
-                <button class="tp-btn tp-btn-secondary" @click="generateCredentials" :disabled="generatingCredentials">
-                  Generate Credentials
-                </button>
-              </div>
-
               <v-text-field
-                v-model="prolificSettings.redirectUrl"
-                label="Redirect URL"
+                v-model="prolificSettings.studyId"
+                label="Study ID"
                 hide-details
                 density="compact"
                 variant="outlined"
               />
+            </div>
 
-              <div class="card-actions">
-                <button
-                  class="tp-btn tp-btn-primary tp-btn-lg"
-                  @click="saveProlificSettings"
-                  :disabled="savingProlific"
-                  style="width: 100%"
-                >
-                  Save Session Settings
-                </button>
-              </div>
+            <v-textarea
+              v-model="prolificSettings.credentials"
+              label="Participant Credentials"
+              hide-details
+              variant="outlined"
+              placeholder="username1,password1&#10;username2,password2"
+              rows="3"
+              class="credentials-field"
+            />
+
+            <div class="form-row-inline">
+              <v-text-field
+                v-model="numCredentials"
+                label="Count"
+                type="number"
+                min="1"
+                max="20"
+                hide-details
+                density="compact"
+                variant="outlined"
+                style="max-width: 100px"
+              />
+              <button class="tp-btn tp-btn-secondary" @click="generateCredentials" :disabled="generatingCredentials">
+                Generate Credentials
+              </button>
+            </div>
+
+            <v-text-field
+              v-model="prolificSettings.redirectUrl"
+              label="Redirect URL"
+              hide-details
+              density="compact"
+              variant="outlined"
+            />
+
+            <div class="card-actions">
+              <button
+                class="tp-btn tp-btn-primary"
+                @click="saveProlificSettings"
+                :disabled="savingProlific"
+                style="width: 100%"
+              >
+                Save Session Settings
+              </button>
             </div>
           </div>
-
-          <!-- Lab Link Generation (prominent) -->
-          <div v-if="formState.session_type === 'lab'" class="config-card config-card-accent">
-            <div class="config-card-header">
-              <span class="config-card-tag config-card-tag-accent">Lab Link Generator</span>
-            </div>
-            <div class="config-card-body">
-              <div class="form-row-inline">
-                <v-text-field
-                  v-model="numLabLinks"
-                  label="Total Participants"
-                  type="number"
-                  min="1"
-                  max="200"
-                  hide-details
-                  density="compact"
-                  variant="outlined"
-                  style="max-width: 160px"
-                />
-                <v-text-field
-                  v-model="numTreatments"
-                  label="Treatments"
-                  type="number"
-                  min="1"
-                  max="8"
-                  hide-details
-                  density="compact"
-                  variant="outlined"
-                  style="max-width: 120px"
-                />
-                <button class="tp-btn tp-btn-primary" @click="generateLabLinks" :disabled="generatingLabLinks">
-                  {{ generatingLabLinks ? 'Generating...' : 'Generate Links' }}
-                </button>
-              </div>
-
-              <!-- Treatment Overrides -->
-              <div v-if="parseInt(numTreatments) > 1" class="overrides-section">
-                <span class="overrides-label">Treatment Parameter Overrides</span>
-                <div class="overrides-grid">
-                  <div v-for="t in parseInt(numTreatments)" :key="t" class="override-row">
-                    <span class="override-tag">T{{ t }}</span>
-                    <v-text-field
-                      v-model="treatmentOverrides[t-1].informed_trade_intensity"
-                      label="informed_trade_intensity"
-                      type="number"
-                      step="0.01"
-                      hide-details
-                      density="compact"
-                      variant="outlined"
-                    />
-                    <v-text-field
-                      v-model="treatmentOverrides[t-1].informed_share_passive"
-                      label="informed_share_passive"
-                      type="number"
-                      step="0.01"
-                      hide-details
-                      density="compact"
-                      variant="outlined"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Generated Links Output -->
-              <div v-if="labLinks" class="links-output">
-                <v-textarea
-                  v-model="labLinks"
-                  label="Generated Lab Links"
-                  readonly
-                  rows="5"
-                  hide-details
-                  variant="outlined"
-                  class="links-textarea"
-                />
-                <button class="tp-btn tp-btn-primary" @click="copyLabLinks" style="width: 100%">
-                  Copy All Links to Clipboard
-                </button>
-              </div>
-            </div>
-          </div>
-
         </div>
-      </v-expand-transition>
+
+        <!-- Lab Link Generation -->
+        <div v-if="formState.session_type === 'lab'" class="config-card">
+          <div class="config-card-header">
+            <span class="config-card-tag">Lab Link Generator</span>
+          </div>
+          <div class="config-card-body">
+            <div class="form-row-inline">
+              <v-text-field
+                v-model="numLabLinks"
+                label="Total Participants"
+                type="number"
+                min="1"
+                max="200"
+                hide-details
+                density="compact"
+                variant="outlined"
+                style="max-width: 160px"
+              />
+              <v-text-field
+                v-model="numTreatments"
+                label="Treatments"
+                type="number"
+                min="1"
+                max="8"
+                hide-details
+                density="compact"
+                variant="outlined"
+                style="max-width: 120px"
+              />
+              <button class="tp-btn tp-btn-primary" @click="generateLabLinks" :disabled="generatingLabLinks">
+                {{ generatingLabLinks ? 'Generating...' : 'Generate Links' }}
+              </button>
+            </div>
+
+            <!-- Treatment Overrides -->
+            <div v-if="parseInt(numTreatments) > 1" class="overrides-section">
+              <span class="overrides-label">Treatment Parameter Overrides</span>
+              <table class="plain-table">
+                <thead>
+                  <tr>
+                    <th style="width: 50px">T#</th>
+                    <th>informed_trade_intensity</th>
+                    <th>informed_share_passive</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="t in parseInt(numTreatments)" :key="t">
+                    <td class="font-mono">T{{ t }}</td>
+                    <td>
+                      <v-text-field
+                        v-model="treatmentOverrides[t-1].informed_trade_intensity"
+                        type="number"
+                        step="0.01"
+                        hide-details
+                        density="compact"
+                        variant="outlined"
+                      />
+                    </td>
+                    <td>
+                      <v-text-field
+                        v-model="treatmentOverrides[t-1].informed_share_passive"
+                        type="number"
+                        step="0.01"
+                        hide-details
+                        density="compact"
+                        variant="outlined"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Generated Links Output -->
+            <div v-if="labLinks" class="links-output">
+              <v-textarea
+                v-model="labLinks"
+                label="Generated Lab Links"
+                readonly
+                rows="5"
+                hide-details
+                variant="outlined"
+                class="links-textarea"
+              />
+              <button class="tp-btn tp-btn-primary" @click="copyLabLinks" style="width: 100%">
+                Copy All Links
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </template>
@@ -633,15 +636,7 @@ watch(() => props.serverActive, (newVal) => {
 }
 
 .section-header-toggle:hover .section-title {
-  color: var(--color-primary);
-}
-
-.section-header-line {
-  width: 3px;
-  height: 18px;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
+  color: var(--color-text-secondary);
 }
 
 .section-title {
@@ -652,7 +647,7 @@ watch(() => props.serverActive, (newVal) => {
   letter-spacing: var(--tracking-tight);
 }
 
-.section-header-actions {
+.section-header .tp-btn {
   margin-left: auto;
 }
 
@@ -662,14 +657,12 @@ watch(() => props.serverActive, (newVal) => {
   gap: var(--space-4);
 }
 
-.toggle-chevron {
+.toggle-indicator {
   margin-left: auto;
+  font-size: var(--text-lg);
   color: var(--color-text-muted);
-  transition: transform var(--transition-base);
-}
-
-.toggle-chevron.toggle-open {
-  transform: rotate(180deg);
+  font-family: var(--font-mono);
+  line-height: 1;
 }
 
 /* ===== Cards Grid ===== */
@@ -682,25 +675,14 @@ watch(() => props.serverActive, (newVal) => {
 /* ===== Config Card ===== */
 .config-card {
   background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  transition: box-shadow var(--transition-base);
-}
-
-.config-card:hover {
-  box-shadow: var(--shadow-sm);
-}
-
-.config-card-accent {
-  border-color: var(--color-primary-muted);
-  background: linear-gradient(180deg, rgba(8, 145, 178, 0.02) 0%, var(--color-bg-surface) 100%);
 }
 
 .config-card-header {
   padding: var(--space-2) var(--space-3);
-  border-bottom: var(--border-width) solid var(--color-border-light);
-  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .config-card-tag {
@@ -711,10 +693,6 @@ watch(() => props.serverActive, (newVal) => {
   letter-spacing: var(--tracking-widest);
 }
 
-.config-card-tag-accent {
-  color: var(--color-primary);
-}
-
 .config-card-body {
   padding: var(--space-4);
   display: flex;
@@ -722,42 +700,35 @@ watch(() => props.serverActive, (newVal) => {
   gap: var(--space-3);
 }
 
-/* ===== Throttle Table ===== */
-.throttle-table {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+/* ===== Plain Table ===== */
+.plain-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
 }
 
-.throttle-table-head {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: var(--space-2);
-  padding: 0 0 var(--space-1-5) 0;
-  border-bottom: var(--border-width) solid var(--color-border-light);
-}
-
-.throttle-table-head .throttle-col-label,
-.throttle-table-head .throttle-col-value {
+.plain-table th {
+  text-align: left;
   font-size: var(--text-xs);
   font-weight: var(--font-semibold);
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
+  padding: var(--space-1) var(--space-2) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.throttle-table-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: var(--space-2);
-  align-items: center;
-  padding: var(--space-1) 0;
-}
-
-.throttle-col-label {
+.plain-table td {
+  padding: var(--space-1-5) var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
+  vertical-align: middle;
+  font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--color-text-primary);
-  font-weight: var(--font-medium);
+}
+
+.plain-table tr:last-child td {
+  border-bottom: none;
 }
 
 .font-mono {
@@ -790,7 +761,7 @@ watch(() => props.serverActive, (newVal) => {
   justify-content: flex-end;
   gap: var(--space-2);
   padding-top: var(--space-2);
-  border-top: var(--border-width) solid var(--color-border-light);
+  border-top: 1px solid var(--color-border-light);
 }
 
 /* ===== Helper Text ===== */
@@ -814,38 +785,20 @@ watch(() => props.serverActive, (newVal) => {
   font-size: var(--text-xs) !important;
 }
 
-/* ===== Treatment Tags ===== */
-.treatment-tags {
+/* ===== Treatment List ===== */
+.treatment-list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
 }
 
-.treatment-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  padding: var(--space-1) var(--space-2);
+.treatment-item {
   font-size: var(--text-xs);
-  font-weight: var(--font-medium);
-  color: var(--color-text-secondary);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-
-.treatment-tag-index {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: var(--radius-sm);
-  background: var(--color-primary-light);
-  color: var(--color-primary);
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: var(--font-bold);
+  color: var(--color-text-secondary);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
 }
 
 /* ===== Form Rows ===== */
@@ -865,7 +818,7 @@ watch(() => props.serverActive, (newVal) => {
 /* ===== Overrides Section ===== */
 .overrides-section {
   padding-top: var(--space-3);
-  border-top: var(--border-width) solid var(--color-border-light);
+  border-top: 1px solid var(--color-border-light);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -879,39 +832,10 @@ watch(() => props.serverActive, (newVal) => {
   letter-spacing: var(--tracking-wider);
 }
 
-.overrides-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.override-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.override-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 28px;
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-md);
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: var(--font-bold);
-  letter-spacing: var(--tracking-wide);
-  flex-shrink: 0;
-}
-
 /* ===== Links Output ===== */
 .links-output {
   padding-top: var(--space-3);
-  border-top: var(--border-width) solid var(--color-border-light);
+  border-top: 1px solid var(--color-border-light);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -934,11 +858,6 @@ watch(() => props.serverActive, (newVal) => {
 
   .form-row-2 {
     grid-template-columns: 1fr;
-  }
-
-  .throttle-table-head,
-  .throttle-table-row {
-    grid-template-columns: 0.8fr 1fr 1fr;
   }
 }
 </style>
