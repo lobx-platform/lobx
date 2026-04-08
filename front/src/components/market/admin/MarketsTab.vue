@@ -23,15 +23,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in activeSessions" :key="item.market_id">
-                <td class="font-mono">{{ formatMarketId(item.market_id) }}</td>
+              <tr v-for="item in activeSessions" :key="item.id">
+                <td class="font-mono">{{ item.id }}</td>
                 <td>{{ item.status }}</td>
-                <td class="font-mono">{{ item.member_ids?.length || 0 }}</td>
+                <td class="font-mono">{{ item.user_count || 0 }}</td>
                 <td>
                   <button
                     class="tp-btn tp-btn-sm tp-btn-secondary"
-                    :disabled="item.status === 'active' || !item.member_ids?.length"
-                    @click="forceStartSession(item.market_id)"
+                    :disabled="item.status === 'active'"
+                    @click="forceStartSession(item.id)"
                   >
                     Start
                   </button>
