@@ -108,131 +108,28 @@
           </v-card>
         </v-col>
 
-        <!-- Image Card 1 -->
+        <!-- Market Dynamics 1: Clear Upward -->
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="text-h6 font-weight-bold mb-4">Market Dynamics 1 (Clear Upward Trending)</div>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <img src="@/assets/buy_1min.png" style="width: 100%;" />
-                  <div class="text-caption text-center mt-2"> Price movement after 1 minute </div>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <img src="@/assets/buy_2_5min.png" style="width: 100%;" />
-                  <div class="text-caption text-center mt-2"> Price movement after 2.5 minutes </div>
-                </v-col>
-              </v-row>
-
-              <div class="strategy-hint-box mt-5">
-                <div class="strategy-hint-header">
-                  <span class="strategy-hint-title">Strategy Insight</span>
-                </div>
-                <div class="strategy-hint-body">
-                  Both charts show a clear <strong>upward trend</strong> in price. The best strategy here
-                  is to <strong>buy shares early</strong> and hold them as the price rises, allowing you
-                  to sell at a higher value and maximise your profit.
-                </div>
-              </div>
-
-            </v-card-text>
-          </v-card>
+          <div class="text-h6 font-weight-bold mb-2">Market Dynamics 1 (Clear Upward Trending)</div>
+          <TradingPreview trend="up" caption="Both charts show a clear upward trend in price. The best strategy here is to buy shares early and hold them as the price rises, allowing you to sell at a higher value and maximise your profit." />
         </v-col>
 
-        <!-- Image Card 2 -->
+        <!-- Market Dynamics 2: Unclear Upward -->
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="text-h6 font-weight-bold mb-4">Market Dynamics 2 (Unclear Upward Trending)</div>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <img src="@/assets/unclear_buy_1min.png" style="width: 100%;" />
-                  <div class="text-caption text-center mt-2"> Price movement after 1 minute </div>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <img src="@/assets/unclear_buy_2_5min.png" style="width: 100%;" />
-                  <div class="text-caption text-center mt-2"> Price movement after 2.5 minutes </div>
-                </v-col>
-              </v-row>
-
-              <div class="strategy-hint-box mt-5">
-                <div class="strategy-hint-header">
-                  <span class="strategy-hint-title">Strategy Insight</span>
-                </div>
-                <div class="strategy-hint-body">
-                  Although there is buying pressure, the price direction is not clear. The best strategy here
-                  is to <strong>wait</strong> or <strong>send limit orders</strong>.
-                </div>
-              </div>
-
-            </v-card-text>
-          </v-card>
+          <div class="text-h6 font-weight-bold mb-2">Market Dynamics 2 (Unclear Upward Trending)</div>
+          <TradingPreview trend="unclear-up" caption="Although there is buying pressure, the price direction is not clear. The best strategy here is to wait or send limit orders." />
         </v-col>
 
-        <!-- Image Card 3 -->
+        <!-- Market Dynamics 3: Clear Downward -->
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="text-h6 font-weight-bold mb-4">Market Dynamics 3 (Clear Downward Trending)</div>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <img src="@/assets/sell_1min.png" style="width: 100%;" />
-                  <div class="text-caption text-center mt-2"> Price movement after 1 minute </div>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <img src="@/assets/sell_2_5min.png" style="width: 100%;" />
-                  <div class="text-caption text-center mt-2"> Price movement after 2.5 minutes </div>
-                </v-col>
-              </v-row>
-
-              <div class="strategy-hint-box mt-5">
-                <div class="strategy-hint-header">
-                  <span class="strategy-hint-title">Strategy Insight</span>
-                </div>
-                <div class="strategy-hint-body">
-                  Both charts show a clear <strong>downward trend</strong> in price. The best strategy here
-                  is to <strong>sell shares early</strong> and hold them as the price drops, allowing you
-                  to buy at a lower value and maximise your profit.
-                </div>
-              </div>
-
-            </v-card-text>
-          </v-card>
+          <div class="text-h6 font-weight-bold mb-2">Market Dynamics 3 (Clear Downward Trending)</div>
+          <TradingPreview trend="down" caption="Both charts show a clear downward trend in price. The best strategy here is to sell shares early and hold them as the price drops, allowing you to buy at a lower value and maximise your profit." />
         </v-col>
 
-        <!-- Image Card 4 -->
+        <!-- Market Dynamics 4: Unclear Downward -->
         <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="text-h6 font-weight-bold mb-4">Market Dynamics 4 (Unclear Downward Trending)</div>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <img src="@/assets/unclear_sell_1min.png" style="width: 100%;" />
-                  <div class="text-caption text-center mt-2"> Price movement after 1 minute </div>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <img src="@/assets/unclear_sell_2_5min.png" style="width: 100%;" />
-                  <div class="text-caption text-center mt-2"> Price movement after 2.5 minutes </div>
-                </v-col>
-              </v-row>
-
-              <div class="strategy-hint-box mt-5">
-                <div class="strategy-hint-header">
-                  <span class="strategy-hint-title">Strategy Insight</span>
-                </div>
-                <div class="strategy-hint-body">
-                  Although there is selling pressure, the price initially <strong>dropped</strong>, then <strong>recovered upward</strong>, before
-                  <strong>dropping again</strong>. This volatility makes timing critical. The best strategy is to
-                  <strong>sell shares</strong> when the price is high.
-                </div>
-              </div>
-
-            </v-card-text>
-          </v-card>
+          <div class="text-h6 font-weight-bold mb-2">Market Dynamics 4 (Unclear Downward Trending)</div>
+          <TradingPreview trend="unclear-down" caption="Although there is selling pressure, the price initially dropped, then recovered upward, before dropping again. This volatility makes timing critical. The best strategy is to sell shares when the price is high." />
         </v-col>
 
         <!-- Final Earnings Card -->
@@ -268,6 +165,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import TradingPreview from '@/components/TradingPreview.vue'
 import { useTraderStore } from '@/store/app'
 import { storeToRefs } from 'pinia'
 

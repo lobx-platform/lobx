@@ -70,8 +70,8 @@
           <div class="mock-panel-title">Market Trade Price History</div>
           <div class="mock-panel-body mock-line-chart">
             <svg viewBox="0 0 200 80" class="mock-svg">
-              <polyline points="10,50 30,45 50,40 70,30 90,35 110,32 130,38 150,35 170,40 190,37" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
-              <circle v-for="(p, i) in [[10,50],[30,45],[50,40],[70,30],[90,35],[110,32],[130,38],[150,35],[170,40],[190,37]]" :key="i" :cx="p[0]" :cy="p[1]" r="2" fill="#1a1a1a"/>
+              <polyline :points="pricePolyline" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+              <circle v-for="(p, i) in pricePoints" :key="i" :cx="p[0]" :cy="p[1]" r="2" fill="#1a1a1a"/>
             </svg>
           </div>
         </div>
@@ -143,10 +143,24 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   highlight: { type: String, default: 'all' },
   caption: { type: String, default: '' },
+  trend: { type: String, default: 'neutral' }, // neutral, up, down, unclear-up, unclear-down
 })
+
+const trendLines = {
+  neutral:      [[10,50],[30,45],[50,40],[70,30],[90,35],[110,32],[130,38],[150,35],[170,40],[190,37]],
+  up:           [[10,65],[30,60],[50,55],[70,50],[90,42],[110,35],[130,30],[150,25],[170,20],[190,15]],
+  down:         [[10,15],[30,20],[50,25],[70,30],[90,38],[110,45],[130,50],[150,55],[170,60],[190,65]],
+  'unclear-up': [[10,55],[30,50],[50,55],[70,45],[90,50],[110,40],[130,45],[150,35],[170,40],[190,30]],
+  'unclear-down':[[10,25],[30,30],[50,25],[70,35],[90,30],[110,40],[130,35],[150,45],[170,40],[190,50]],
+}
+
+const pricePoints = computed(() => trendLines[props.trend] || trendLines.neutral)
+const pricePolyline = computed(() => pricePoints.value.map(p => p.join(',')).join(' '))
 </script>
 
 <style scoped>
