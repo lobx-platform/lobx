@@ -1,148 +1,186 @@
 <template>
-  <v-card class="bid-ask-chart-container" elevation="3">
+  <div class="bid-ask-chart">
     <div class="chart-wrapper">
-      <highcharts-chart
-        :constructor-type="'chart'"
-        :options="chartOptions"
-        :deepCopyOnUpdate="true"
-      ></highcharts-chart>
+      <canvas ref="chartCanvas"></canvas>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script setup>
-import { reactive, watchEffect } from 'vue'
-import { useTraderStore } from '@/store/app'
+import { ref, onMounted, watchEffect, onBeforeUnmount } from 'vue'
+import { useMarketStore } from '@/store/market'
 import { storeToRefs } from 'pinia'
-import { Chart as HighchartsChart } from 'highcharts-vue'
-import Highcharts from 'highcharts'
+import { Chart, registerables } from 'chart.js'
 
-const { chartData, midPoint } = storeToRefs(useTraderStore())
+Chart.register(...registerables)
 
-const chartOptions = reactive({
-  chart: {
-    type: 'column',
-    animation: false,
-    backgroundColor: '#FFFFFF',
-    style: {
-      fontFamily: 'Inter, sans-serif',
+const { chartData, midPoint } = storeToRefs(useMarketStore())
+const chartCanvas = ref(null)
+let chart = null
+
+// Custom plugin to draw background bands (blue left of midpoint, red right)
+const backgroundBandsPlugin = {
+  id: 'backgroundBands',
+  beforeDraw(chart) {
+    const { ctx, chartArea, scales } = chart
+    if (!chartArea || !scales.x) return
+
+    const mid = midPoint.value
+    if (mid == null) return
+
+    const labels = chart.data.labels || []
+    // Find pixel position of midpoint
+    const midIndex = labels.findIndex(l => l >= mid)
+    let midPixel
+    if (midIndex >= 0) {
+      midPixel = scales.x.getPixelForValue(midIndex)
+    } else {
+      midPixel = chartArea.right
+    }
+
+    // Blue band (left of midpoint)
+    ctx.save()
+    ctx.fillStyle = 'rgba(33, 150, 243, 0.06)'
+    ctx.fillRect(chartArea.left, chartArea.top, midPixel - chartArea.left, chartArea.height)
+
+    // Red band (right of midpoint)
+    ctx.fillStyle = 'rgba(244, 67, 54, 0.06)'
+    ctx.fillRect(midPixel, chartArea.top, chartArea.right - midPixel, chartArea.height)
+    ctx.restore()
+  }
+}
+
+function buildData() {
+  const bidSeries = chartData.value.find(s => s.name === 'Bids') || { data: [] }
+  const askSeries = chartData.value.find(s => s.name === 'Asks') || { data: [] }
+
+  // Merge all price points and fill gaps for continuous x-axis
+  const allPoints = new Map()
+  for (const pt of bidSeries.data) allPoints.set(pt.x, { bid: pt.y, ask: 0 })
+  for (const pt of askSeries.data) {
+    const entry = allPoints.get(pt.x) || { bid: 0, ask: 0 }
+    entry.ask = pt.y
+    allPoints.set(pt.x, entry)
+  }
+
+  // Fill in missing price points between min and max
+  if (allPoints.size > 0) {
+    const prices = [...allPoints.keys()]
+    const min = Math.min(...prices)
+    const max = Math.max(...prices)
+    for (let p = min; p <= max; p++) {
+      if (!allPoints.has(p)) {
+        allPoints.set(p, { bid: 0, ask: 0 })
+      }
+    }
+  }
+
+  const sorted = [...allPoints.entries()].sort((a, b) => a[0] - b[0])
+  return {
+    labels: sorted.map(([x]) => x),
+    bids: sorted.map(([, v]) => v.bid || null),
+    asks: sorted.map(([, v]) => v.ask || null),
+  }
+}
+
+function buildChart() {
+  if (!chartCanvas.value) return
+
+  const ctx = chartCanvas.value.getContext('2d')
+  if (chart) chart.destroy()
+
+  const { labels, bids, asks } = buildData()
+
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Bids',
+          data: bids,
+          backgroundColor: 'rgba(33, 150, 243, 0.7)',
+          borderColor: 'rgba(25, 118, 210, 1)',
+          borderWidth: 1,
+        },
+        {
+          label: 'Asks',
+          data: asks,
+          backgroundColor: 'rgba(244, 67, 54, 0.7)',
+          borderColor: 'rgba(211, 47, 47, 1)',
+          borderWidth: 1,
+        },
+      ],
     },
-    height: 250,
-    marginTop: 10,
-    marginBottom: 30,
-  },
-  accessibility: {
-    enabled: false,
-  },
-  title: {
-    text: null,
-  },
-  xAxis: {
-    allowDecimals: false,
-    tickInterval: 1,
-    minPadding: 0.1,
-    maxPadding: 0.1,
-    labels: {
-      formatter: function () {
-        return this.value.toString()
-      },
-      style: {
-        color: '#666',
-        fontSize: '10px',
-      },
-    },
-    lineColor: '#ccd6eb',
-    tickColor: '#ccd6eb',
-  },
-  yAxis: {
-    title: null,
-    labels: {
-      format: '{value:.0f}',
-      style: {
-        color: '#666',
-        fontSize: '10px',
-      },
-    },
-    gridLineColor: '#e6e6e6',
-  },
-  credits: {
-    enabled: false,
-  },
-  legend: {
-    enabled: false,
-  },
-  tooltip: {
-    shared: true,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderWidth: 0,
-    shadow: true,
-    useHTML: true,
-    headerFormat: '<table><tr><th colspan="2">{point.key:.2f}</th></tr>',
-    pointFormat:
-      '<tr><td style="color: {series.color}">{series.name}: </td>' +
-      '<td style="text-align: right"><b>{point.y:.0f}</b></td></tr>',
-    footerFormat: '</table>',
-    style: {
-      fontSize: '12px',
-    },
-  },
-  plotOptions: {
-    column: {
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
       animation: false,
-      pointPadding: 0.01,
-      groupPadding: 0,
-      borderWidth: 1,
-      grouping: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          titleColor: '#1a1a1a',
+          bodyColor: '#1a1a1a',
+          borderColor: '#E5E5E5',
+          borderWidth: 1,
+          padding: 8,
+          titleFont: { family: "'IBM Plex Mono', monospace", size: 11 },
+          bodyFont: { family: "'IBM Plex Mono', monospace", size: 11 },
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            color: '#666',
+            font: { size: 10, family: "'IBM Plex Mono', monospace" },
+          },
+          grid: { display: false },
+          border: { color: '#ccd6eb' },
+        },
+        y: {
+          stacked: false,
+          ticks: {
+            color: '#666',
+            font: { size: 10, family: "'IBM Plex Mono', monospace" },
+            precision: 0,
+          },
+          grid: { color: '#e6e6e6' },
+          border: { display: false },
+        },
+      },
     },
-  },
-  series: chartData.value,
-})
+    plugins: [backgroundBandsPlugin],
+  })
+}
+
+onMounted(() => buildChart())
 
 watchEffect(() => {
-  chartOptions.series = chartData.value.map((series) => ({
-    ...series,
-    pointPlacement: 0,
-    color: series.name === 'Bids' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)',
-    borderColor: series.name === 'Bids' ? 'rgba(25, 118, 210, 1)' : 'rgba(211, 47, 47, 1)',
-  }))
+  if (chartData.value && chart) {
+    const { labels, bids, asks } = buildData()
+    chart.data.labels = labels
+    chart.data.datasets[0].data = bids
+    chart.data.datasets[1].data = asks
+    chart.update('none')
+  }
+})
 
-  chartOptions.xAxis.plotBands = [
-    {
-      from: -Infinity,
-      to: midPoint.value,
-      color: 'rgba(33, 150, 243, 0.1)',
-    },
-    {
-      from: midPoint.value,
-      to: Infinity,
-      color: 'rgba(244, 67, 54, 0.1)',
-    },
-  ]
+onBeforeUnmount(() => {
+  if (chart) chart.destroy()
 })
 </script>
 
 <style scoped>
-.bid-ask-chart-container {
+.bid-ask-chart {
   width: 100%;
-  background-color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  background: var(--color-bg-surface);
+  font-family: var(--font-mono);
 }
 
 .chart-wrapper {
-  padding: 0;
-}
-
-:deep(.highcharts-container) {
-  font-family: 'Inter', sans-serif !important;
-}
-
-:deep(.highcharts-axis-labels),
-:deep(.highcharts-axis-title) {
-  font-size: 10px !important;
-  font-weight: 400 !important;
-}
-
-:deep(.highcharts-tooltip) {
-  font-size: 12px !important;
+  padding: 4px;
+  height: 250px;
 }
 </style>

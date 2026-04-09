@@ -15,6 +15,7 @@ dependencies = [
     "prefect",
     "pydantic",
     "pytest",
+    "python-socketio[asgi]",
     "pyyaml",
     "requests",
     "sortedcontainers",

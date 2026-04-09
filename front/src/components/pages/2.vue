@@ -1,319 +1,132 @@
 <template>
   <div class="page-container">
-    <v-scale-transition>
-      <div class="header-section">
-        <v-icon size="40" :color="iconColor" class="pulse-icon">mdi-monitor-dashboard</v-icon>
-        <h2 class="text-h4 gradient-text">Trading Platform Guide</h2>
-      </div>
-    </v-scale-transition>
+    <div class="header-section">
+      <h2 class="text-h4 page-heading">LOBX Platform Guide</h2>
+    </div>
 
     <v-container class="content-grid">
       <v-row>
         <!-- Introduction Card -->
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" :color="iconColor" class="mr-2">mdi-monitor</v-icon>
-                  <span class="text-h6">What is the Trading Platform?</span>
-                </div>
-                <p class="text-body-1">
-                  The trading platform is software that allows participants to trade with one
-                  another. It displays relevant information about the demand and supply of an asset
-                  (e.g. a share). What you see on the trading platform is common knowledge, meaning
-                  all other participants can see it.
-                  <br /><br />
-                  This trading platform closely replicates real financial exchange platforms, where
-                  participants trade under a double auction setting. In particular, a double auction
-                  trading mechanism allows buyers to submit bids (buy offers) and sellers to submit
-                  asks (sell offers) simultaneously. The platform matches buyers and sellers based
-                  on price and quantity.
-                  <br /><br />
-                  Please take some time to carefully read the next slides.
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">What is LOBX?</span>
+              </div>
+              <p class="text-body-1">
+                The trading platform is software that allows participants to trade with one
+                another. It displays relevant information about the demand and supply of an asset
+                (e.g. a share). What you see on the trading platform is common knowledge, meaning
+                all other participants can see it.
+                <br /><br />
+                This trading platform closely replicates real financial exchange platforms, where
+                participants trade under a double auction setting. In particular, a double auction
+                trading mechanism allows buyers to submit bids (buy offers) and sellers to submit
+                asks (sell offers) simultaneously. The platform matches buyers and sellers based
+                on price and quantity.
+                <br /><br />
+                Please take some time to carefully read the next slides.
+              </p>
+            </v-card-text>
+          </v-card>
         </v-col>
 
         <!-- Orders Section -->
         <v-col cols="12" md="6">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              class="info-card success-gradient"
-            >
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="success" class="mr-2">mdi-flash</v-icon>
-                  <span class="text-h6">Direct Orders</span>
-                </div>
-                <p class="text-body-1">
-                  You can directly accept an existing price to sell or buy, such as an order from
-                  another participant. In this case, the trade is immediately executed at the best
-                  bid or ask respectively.
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Direct Orders</span>
+              </div>
+              <p class="text-body-1">
+                You can directly accept an existing price to sell or buy, such as an order from
+                another participant. In this case, the trade is immediately executed at the best
+                bid or ask respectively.
+              </p>
+            </v-card-text>
+          </v-card>
         </v-col>
 
         <v-col cols="12" md="6">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card info-gradient">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="info" class="mr-2">mdi-clock</v-icon>
-                  <span class="text-h6">Passive Orders</span>
-                </div>
-                <p class="text-body-1">
-                  You can place orders to sell or buy that are not immediately executed. This means
-                  you have to wait for someone to accept them.
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Passive Orders</span>
+              </div>
+              <p class="text-body-1">
+                You can place orders to sell or buy that are not immediately executed. This means
+                you have to wait for someone to accept them.
+              </p>
+            </v-card-text>
+          </v-card>
         </v-col>
 
         <!-- Improving Orders -->
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" :color="iconColor" class="mr-2">mdi-trending-up</v-icon>
-                  <span class="text-h6">Improving Orders</span>
-                </div>
-                <v-list class="improvement-list">
-                  <v-list-item>
-                    <template v-slot:prepend>
-                      <v-icon color="success">mdi-arrow-down</v-icon>
-                    </template>
-                    Place an order to sell (ask) a share for a lower price than the current best ask
-                  </v-list-item>
-                  <v-list-item>
-                    <template v-slot:prepend>
-                      <v-icon color="error">mdi-arrow-up</v-icon>
-                    </template>
-                    Place an order to buy (bid) a share for a higher price than the current best bid
-                  </v-list-item>
-                </v-list>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Improving Orders</span>
+              </div>
+              <ul class="rules-list">
+                <li>
+                  Place an order to sell (ask) a share for a lower price than the current best ask
+                </li>
+                <li>
+                  Place an order to buy (bid) a share for a higher price than the current best bid
+                </li>
+              </ul>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <!-- Interactive Trading Platform Preview -->
+        <v-col cols="12">
+          <span class="text-h6 font-weight-bold">LOBX Overview</span>
+          <TradingPreview highlight="all" caption="This is the LOBX trading interface. Each panel shows different information about the market." />
         </v-col>
 
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="primary" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Trading Platform</span>
-                </div>
-                <v-img
-                  :src="Intro"
-                  alt="Trading Platform Screenshot 1"
-                  max-width="850"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-                <p class="text-body-2 text-center mt-4 font-italic">
-                  This demonstration shows the trading platform in action.
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <span class="text-h6 font-weight-bold">Status Bar</span>
+          <TradingPreview highlight="header" caption="The top bar shows your role (Speculator), PnL (Profit and Loss), shares held, available cash, number of traders, and remaining time." />
         </v-col>
 
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="primary" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Trading Platform: Panel 1</span>
-                </div>
-                <v-img
-                  :src="Timer"
-                  alt="Trading Platform Screenshot 2"
-                  max-width="850"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <span class="text-h6 font-weight-bold">Buy-Sell Chart</span>
+          <TradingPreview highlight="chart" caption="This panel shows all buy (bid) and sell (ask) orders in the market. The horizontal axis shows the price and vertical axis shows the number of shares." />
         </v-col>
 
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="primary" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Trading Platform: Panel 2</span>
-                </div>
-                <v-img
-                  :src="Bars"
-                  alt="Trading Platform Screenshot 3"
-                  max-width="850"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <span class="text-h6 font-weight-bold">Price History</span>
+          <TradingPreview highlight="price-history" caption="This chart plots traded prices on the y-axis against time on the x-axis." />
         </v-col>
 
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="primary" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Trading Platform: Panel 3</span>
-                </div>
-                <v-img
-                  :src="Plot"
-                  alt="Trading Platform Screenshot 4"
-                  max-width="850"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <span class="text-h6 font-weight-bold">Your Trades</span>
+          <TradingPreview highlight="trades" caption="This panel shows your trades along with the average prices sold and bought. For example, if you bought 4 shares at an average price of 101.25 and sold 4 shares at an average price of 100, you are making a loss." />
         </v-col>
 
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="primary" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Trading Platform: Panel 4</span>
-                </div>
-                <v-img
-                  :src="Trades"
-                  alt="Trading Platform Screenshot 5"
-                  max-width="850"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <span class="text-h6 font-weight-bold">Market Info</span>
+          <TradingPreview highlight="market-info" caption="This panel shows the Last Traded Price, the Midprice (average between best buy and ask prices), and the Spread (difference between best sell and best buy price). It also provides trading tips." />
         </v-col>
 
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="primary" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Trading Platform: Panel 5</span>
-                </div>
-                <v-img
-                  :src="Messages"
-                  alt="Trading Platform Screenshot 6"
-                  max-width="850"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <span class="text-h6 font-weight-bold">Trading Panel</span>
+          <TradingPreview highlight="trading-panel" caption="This panel contains buttons to buy or sell. For example, to buy a share immediately, press the first Buy button at the top price. Similarly, you can sell immediately at the top Sell price. You can also send passive orders at other price levels." />
         </v-col>
 
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="primary" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Trading Platform: Panel 6</span>
-                </div>
-                <v-img
-                  :src="Buttons"
-                  alt="Trading Platform Screenshot 7"
-                  max-width="850"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <span class="text-h6 font-weight-bold">Passive Orders</span>
+          <TradingPreview highlight="orders" caption="This panel shows all passive orders you sent. These orders do not execute immediately — other traders must accept them. You can cancel them by clicking the minus button." />
         </v-col>
-
-        <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card v-bind="props" :elevation="isHovering ? 8 : 2" class="info-card">
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="primary" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Trading Platform: Panel 7</span>
-                </div>
-                <v-img
-                  :src="Orders"
-                  alt="Trading Platform Screenshot 8"
-                  max-width="850"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-              </v-card-text>
-            </v-card>
-          </v-hover>
-        </v-col>
-
-        <!-- Demo Section -->
-        <!-- <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              class="info-card"
-            >
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" :color="iconColor" class="mr-2">mdi-play-circle</v-icon>
-                  <span class="text-h6">Platform Demo</span>
-                </div>
-                <v-img
-                  :src="demoGif"
-                  alt="Trading Platform Demo"
-                  max-width="600"
-                  contain
-                  class="mx-auto rounded-lg"
-                ></v-img>
-                <p class="text-body-2 text-center mt-4 font-italic">
-                  This demonstration shows the key features of the trading platform in action
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
-        </v-col> -->
       </v-row>
     </v-container>
   </div>
 </template>
 
 <script setup>
-import demoGif from '@/assets/demo.gif'
-import Intro from '@/assets/Intro.jpg'
-import Timer from '@/assets/Timer.jpg'
-import Bars from '@/assets/Bars.jpg'
-import Plot from '@/assets/Plot.jpg'
-import Trades from '@/assets/Trades.jpg'
-import Messages from '@/assets/Messages.jpg'
-import Buttons from '@/assets/Buttons.jpg'
-import Orders from '@/assets/Orders.jpg'
-
-const props = defineProps({
-  iconColor: String,
-})
+import TradingPreview from '@/components/TradingPreview.vue'
 </script>
 
 <style scoped>

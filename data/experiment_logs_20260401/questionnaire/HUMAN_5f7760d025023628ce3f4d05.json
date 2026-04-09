@@ -1,0 +1,33 @@
+{
+  "trader_id": "HUMAN_5f7760d025023628ce3f4d05",
+  "premarket_interactions": [
+    {
+      "timestamp": "2026-02-27 11:27:02",
+      "question_index": 6,
+      "question_text": "Let assume that you bought 3 shares at an average price of 101 Liras, and you sold all of them at an average price of 104 Liras. The initial midprice is 100 liras. What is the generated profit?",
+      "selected_answer": "9",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-02-27 11:27:03",
+      "question_index": 7,
+      "question_text": "Let assume that you bought 3 shares at an average price of 101 Liras, and you sold only 2 of them at an average price of 104 Liras. The final midprice is 105 liras. What is the generated profit?",
+      "selected_answer": "5",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-02-27 11:27:05",
+      "question_index": 5,
+      "question_text": "What is the impact on the market price if one of the aritificial agents sells a large number of shares?",
+      "selected_answer": "Mid-Price decreases",
+      "is_correct": true
+    }
+  ],
+  "postmarket_responses": {
+    "timestamp": "2026-02-27 11:46:50",
+    "q1": "Yes",
+    "q2": "Price History Chart",
+    "q3": "Yes",
+    "q4": "No"
+  }
+}

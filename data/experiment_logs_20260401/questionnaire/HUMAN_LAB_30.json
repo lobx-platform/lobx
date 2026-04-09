@@ -1,0 +1,117 @@
+{
+  "trader_id": "HUMAN_LAB_30",
+  "premarket_interactions": [
+    {
+      "timestamp": "2026-04-01 10:48:26",
+      "question_index": 0,
+      "question_text": "If you have a certain buying or selling goal, can you both buy and sell shares in the same market?",
+      "selected_answer": "No",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:48:27",
+      "question_index": 1,
+      "question_text": "What happens when you place a passive order?",
+      "selected_answer": "You must wait for someone to accept it",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:48:28",
+      "question_index": 3,
+      "question_text": "What happens if you don't complete your trading objective within the time limit?",
+      "selected_answer": "The system automatically completes the trades for you at the prevailing price.",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:48:29",
+      "question_index": 2,
+      "question_text": "How many shares can you trade in a single order?",
+      "selected_answer": "Only one share per order",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:48:30",
+      "question_index": 4,
+      "question_text": "What are the other market participants?",
+      "selected_answer": "Artificial (Algorithmic) Agents",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:48:32",
+      "question_index": 5,
+      "question_text": "What is the impact on the market price if one of the aritificial agents sells a large number of shares?",
+      "selected_answer": "Mid-Price decreases",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 11:05:14",
+      "question_index": 0,
+      "question_text": "If you have a certain buying or selling goal, can you both buy and sell shares in the same market?",
+      "selected_answer": "No",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 11:05:15",
+      "question_index": 1,
+      "question_text": "What happens when you place a passive order?",
+      "selected_answer": "You must wait for someone to accept it",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 11:05:16",
+      "question_index": 3,
+      "question_text": "What happens if you don't complete your trading objective within the time limit?",
+      "selected_answer": "The system automatically completes the trades for you at the prevailing price.",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 11:05:17",
+      "question_index": 2,
+      "question_text": "How many shares can you trade in a single order?",
+      "selected_answer": "Only one share per order",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 11:05:20",
+      "question_index": 4,
+      "question_text": "What are the other market participants?",
+      "selected_answer": "Artificial (Algorithmic) Agents",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 11:05:23",
+      "question_index": 5,
+      "question_text": "What is the impact on the market price if one of the aritificial agents sells a large number of shares?",
+      "selected_answer": "Mid-Price decreases",
+      "is_correct": true
+    }
+  ],
+  "postmarket_responses": null,
+  "per_market_responses": {
+    "1": {
+      "timestamp": "2026-04-01 10:51:41",
+      "market_description": "algo_sold",
+      "imbalance_reason": "N/A"
+    },
+    "2": {
+      "timestamp": "2026-04-01 10:54:49",
+      "market_description": "algo_sold",
+      "imbalance_reason": "N/A"
+    },
+    "3": {
+      "timestamp": "2026-04-01 10:57:58",
+      "market_description": "algo_sold",
+      "imbalance_reason": "N/A"
+    },
+    "4": {
+      "timestamp": "2026-04-01 11:01:07",
+      "market_description": "algo_sold",
+      "imbalance_reason": "N/A"
+    },
+    "5": {
+      "timestamp": "2026-04-01 11:04:33",
+      "market_description": "algo_sold",
+      "imbalance_reason": "N/A"
+    }
+  }
+}

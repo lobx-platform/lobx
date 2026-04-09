@@ -1,49 +1,37 @@
 <template>
   <div class="admin-dashboard">
-    <!-- Header -->
-    <header class="tp-page-header">
-      <h1 class="tp-page-title">Trading Platform Admin</h1>
-      <div class="tp-status">
-        <span class="tp-status-dot" :class="serverActive ? 'tp-status-dot-success' : 'tp-status-dot-error'"></span>
-        <span class="text-sm">{{ serverActive ? 'Connected' : 'Disconnected' }}</span>
-      </div>
+    <!-- Header Bar -->
+    <header class="admin-header">
+      <h1 class="admin-title">Control Panel</h1>
+      <span class="admin-status" :class="serverActive ? 'status-on' : 'status-off'">
+        {{ serverActive ? 'Online' : 'Offline' }}
+      </span>
     </header>
 
-    <!-- Main Layout: Tabs + Content + Export Panel -->
-    <div class="main-layout">
-      <!-- Left: Vertical Tabs -->
-      <nav class="tabs-sidebar">
-        <div class="tabs-list">
-          <button
-            v-for="tab in tabs"
-            :key="tab.value"
-            class="tab-item"
-            :class="{ 'tab-active': activeTab === tab.value }"
-            @click="activeTab = tab.value"
-          >
-            {{ tab.label }}
-          </button>
-        </div>
-      </nav>
+    <!-- Tab Navigation -->
+    <nav class="admin-tabs">
+      <button
+        v-for="tab in tabs"
+        :key="tab.value"
+        class="admin-tab"
+        :class="{ 'admin-tab-active': activeTab === tab.value }"
+        @click="activeTab = tab.value"
+      >
+        {{ tab.label }}
+      </button>
+    </nav>
 
-      <!-- Center: Tab Content -->
-      <main class="tab-content">
-        <ConfigTab
-          v-if="activeTab === 'config'"
-          :formState="formState"
-          :formFields="formFields"
-          :serverActive="serverActive"
-          @update:formState="updateFormState"
-        />
-        <AIPromptsTab v-else-if="activeTab === 'prompts'" :serverActive="serverActive" />
-        <MarketsTab v-else-if="activeTab === 'markets'" :serverActive="serverActive" />
-      </main>
-
-      <!-- Right: Data Export (Always Visible) -->
-      <aside class="export-sidebar">
-        <LogFilesManager />
-      </aside>
-    </div>
+    <!-- Main Content -->
+    <main class="admin-content">
+      <ConfigTab
+        v-if="activeTab === 'config'"
+        :formState="formState"
+        :formFields="formFields"
+        :serverActive="serverActive"
+        @update:formState="updateFormState"
+      />
+      <MarketsTab v-else-if="activeTab === 'markets'" :serverActive="serverActive" />
+    </main>
   </div>
 </template>
 
@@ -51,13 +39,10 @@
 import { ref, onMounted } from 'vue'
 import axios from '@/api/axios'
 import ConfigTab from './admin/ConfigTab.vue'
-import AIPromptsTab from './admin/AIPromptsTab.vue'
 import MarketsTab from './admin/MarketsTab.vue'
-import LogFilesManager from './creator/LogFilesManager.vue'
 
 const tabs = [
   { value: 'config', label: 'Config' },
-  { value: 'prompts', label: 'AI Prompts' },
   { value: 'markets', label: 'Markets' },
 ]
 
@@ -69,7 +54,6 @@ const formState = ref({
     INFORMED: { order_throttle_ms: 0, max_orders_per_window: 1 },
     MARKET_MAKER: { order_throttle_ms: 0, max_orders_per_window: 1 },
     INITIAL_ORDER_BOOK: { order_throttle_ms: 0, max_orders_per_window: 1 },
-    SIMPLE_ORDER: { order_throttle_ms: 0, max_orders_per_window: 1 },
   },
 })
 const formFields = ref([])
@@ -104,8 +88,7 @@ const fetchData = async () => {
       INFORMED: { order_throttle_ms: 0, max_orders_per_window: 1 },
       MARKET_MAKER: { order_throttle_ms: 0, max_orders_per_window: 1 },
       INITIAL_ORDER_BOOK: { order_throttle_ms: 0, max_orders_per_window: 1 },
-      SIMPLE_ORDER: { order_throttle_ms: 0, max_orders_per_window: 1 },
-    }
+      }
 
     formState.value.throttle_settings = persistentSettings.throttle_settings || defaultThrottleSettings
     serverActive.value = true
@@ -128,102 +111,73 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.main-layout {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* Tabs Sidebar */
-.tabs-sidebar {
-  width: 160px;
-  background: var(--color-bg-surface);
-  border-right: var(--border-width) solid var(--color-border);
-  padding: var(--space-3) 0;
-}
-
-.tabs-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: 0 var(--space-2);
-}
-
-.tab-item {
+/* ---- Header ---- */
+.admin-header {
   display: flex;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--color-text-secondary);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-align: left;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.tab-item:hover {
-  background: var(--color-bg-subtle);
+.admin-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: var(--tracking-tight);
+}
+
+.admin-status {
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-wide);
+}
+
+.admin-status.status-on {
+  color: var(--color-success);
+}
+
+.admin-status.status-off {
+  color: var(--color-text-muted);
+}
+
+/* ---- Tab Navigation ---- */
+.admin-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--space-5);
+}
+
+.admin-tab {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: color var(--transition-fast);
+  margin-bottom: -1px;
+}
+
+.admin-tab:hover {
   color: var(--color-text-primary);
 }
 
-.tab-active {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+.admin-tab-active {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-text-primary);
+  font-weight: var(--font-semibold);
 }
 
-.tab-active:hover {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-}
-
-/* Tab Content */
-.tab-content {
+/* ---- Main Content ---- */
+.admin-content {
   flex: 1;
-  overflow-y: auto;
-  padding: var(--space-4);
+  padding: var(--space-5);
   background: var(--color-bg-page);
-}
-
-/* Export Sidebar */
-.export-sidebar {
-  width: 320px;
-  background: var(--color-bg-surface);
-  border-left: var(--border-width) solid var(--color-border);
-  padding: var(--space-4);
-  overflow-y: auto;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .export-sidebar {
-    width: 280px;
-  }
-}
-
-@media (max-width: 960px) {
-  .main-layout {
-    flex-direction: column;
-  }
-  
-  .tabs-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: var(--border-width) solid var(--color-border);
-    padding: var(--space-2) 0;
-  }
-  
-  .tabs-list {
-    flex-direction: row;
-    overflow-x: auto;
-  }
-  
-  .export-sidebar {
-    width: 100%;
-    border-left: none;
-    border-top: var(--border-width) solid var(--color-border);
-  }
 }
 </style>

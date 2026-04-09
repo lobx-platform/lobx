@@ -1,73 +1,55 @@
 <template>
-  <v-card height="100%" elevation="3" class="market-info-card">
-    <v-card-text class="market-info-content" ref="messageContainer">
-      <div class="info-grid">
-        <div
-          v-for="item in filteredParams"
-          :key="item.var_name"
-          class="info-cell"
-        >
-          <div class="info-title">
-            {{ item.display_name }}
-            <v-tooltip location="bottom" :text="item.explanation" max-width="300">
-              <template v-slot:activator="{ props }">
-                <v-icon x-small v-bind="props" color="grey lighten-1">mdi-information-outline</v-icon>
-              </template>
-            </v-tooltip>
-          </div>
-          <div class="info-value" :class="getValueColor(item.value)">
-            {{ formatValue(item.value) }}
-          </div>
+  <div class="market-info">
+    <div class="info-grid">
+      <div
+        v-for="item in filteredParams"
+        :key="item.var_name"
+        class="info-cell"
+      >
+        <div class="info-label">
+          {{ item.display_name }}
+          <v-tooltip location="bottom" :text="item.explanation" max-width="300">
+            <template v-slot:activator="{ props }">
+              <span v-bind="props" class="info-hint">?</span>
+            </template>
+          </v-tooltip>
+        </div>
+        <div class="info-value" :class="getValueColor(item.value)">
+          {{ formatValue(item.value) }}
         </div>
       </div>
+    </div>
 
-      <div class="guidance-msg">
-        <div class="tip-title">💡 Trading Tip</div>
-        <ul class="tip-list">
-        <li>
-        If you believe the market will go up:
-        <span class="buy-text">Buy now</span> and sell later.
-        </li>
-        <li>
-        If you believe the market will go down:
-        <span class="sell-text">Sell now</span> and buy later.
-         </li>
-        </ul>
-      </div>
-
-      <!-- IMBALANCE MESSAGE -->
-      <!--<div v-if="imbalanceValue !== 0" class="imbalance-msg" :class="imbalanceColorClass">
-        {{ imbalanceMessage }}
-      </div> -->
-    </v-card-text>
-  </v-card>
+    <div class="trading-tip">
+      <div class="tip-row">If you believe the market will go up: <strong class="bid-color">Buy now</strong> and sell later.</div>
+      <div class="tip-row">If you believe the market will go down: <strong class="ask-color">Sell now</strong> and buy later.</div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useTraderStore } from '@/store/app'
+import { useMarketStore } from '@/store/market'
 
-const { extraParams } = storeToRefs(useTraderStore())
+const { extraParams } = storeToRefs(useMarketStore())
 
-//filter params are extraParams without imbalance
-// remove them if imbalance is needed
 const filteredParams = computed(() => {
-  return extraParams.value.filter(p => p.var_name !== 'imbalance')
+  return extraParams.value.filter((p) => p.var_name !== 'imbalance')
 })
 
 const imbalanceValue = computed(() => {
-  const item = extraParams.value.find(p => p.var_name === 'imbalance')
+  const item = extraParams.value.find((p) => p.var_name === 'imbalance')
   return item && item.value ? Number(item.value) : 0
 })
 
 const imbalanceMessage = computed(() => {
   const val = imbalanceValue.value || 0
-  
+
   if (val > 0) {
-    return `⚠️ You have ${val} shares in excess. \n Sell ${val} shares before the market ends. \n Penalty if not corrected: ${val*(-5)}`
+    return `You have ${val} shares in excess. \n Sell ${val} shares before the market ends. \n Penalty if not corrected: ${val * -5}`
   } else if (val < 0) {
-    return `⚠️ You have ${Math.abs(val)} shares in deficit. \n Buy ${Math.abs(val)} shares before the market ends. \n Penalty if not corrected: ${Math.abs(val)* (-5)}`
+    return `You have ${Math.abs(val)} shares in deficit. \n Buy ${Math.abs(val)} shares before the market ends. \n Penalty if not corrected: ${Math.abs(val) * -5}`
   } else {
     return `Your inventory is balanced.`
   }
@@ -89,109 +71,109 @@ const formatValue = (value) => {
 
 const getValueColor = (value) => {
   if (typeof value === 'number') {
-    return value > 0 ? 'green--text' : value < 0 ? 'red--text' : ''
+    return value > 0 ? 'val-green' : value < 0 ? 'val-red' : ''
   }
   return ''
 }
 
 onMounted(() => {
-  // Any necessary setup
+  // setup
 })
 </script>
 
 <style scoped>
-.market-info-card {
-  background-color: #ffffff;
-  font-family: 'Inter', sans-serif;
-}
-
-.market-info-content {
-  padding: 12px 8px;
+.market-info {
+  font-family: var(--font-family);
+  background: var(--color-bg-surface);
+  padding: 10px 8px;
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
 }
 
 .info-cell {
   text-align: center;
+  padding: 10px 8px;
+  background: var(--color-bg-surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.info-title {
-  font-size: 11px;
-  font-weight: 500;
-  color: #666;
+.info-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
   margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.2;
 }
 
-.info-value {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.v-icon.v-icon--size-x-small {
-  font-size: 12px;
+.info-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  opacity: 0.4;
+  cursor: help;
   margin-left: 2px;
 }
 
-.imbalance-msg {
-  text-align: left;
-  margin-top: 8px;
-  white-space: pre-line;
+.info-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
 }
 
-.imbalance-red {
-  color: red !important;
-  font-size: 13px;
-  font-weight: 700;
-  animation: flicker 3s infinite;
+.val-green {
+  color: var(--color-bid);
 }
 
-@keyframes flicker {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+.val-red {
+  color: var(--color-ask);
 }
 
-.imbalance-green {
-  color: green !important;
-  font-size: 14px;
-  font-weight: 700;
+.trading-tip {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-base);
+  line-height: 1.6;
 }
 
-.guidance-msg {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 14px 16px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  color: #334155;
-  margin-top: 10px;
+.tip-row {
+  margin-bottom: 4px;
 }
 
-.tip-title {
-  font-weight: 600;
-  margin-bottom: 6px;
+.tip-label {
+  font-weight: var(--font-semibold);
 }
 
-.tip-list {
-  padding-left: 18px;
-  margin: 0;
+.trading-tip .bid-color {
+  font-size: var(--text-lg);
+  text-decoration: underline;
 }
 
-.tip-list li {
-  margin-bottom: 6px;
+.trading-tip .ask-color {
+  font-size: var(--text-lg);
+  text-decoration: underline;
 }
 
-.buy-text {
-  color: blue;
-  font-weight: 600;
+.trading-tip-placeholder {
+  margin-bottom: 4px;
 }
 
-.sell-text {
-  color: #dc2626;
-  font-weight: 600;
+.bid-color {
+  color: var(--color-bid);
 }
 
+.ask-color {
+  color: var(--color-ask);
+}
 </style>

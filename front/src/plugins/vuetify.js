@@ -1,7 +1,7 @@
 /**
  * plugins/vuetify.js
  *
- * Framework documentation: https://vuetifyjs.com`
+ * Trading Platform — Refined Minimalist Theme
  */
 
 // Styles
@@ -11,37 +11,34 @@ import 'vuetify/styles'
 // Composables
 import { createVuetify } from 'vuetify'
 
-/**
- * Trading Platform Design System - Vuetify Theme
- * Colors aligned with design-tokens.css
- */
 export default createVuetify({
   theme: {
     defaultTheme: 'light',
     themes: {
       light: {
+        dark: false,
         colors: {
-          // Primary - Main brand color
-          primary: '#4F46E5',
-          'primary-darken-1': '#4338CA',
-          
-          // Secondary - Neutral gray
-          secondary: '#4B5563',
-          
+          // Primary — Blue accent
+          primary: '#0066FF',
+          'primary-darken-1': '#0052CC',
+
+          // Secondary
+          secondary: '#666666',
+
           // Semantic colors
-          error: '#EF4444',
-          info: '#3B82F6',
-          success: '#10B981',
-          warning: '#F59E0B',
-          
+          error: '#cb2431',
+          info: '#0066FF',
+          success: '#22863a',
+          warning: '#b08800',
+
           // Surface colors
-          background: '#F9FAFB',
+          background: '#FAFAFA',
           surface: '#FFFFFF',
-          'surface-variant': '#F3F4F6',
-          
+          'surface-variant': '#F5F5F5',
+
           // Text colors
-          'on-background': '#111827',
-          'on-surface': '#111827',
+          'on-background': '#1a1a1a',
+          'on-surface': '#1a1a1a',
           'on-primary': '#FFFFFF',
         }
       }
@@ -51,9 +48,10 @@ export default createVuetify({
     VBtn: {
       variant: 'flat',
       rounded: 'md',
+      elevation: 0,
     },
     VCard: {
-      rounded: 'lg',
+      rounded: 'md',
       elevation: 0,
     },
     VTextField: {

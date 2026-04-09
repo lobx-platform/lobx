@@ -1,212 +1,123 @@
 <template>
   <div class="page-container">
-    <v-scale-transition>
-      <div class="header-section">
-        <v-icon size="40" :color="iconColor" class="pulse-icon">mdi-target</v-icon>
-        <h2 class="text-h4 gradient-text">General Trading Objectives</h2>
-      </div>
-    </v-scale-transition>
+    <div class="header-section">
+      <h2 class="section-title">General Trading Objectives</h2>
+    </div>
 
     <v-container class="content-grid">
       <v-row>
         <!-- Overview Card -->
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              class="info-card"
-            >
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" :color="iconColor" class="mr-2">mdi-information</v-icon>
-                  <span class="text-h6">Overview</span>
-                </div>
-                <p class="text-body-1">
-                  We are going to conduct <span class="highlight-text">{{ numMarkets }} markets</span> 
-                  in which you will have a straightforward task. 
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Overview</span>
+              </div>
+              <p class="text-body-1">
+                We are going to conduct <span class="highlight-text">{{ numMarkets }} markets</span>
+                in which you will have a straightforward task.
+              </p>
+            </v-card-text>
+          </v-card>
         </v-col>
 
         <!-- Task Card -->
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              class="info-card warning-gradient"
-            >
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="warning" class="mr-2">mdi-alert</v-icon>
-                  <span class="text-h6">Your Task</span>
-                </div>
-                <p class="text-body-1 font-weight-medium">
-                  At the beginning of each market you will be given a specific role.
-                  <br><br>
-                  Potential tasks for your role could include:
-                  <ul style="margin-left: 20px;">
-                    <li style="margin-bottom: 10px; margin-top: 10px;">Buy a certain number of shares at the lowest price. (Informed Trader)</li> 
-                    <li style="margin-bottom: 10px;">Sell a certain number of shares at the highest price. (Informed Trader)</li>
-                    <li>Buy and Sell shares to generate profit. (Speculator)</li>
-                  </ul>
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Your Task</span>
+              </div>
+              <p class="text-body-1 font-weight-medium">
+                At the beginning of each market you will be given a specific role.
+                <br><br>
+                Potential tasks for your role could include:
+                <ul style="margin-left: 20px;">
+                  <li style="margin-bottom: 10px; margin-top: 10px;">Buy a certain number of shares at the lowest price. (Informed Trader)</li>
+                  <li style="margin-bottom: 10px;">Sell a certain number of shares at the highest price. (Informed Trader)</li>
+                  <li>Buy and Sell shares to generate profit. (Speculator)</li>
+                </ul>
+              </p>
+            </v-card-text>
+          </v-card>
         </v-col>
 
-        <!-- Task Card -->
+        <!-- Informed Trader Task Card -->
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              class="info-card warning-gradient"
-            >
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="warning" class="mr-2">mdi-alert</v-icon>
-                  <span class="text-h6">Task as a Informed Trader</span>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Task as a Informed Trader</span>
+              </div>
+              <div class="text-body-1 font-weight-medium">
+                In this role, your task is to buy or sell a specific number of shares.
+                <br><br>
+                At the beginning of each market, you will be given a specific number of shares.
+                <br><br>
+                By the end of the market, you must ensure that you have achieved your goal.
+                <br><br>
+                <div style="border: 1px solid #f44336; background-color: #fdecea; color: #b71c1c; padding: 16px; border-radius: 4px; font-family: sans-serif;">
+                <strong>Important Notice:</strong>
+                <br><br>
+                If, at the end of each market, you haven't completed your task, the platform will automatically buy or sell the remaining shares at a penalized price.
+                This will affect your profits.
                 </div>
-                <div class="text-body-1 font-weight-medium">
-                  In this role, your task is to buy or sell a specific number of shares.
-                  <br><br>
-                  At the beginning of each market, you will be given a specific number of shares.
-                  <br><br>
-                  By the end of the market, you must ensure that you have achieved your goal.
-                  <br><br>
-                  <div style="border: 1px solid #f44336; background-color: #fdecea; color: #b71c1c; padding: 16px; border-radius: 8px; font-family: sans-serif;">
-                  <strong>Important Notice:</strong>
-                  <br><br>
-                  If, at the end of each market, you haven't completed your task, the platform will automatically buy or sell the remaining shares at a penalized price. 
-                  This will affect your profits.
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-hover>
-        </v-col> 
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
 
-        <!-- Task Card -->
+        <!-- Speculator Task Card -->
         <v-col cols="12">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              class="info-card warning-gradient"
-            >
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="warning" class="mr-2">mdi-alert</v-icon>
-                  <span class="text-h6">Task as a Speculator</span>
-                </div>
-                <div class="text-body-1 font-weight-medium">
-                  In this role, your task is to buy and sell shares in order to make profits.
-                  <br><br>
-                  At the beginning of each market, you will be given a specific number of shares.
-                  <!-- <br><br>
-                  By the end of the market, you must ensure that the number of shares matches the initial number you were given. -->
-                  <br><br>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Task as a Speculator</span>
+              </div>
+              <div class="text-body-1 font-weight-medium">
+                In this role, your task is to buy and sell shares in order to make profits.
+                <br><br>
+                At the beginning of each market, you will be given a specific number of shares.
+                <br><br>
 
-                  <div style="border: 1px solid #f44336; background-color: #fdecea; color: #b71c1c; padding: 16px; border-radius: 8px; font-family: sans-serif;">
-                  <strong>Important Notice:</strong>
-                  <br><br>
-                  At the end of each market, if the number of shares you hold is different from your initial amount, the platform will automatically adjust your balance at the prevailing bid or ask price.
-                  <br><br>
-                  <!-- To do this, the platform will:
-                  <ul style="margin-left: 20px;">
-                    <li><strong>Sell extra shares</strong> at <strong>Final Midprice − 5</strong></li>
-                    <li><strong>Buy missing shares</strong> at <strong>Final Midprice + 5</strong></li>
-                  </ul>
-                  <br><br> 
-                  This adjustment is very likely to result in a loss.
-                  <br><br>
-                  <strong>Example 1 - You end up with more shares</strong>
-                  <br>
-                  <ul style="margin-left: 20px;">
-                    <li style="margin-bottom: 10px; margin-top: 10px;"> <strong>Initial Midprice</strong>: 100 Liras</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;"> <strong>Final Midprice</strong>: 110 Liras.</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;"> <strong>Your Initial Shares</strong>: 10</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;"><strong>Your shares at the end of the market</strong> : 15</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;">You have <strong>5 extra shares</strong> (15 - 10). </li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;">Suppose you bought these 5 shares at an <strong> average price of 106 Liras</strong>.</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;">At the end, the platform <strong>sells</strong> these 5 shares for you at the <strong>Final Midprice - 5 = 105 Liras</strong>.</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;"><strong>Result</strong>: Loss = 5 × (106 - 105) = <strong>-5 Liras</strong></li>
-                  </ul>
-                  <br><br>
-                  <strong>Example 2 - You end up with fewer shares</strong>
-                  <br>
-                  <ul style="margin-left: 20px;">
-                    <li style="margin-bottom: 10px; margin-top: 10px;"> <strong>Initial Midprice</strong>: 100 Liras</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;"> <strong>Final Midprice</strong>: 90 Liras.</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;"> <strong>Your Initial Shares</strong>: 10</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;"><strong>Your shares at the end of the market</strong> : 5</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;">You are <strong>missing 5 shares</strong> (10 - 5)</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;">Suppose you sold these 5 shares earlier at an <strong> average price of 92 Liras</strong>.</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;">At the end, the platform <strong>buys</strong> these 5 shares for you at the <strong>Final Midprice + 5 = 95 Liras</strong>.</li>
-                    <li style="margin-bottom: 10px; margin-top: 10px;"><strong>Result</strong>: Loss = 5 × (92 - 95) = <strong> -15 Liras</strong></li>
-                  </ul>
-                  <br><br>
-                  <strong>In short:</strong>
-                  <br>
-                  You must finish the market with the same number of shares you started with.
-                  <br>
-                  If not, the system automatically restores your original balance at a <strong>Penalised Price</strong>, 
-                  <br>
-                  which may likely result in a loss.
-                  -->
-                  </div>  
+                <div style="border: 1px solid #f44336; background-color: #fdecea; color: #b71c1c; padding: 16px; border-radius: 4px; font-family: sans-serif;">
+                <strong>Important Notice:</strong>
+                <br><br>
+                At the end of each market, if the number of shares you hold is different from your initial amount, the platform will automatically adjust your balance at the prevailing bid or ask price.
+                <br><br>
                 </div>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+              </div>
+            </v-card-text>
+          </v-card>
         </v-col>
 
         <!-- Objective Card -->
         <v-col cols="12" md="6">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              class="info-card success-gradient"
-            >
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="success" class="mr-2">mdi-target</v-icon>
-                  <span class="text-h6">Your Objective</span>
-                </div>
-                <p class="text-body-1 font-weight-medium">
-                  Sell at the highest price or buy at the lowest price.
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Your Objective</span>
+              </div>
+              <p class="text-body-1 font-weight-medium">
+                Sell at the highest price or buy at the lowest price.
+              </p>
+            </v-card-text>
+          </v-card>
         </v-col>
 
         <!-- Market Details Card -->
         <v-col cols="12" md="6">
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 8 : 2"
-              class="info-card info-gradient"
-            >
-              <v-card-text>
-                <div class="d-flex align-center mb-4">
-                  <v-icon size="28" color="info" class="mr-2">mdi-clock-outline</v-icon>
-                  <span class="text-h6">Market Details</span>
-                </div>
-                <p class="text-body-1">
-                  All trading will be in terms of Liras and the length of each market will be 
-                  <span class="highlight-text">{{ marketDuration }} minutes</span>.
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-hover>
+          <v-card class="info-card" flat>
+            <v-card-text>
+              <div class="mb-4">
+                <span class="text-h6 font-weight-bold">Market Details</span>
+              </div>
+              <p class="text-body-1">
+                All trading will be in terms of Liras and the length of each market will be
+                <span class="highlight-text">{{ marketDuration }} minutes</span>.
+              </p>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
     </v-container>
@@ -216,10 +127,6 @@
 <script setup>
 import { computed } from 'vue';
 import { useTraderStore } from "@/store/app";
-
-const props = defineProps({
-  iconColor: String
-});
 
 const traderStore = useTraderStore();
 

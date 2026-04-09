@@ -6,8 +6,6 @@ export const useUIStore = defineStore('ui', {
     snackbarText: '',
     snackbarColor: 'info',
     snackbarTimeout: 5000,
-    dayOver: false,
-    intendedRoute: null,
   }),
 
   actions: {
@@ -36,20 +34,6 @@ export const useUIStore = defineStore('ui', {
     hideMessage() {
       this.showSnackbar = false
       this.snackbarText = ''
-    },
-
-    setDayOver(value) {
-      this.dayOver = value
-    },
-
-    setIntendedRoute(route) {
-      this.intendedRoute = route
-    },
-
-    getIntendedRoute() {
-      const route = this.intendedRoute
-      this.intendedRoute = null
-      return route
     },
 
     showLimitMessage(

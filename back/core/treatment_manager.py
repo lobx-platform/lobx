@@ -129,6 +129,20 @@ class TreatmentManager:
         data = {'treatments': [t.to_dict() for t in self.treatments]}
         return yaml.dump(data, default_flow_style=False, sort_keys=False)
     
+    def set_treatments(self, treatments_list: List[Dict[str, Any]]) -> int:
+        """Set treatments from a list of dicts (each dict has 'name' + settings).
+
+        This is the unified way to configure treatments -- no YAML needed.
+        """
+        self.treatments = []
+        for t in treatments_list:
+            t = dict(t)  # shallow copy so pop doesn't mutate caller
+            name = t.pop('name', f"Treatment {len(self.treatments) + 1}")
+            self.treatments.append(Treatment(name=name, settings=t))
+        self._save_to_file()
+        logger.info(f"Set {len(self.treatments)} treatments from list")
+        return len(self.treatments)
+
     def clear(self):
         self.treatments = []
         self._save_to_file()

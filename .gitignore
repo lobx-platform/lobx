@@ -57,6 +57,11 @@ firebase-debug.log
 !back/config/firebase/firebase.json
 
 # ====================
+# MCP / PLAYWRIGHT
+# ====================
+.playwright-mcp/
+
+# ====================
 # OS & TEMP FILES
 # ====================
 .DS_Store
@@ -71,3 +76,17 @@ papers/
 analysis/
 designs/
 docs/
+
+# Temporary screenshots
+*.png
+!front/src/assets/*.png
+
+# Bun lock
+bun.lock
+front/bun.lock
+
+# Working docs
+CORE.md
+FRONTEND-DESIGN.md
+SKILL.md
+audits/

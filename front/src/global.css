@@ -1,7 +1,7 @@
 /**
- * Trading Platform - Global Styles
- * 
- * This file contains app-specific overrides and utilities.
+ * Trading Platform — Global Styles (Light Theme)
+ *
+ * App-specific overrides and utilities.
  * Base styles are in design-tokens.css and components.css
  */
 
@@ -19,42 +19,7 @@ body {
 
 .v-main {
   min-height: 100vh;
-}
-
-/* ========================================
- * LEGACY UTILITY CLASSES
- * Keep for backward compatibility
- * ======================================== */
-
-.card {
-  background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
-}
-
-.bg-primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-inverse);
-}
-
-.bg-secondary {
-  background-color: var(--color-bg-subtle);
-  color: var(--color-text-primary);
-}
-
-/* ========================================
- * ANIMATIONS
- * ======================================== */
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.fade-in {
-  animation: fadeIn var(--transition-base);
+  background: var(--color-bg-page) !important;
 }
 
 /* ========================================

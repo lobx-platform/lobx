@@ -1,8 +1,9 @@
+import math
+import json
+
+
 def sanitize_websocket_message(message):
     """Sanitize a message before sending over WebSocket to prevent JSON parsing errors."""
-    import math
-    import json
-    
     def sanitize_value(value):
         if isinstance(value, dict):
             return {str(k): sanitize_value(v) for k, v in value.items()}
@@ -38,5 +39,5 @@ def sanitize_websocket_message(message):
                     return 'object'
                 safe_value = str_value.replace('--', '_').strip('-')
                 return safe_value if safe_value else 'unknown'
-    
-    return sanitize_value(message) 
+
+    return sanitize_value(message)

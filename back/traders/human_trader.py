@@ -21,6 +21,11 @@ class HumanTrader(PausingTrader):
         self.websocket = None
         self.goal_progress = 0
 
+        # Socket.IO fields (used when connected via Socket.IO instead of raw WS)
+        self._sio = None        # socketio.AsyncServer instance
+        self._sio_sid = None    # Socket.IO session id
+        self._sio_room = None   # market room id
+
     def get_trader_params_as_dict(self):
         return {
             "id": self.id,
@@ -53,17 +58,38 @@ class HumanTrader(PausingTrader):
             message_data = {k: v for k, v in json_message.items() if k != "type"}
             await self.send_message_to_client(message_type, **message_data)
 
+    async def connect_to_socketio(self, sio, sid, market_id):
+        """Connect this trader via Socket.IO instead of raw WebSocket."""
+        try:
+            self._sio = sio
+            self._sio_sid = sid
+            self._sio_room = market_id
+            self.socket_status = True
+
+            await self.initialize()
+            await self.connect_to_market(self.trading_market.id, self.trading_market)
+
+            # Register with the trading platform directly
+            await self.trading_market.handle_register_me({
+                "trader_id": self.id,
+                "trader_type": self.trader_type,
+                "gmail_username": self.gmail_username,
+                "trader_instance": self,
+            })
+        except Exception as e:
+            traceback.print_exc()
+
     async def connect_to_socket(self, websocket):
         try:
             self.websocket = websocket
             self.socket_status = True
-            
+
             await self.initialize()
             await self.connect_to_market(self.trading_market.id, self.trading_market)
-            
+
             # Register WebSocket with the trading platform for broadcasting
             self.trading_market.register_websocket(websocket)
-            
+
             # Register with the trading platform directly
             await self.trading_market.handle_register_me({
                 "trader_id": self.id,
@@ -75,11 +101,14 @@ class HumanTrader(PausingTrader):
             traceback.print_exc()
 
     async def send_message_to_client(self, message_type, **kwargs):
-        if not self.websocket:
-            return
-        if self.websocket.client_state != WebSocketState.CONNECTED:
-            return
         if not self.socket_status:
+            return
+
+        # Check that we have at least one transport
+        has_ws = self.websocket and self.websocket.client_state == WebSocketState.CONNECTED
+        has_sio = self._sio is not None and self._sio_sid is not None
+
+        if not has_ws and not has_sio:
             return
 
         order_book = self.order_book or {"bids": [], "asks": []}
@@ -91,8 +120,8 @@ class HumanTrader(PausingTrader):
                 "pnl": self.get_current_pnl(),
                 "type": message_type,
                 "inventory": dict(shares=self.shares, cash=self.cash),
-                "goal": self.goal,  # Add this line
-                "goal_progress": self.goal_progress,  # Add this line
+                "goal": self.goal,
+                "goal_progress": self.goal_progress,
                 **kwargs,
                 "order_book": order_book,
                 "initial_cash": self.initial_cash,
@@ -102,13 +131,18 @@ class HumanTrader(PausingTrader):
                 "filled_orders": self.filled_orders,
                 "placed_orders": self.placed_orders,
             }
-            # Import sanitization function
             from utils.websocket_utils import sanitize_websocket_message
             sanitized_message = sanitize_websocket_message(message)
-            await self.websocket.send_json(sanitized_message)
+
+            # Socket.IO path
+            if has_sio:
+                event = message_type.lower()  # e.g. "BOOK_UPDATED" -> "book_updated"
+                await self._sio.emit(event, sanitized_message, to=self._sio_sid)
+            # Legacy raw WebSocket path
+            elif has_ws:
+                await self.websocket.send_json(sanitized_message)
         except WebSocketDisconnect:
             self.socket_status = False
-            # Unregister websocket from trading platform
             if hasattr(self, 'trading_market') and self.trading_market:
                 self.trading_market.unregister_websocket(self.websocket)
         except Exception as e:
@@ -171,11 +205,15 @@ class HumanTrader(PausingTrader):
         await super().handle_closure(data)
 
     async def clean_up(self):
-        """Override base cleanup to also unregister websocket."""
+        """Override base cleanup to also unregister websocket / Socket.IO."""
         await super().clean_up()
-        # Unregister websocket from trading platform
+        # Unregister raw websocket from trading platform
         if hasattr(self, 'trading_market') and self.trading_market and hasattr(self, 'websocket') and self.websocket:
             self.trading_market.unregister_websocket(self.websocket)
+        # Clear Socket.IO references
+        self._sio = None
+        self._sio_sid = None
+        self._sio_room = None
 
     async def handle_TRADING_STARTED(self, data):
         """

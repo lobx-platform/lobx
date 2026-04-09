@@ -21,23 +21,18 @@ export const useSessionStore = defineStore('session', {
     maxMarkets: 4,
     
     // Flags
-    isRecovering: false,
     isSyncing: false,
     lastSyncTime: null,
-    
-    // Prolific-specific
-    prolificParams: null,
 
-    // Lab-specific
-    labToken: null,
+    // Login token for auto-re-login (lab token string, e.g. "T1_P1")
+    loginToken: null,
   }),
 
   getters: {
     canTrade: (state) => state.status === 'trading',
     canStartNewMarket: (state) => state.marketsCompleted < state.maxMarkets,
     isLastMarket: (state) => state.marketsCompleted >= state.maxMarkets,
-    isProlificUser: (state) => !!state.prolificParams,
-    isLabUser: (state) => !!state.labToken,
+    isLabUser: (state) => !!state.loginToken,
     
     // Get the route name for current onboarding step
     currentOnboardingRoute: (state) => {
@@ -118,66 +113,15 @@ export const useSessionStore = defineStore('session', {
       }
     },
 
-    // Store Lab token
-    setLabToken(token) {
-      this.labToken = token
-      if (token) {
-        localStorage.setItem('lab_token', token)
-      } else {
-        localStorage.removeItem('lab_token')
-      }
+    // Store login token (lab token string for auto-re-login)
+    setLoginToken(token) {
+      this.loginToken = token
       this.saveToLocalStorage()
     },
 
-    // Load Lab token from localStorage
-    loadLabToken() {
-      try {
-        const stored = localStorage.getItem('lab_token')
-        if (stored) {
-          this.labToken = stored
-          return stored
-        }
-      } catch (e) {
-        localStorage.removeItem('lab_token')
-      }
-      return null
-    },
-
-    // Store Prolific params
-    setProlificParams(params) {
-      this.prolificParams = params
-      if (params) {
-        localStorage.setItem('prolific_params', JSON.stringify({
-          ...params,
-          timestamp: Date.now()
-        }))
-      } else {
-        localStorage.removeItem('prolific_params')
-      }
-    },
-
-    // Load Prolific params from localStorage
-    loadProlificParams() {
-      try {
-        const stored = localStorage.getItem('prolific_params')
-        if (stored) {
-          const parsed = JSON.parse(stored)
-          // Check if params are less than 2 hours old
-          if (Date.now() - parsed.timestamp < 2 * 60 * 60 * 1000) {
-            this.prolificParams = {
-              PROLIFIC_PID: parsed.PROLIFIC_PID,
-              STUDY_ID: parsed.STUDY_ID,
-              SESSION_ID: parsed.SESSION_ID,
-            }
-            return this.prolificParams
-          } else {
-            localStorage.removeItem('prolific_params')
-          }
-        }
-      } catch (e) {
-        localStorage.removeItem('prolific_params')
-      }
-      return null
+    // Load login token
+    loadLoginToken() {
+      return this.loginToken
     },
 
     // Called when market is completed
@@ -202,14 +146,10 @@ export const useSessionStore = defineStore('session', {
         onboardingStep: 0,
         hasCompletedOnboarding: false,
         marketsCompleted: 0,
-        isRecovering: false,
         isSyncing: false,
         lastSyncTime: null,
-        prolificParams: null,
-        labToken: null,
+        loginToken: null,
       })
-      localStorage.removeItem('prolific_params')
-      localStorage.removeItem('lab_token')
       this.saveToLocalStorage()
     },
 
@@ -223,8 +163,7 @@ export const useSessionStore = defineStore('session', {
         hasCompletedOnboarding: this.hasCompletedOnboarding,
         marketsCompleted: this.marketsCompleted,
         maxMarkets: this.maxMarkets,
-        prolificParams: this.prolificParams,
-        labToken: this.labToken,
+        loginToken: this.loginToken,
       }
       localStorage.setItem('session_store', JSON.stringify(dataToSave))
     },
@@ -243,23 +182,16 @@ export const useSessionStore = defineStore('session', {
     },
   },
 
-  // Note: If pinia-plugin-persistedstate is installed, this will work automatically
-  // Otherwise, call saveToLocalStorage() manually after state changes
   persist: {
-    enabled: true,
-    strategies: [{
-      storage: localStorage,
-      paths: [
-        'traderId',
-        'marketId', 
-        'status',
-        'onboardingStep',
-        'hasCompletedOnboarding',
-        'marketsCompleted',
-        'maxMarkets',
-        'prolificParams',
-        'labToken',
-      ]
-    }]
+    pick: [
+      'traderId',
+      'marketId',
+      'status',
+      'onboardingStep',
+      'hasCompletedOnboarding',
+      'marketsCompleted',
+      'maxMarkets',
+      'loginToken',
+    ],
   }
 })

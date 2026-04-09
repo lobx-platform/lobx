@@ -1,9 +1,5 @@
 import { defineStore } from 'pinia'
 import axios from '@/api/axios'
-import { auth } from '@/firebaseConfig'
-import { onAuthStateChanged } from 'firebase/auth'
-
-const LOGIN_COOLDOWN_MS = 1000 // 1 second in milliseconds
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -11,18 +7,13 @@ export const useAuthStore = defineStore('auth', {
     isAdmin: false,
     traderId: null,
     marketId: null,
-    isInitialized: false,
-    isPersisted: false,
-    lastLoginTime: null,
+    userToken: null,    // unified: trader_id used for all API auth
+    adminToken: null,
     loginInProgress: false,
-    prolificToken: null,
-    labToken: null,
   }),
   actions: {
-    // Sync trader ID to session store
     syncToSessionStore() {
       try {
-        // Dynamically import to avoid circular dependency
         import('./session').then(({ useSessionStore }) => {
           const sessionStore = useSessionStore()
           if (this.traderId && sessionStore.traderId !== this.traderId) {
@@ -34,115 +25,12 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async initializeAuth() {
-      let unsubscribe
-      return new Promise((resolve) => {
-        unsubscribe = onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            try {
-              const now = Date.now()
-              if (
-                !this.loginInProgress &&
-                (!this.lastLoginTime || now - this.lastLoginTime > LOGIN_COOLDOWN_MS) &&
-                (!this.traderId || !this.user)
-              ) {
-                this.isPersisted = true
-                await this.login(user, true)
-              }
-            } catch (error) {
-              console.error('Auto-login failed:', error)
-              this.user = null
-              this.isPersisted = false
-            }
-          } else {
-            this.user = null
-            this.isPersisted = false
-          }
-          this.isInitialized = true
-          resolve()
-          if (unsubscribe) unsubscribe()
-        })
-      })
-    },
-
-    async prolificLogin(prolificParams, credentials = null) {
-      if (this.loginInProgress) {
-        return
-      }
-
-      try {
-        this.loginInProgress = true
-
-        const prolificPID = prolificParams.PROLIFIC_PID
-        const newUserId = `prolific_${prolificPID}`
-
-        // Check if this is a different user than before - if so, reset session state
-        const previousUserId = this.user?.uid
-        if (previousUserId !== newUserId) {
-          // Different user logging in (or first login) - clear old session data
-          const { useSessionStore } = await import('./session')
-          const sessionStore = useSessionStore()
-          sessionStore.reset()
-        }
-
-        const pseudoUser = {
-          uid: newUserId,
-          email: `${prolificPID}@prolific.co`,
-          displayName: `Prolific User ${prolificPID}`,
-          isProlific: true,
-          prolificData: prolificParams,
-        }
-
-        this.user = pseudoUser
-
-        const url = `/user/login?PROLIFIC_PID=${prolificParams.PROLIFIC_PID}&STUDY_ID=${prolificParams.STUDY_ID}&SESSION_ID=${prolificParams.SESSION_ID}`
-
-        let requestBody = {}
-        if (credentials && credentials.username && credentials.password) {
-          requestBody = {
-            username: credentials.username,
-            password: credentials.password,
-          }
-          if (credentials.turnstile_token) {
-            requestBody.turnstile_token = credentials.turnstile_token
-          }
-        }
-
-        const response = await axios.post(url, requestBody)
-
-        if (!response.data.data || !response.data.data.trader_id) {
-          throw new Error('No trader ID received')
-        }
-
-        this.isAdmin = response.data.data.is_admin || false
-        this.traderId = response.data.data.trader_id
-        this.lastLoginTime = Date.now()
-        this.isPersisted = false
-
-        if (response.data.data.prolific_token) {
-          this.prolificToken = response.data.data.prolific_token
-        }
-
-        // Sync to session store
-        this.syncToSessionStore()
-      } catch (error) {
-        console.error('Prolific login error:', error)
-        this.user = null
-        throw new Error(error.message || 'Failed to login with Prolific')
-      } finally {
-        this.loginInProgress = false
-      }
-    },
-
     async labLogin(labToken) {
-      if (this.loginInProgress) {
-        return
-      }
+      if (this.loginInProgress) return
 
       try {
         this.loginInProgress = true
-
-        const response = await axios.post(`/user/login?LAB_TOKEN=${labToken}`)
+        const response = await axios.post(`/user/login?LAB=${encodeURIComponent(labToken)}`)
 
         if (!response.data.data || !response.data.data.trader_id) {
           throw new Error('No trader ID received')
@@ -152,15 +40,12 @@ export const useAuthStore = defineStore('auth', {
         this.user = {
           uid: data.uid || `lab_${labToken}`,
           email: data.email || 'lab@lab.local',
-          displayName: `Lab Participant`,
+          displayName: 'Lab Participant',
           isLab: true,
         }
         this.isAdmin = false
         this.traderId = data.trader_id
-        this.labToken = data.lab_token || labToken
-        this.lastLoginTime = Date.now()
-        this.isPersisted = false
-
+        this.userToken = data.trader_id
         this.syncToSessionStore()
       } catch (error) {
         console.error('Lab login error:', error)
@@ -171,59 +56,55 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async login(user, isAutoLogin = false) {
-      if (this.loginInProgress) {
-        return
-      }
-
-      if (this.user?.uid === user.uid && this.traderId) {
-        console.log('User already logged in')
-        return
-      }
+    async prolificLogin(prolificPID, studyID, sessionID) {
+      if (this.loginInProgress) return
 
       try {
         this.loginInProgress = true
-        let response = await axios.post('/user/login')
+        const params = new URLSearchParams({ PROLIFIC_PID: prolificPID })
+        if (studyID) params.set('STUDY_ID', studyID)
+        if (sessionID) params.set('SESSION_ID', sessionID)
 
-        if (!response.data.data.trader_id) {
-          console.error('No trader ID received')
-          if (!isAutoLogin) {
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-            const retryResponse = await axios.post('/user/login')
-            if (!retryResponse.data.data.trader_id) {
-              throw new Error('Failed to get trader ID')
-            }
-            response = retryResponse
-          }
+        const response = await axios.post(`/user/login?${params.toString()}`)
+
+        if (!response.data.data || !response.data.data.trader_id) {
+          throw new Error('No trader ID received')
         }
 
-        if (user.uid === auth.currentUser?.uid) {
-          this.user = user
-          this.isAdmin = response.data.data.is_admin
-          this.traderId = response.data.data.trader_id
-          this.lastLoginTime = Date.now()
-
-          if (!isAutoLogin) {
-            this.isPersisted = false
-          }
-
-          // Sync to session store
-          this.syncToSessionStore()
+        const data = response.data.data
+        this.user = {
+          uid: prolificPID,
+          email: `${prolificPID}@prolific`,
+          displayName: 'Prolific Participant',
+          isProlific: true,
+          prolificData: { PROLIFIC_PID: prolificPID, STUDY_ID: studyID, SESSION_ID: sessionID },
         }
+        this.isAdmin = false
+        this.traderId = data.trader_id
+        this.userToken = data.trader_id
+        this.syncToSessionStore()
       } catch (error) {
-        console.error('Login error:', error)
-        throw new Error(error.message || 'Failed to login')
+        console.error('Prolific login error:', error)
+        this.user = null
+        throw new Error(error.message || 'Failed to login via Prolific')
       } finally {
         this.loginInProgress = false
       }
     },
 
-    async adminLogin(user) {
+    async adminPasswordLogin(password) {
       try {
-        const response = await axios.post('/admin/login')
-        this.user = user
-        this.isAdmin = response.data.data.is_admin
+        this.adminToken = password
+        const response = await axios.post('/admin/login', { password })
+
+        this.user = {
+          uid: 'admin',
+          email: 'admin@local',
+          displayName: 'Admin',
+        }
+        this.isAdmin = response.data.data?.is_admin ?? true
       } catch (error) {
+        this.adminToken = null
         console.error('Admin login error:', error)
         throw new Error(error.message || 'Failed to login as admin')
       }
@@ -235,37 +116,15 @@ export const useAuthStore = defineStore('auth', {
       this.isAdmin = false
       this.traderId = null
       this.marketId = null
-      this.isPersisted = false
-      this.isInitialized = false
-      this.lastLoginTime = null
-      this.prolificToken = null
-      this.labToken = null
-
-      localStorage.removeItem('auth')
+      this.userToken = null
+      this.adminToken = null
     },
   },
   getters: {
     isAuthenticated: (state) => !!state.user,
     isLabUser: (state) => !!state.user?.isLab,
-    prolificId: (state) =>
-      state.user?.isProlific ? state.user.prolificData?.PROLIFIC_PID || '' : '',
   },
   persist: {
-    enabled: true,
-    strategies: [
-      {
-        storage: localStorage,
-        paths: [
-          'isAdmin',
-          'traderId',
-          'marketId',
-          'isPersisted',
-          'lastLoginTime',
-          'loginInProgress',
-          'prolificToken',
-          'labToken',
-        ],
-      },
-    ],
+    pick: ['isAdmin', 'traderId', 'marketId', 'userToken', 'adminToken', 'user'],
   },
 })

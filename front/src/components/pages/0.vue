@@ -1,23 +1,19 @@
 <template>
   <div class="consent-page">
-    <!-- Animated header -->
-    <div v-motion-slide-visible-once-bottom :delay="200" class="page-header">
-      <div class="icon-wrapper">
-        <ClipboardCheck :size="32" class="header-icon" />
-      </div>
+    <!-- Header -->
+    <div class="page-header">
       <h2 class="header-title">Research Participant Consent Form</h2>
       <p class="header-subtitle">Please read this information carefully before proceeding</p>
     </div>
 
-    <!-- Content with smooth animations -->
-    <div v-motion-fade-visible-once :delay="400" class="content-container">
+    <!-- Content -->
+    <div class="content-container">
       <div class="consent-content prose prose-slate max-w-none">
         <div class="project-info">
           <h3>Project Title: Information Dissemination in Electronic Financial Markets</h3>
 
           <div class="info-grid">
             <div class="info-item">
-              <Building2 :size="20" />
               <div>
                 <strong>Institution:</strong>
                 <span>Royal Holloway, University of London -- Department of Economics</span>
@@ -25,7 +21,6 @@
             </div>
 
             <div class="info-item">
-              <Users :size="20" />
               <div>
                 <strong>Researchers:</strong>
                 <span
@@ -36,7 +31,6 @@
             </div>
 
             <div class="info-item">
-              <CreditCard :size="20" />
               <div>
                 <strong>Funding Body:</strong>
                 <span>The Leverhulme Trust</span>
@@ -47,7 +41,7 @@
 
         <div class="content-sections">
           <section class="content-section">
-            <h4><Info :size="20" /> Introduction</h4>
+            <h4>Introduction</h4>
             <p>
               Royal Holloway, University of London supports the practise of protecting human
               participants in research. This form provides you with important information about
@@ -60,8 +54,8 @@
             </p>
           </section>
 
-          <section class="content-section highlight-section">
-            <h4><Target :size="20" /> Summary</h4>
+          <section class="content-section">
+            <h4>Summary</h4>
             <p>
               The purpose of this study is to investigate the interaction between human and machines
               (AI agents) in electronic financial markets. In this study, we will ask you to
@@ -75,7 +69,7 @@
           </section>
 
           <section class="content-section">
-            <h4><Shield :size="20" /> Ethical Approval</h4>
+            <h4>Ethical Approval</h4>
             <p>
               This study has received ethics approval from Royal Holloway, University of London's
               Research Ethics Committee, with the approval ID of <strong>713</strong>.
@@ -83,7 +77,7 @@
           </section>
 
           <section class="content-section">
-            <h4><Database :size="20" /> Data Collection</h4>
+            <h4>Data Collection</h4>
             <p>
               During this study, we will collect data from you only related to your buy or sell
               decision orders. At the end of the study, you will be asked to complete a short survey
@@ -94,12 +88,12 @@
           </section>
 
           <section class="content-section">
-            <h4><Lock :size="20" /> Data Protection</h4>
+            <h4>Data Protection</h4>
             <p>This research commits to abide by the Data Protection Act (2018).</p>
           </section>
 
           <section class="content-section">
-            <h4><FileText :size="20" /> General Data Protection Regulation Statement</h4>
+            <h4>General Data Protection Regulation Statement</h4>
             <div class="gdpr-content">
               <p>
                 Important General Data Protection Regulation information (GDPR). Royal Holloway,
@@ -148,8 +142,8 @@
             </div>
           </section>
 
-          <section class="content-section earnings-section">
-            <h4><DollarSign :size="20" /> Compensation</h4>
+          <section class="content-section">
+            <h4>Compensation</h4>
             <p>
               For your time and effort, you will receive compensation through the Prolific platform
               payment. You will receive a participation fee of <strong>£5 GBP</strong>, and
@@ -160,15 +154,15 @@
           </section>
 
           <section class="content-section">
-            <h4><MessageSquare :size="20" /> Contact Information</h4>
+            <h4>Contact Information</h4>
             <p>
               If you have any question, concerns, or feedback related to this study, please feel
               free to contact us through the Prolific message box.
             </p>
           </section>
 
-          <section class="content-section consent-section">
-            <h4><CheckSquare :size="20" /> Statement of Consent</h4>
+          <section class="content-section">
+            <h4>Statement of Consent</h4>
             <p><strong>I confirm that:</strong></p>
             <ul class="consent-list">
               <li>I have read and understood the information provided in this consent form.</li>
@@ -190,7 +184,12 @@
     </div>
 
     <!-- Consent checkbox and button -->
-    <div v-motion-slide-visible-once-bottom :delay="600" class="consent-footer">
+    <div class="consent-footer">
+      <!-- Lab identity confirmation -->
+      <div v-if="participantLabel" class="identity-confirm">
+        You are participant <strong>{{ participantLabel }}</strong>. If this is not correct, please contact the researcher.
+      </div>
+
       <div class="checkbox-container">
         <input
           id="consent-checkbox"
@@ -201,7 +200,7 @@
         />
         <label for="consent-checkbox" class="checkbox-label">
           <div class="checkbox-indicator">
-            <Check v-if="consentGiven" :size="16" class="check-icon" />
+            <span v-if="consentGiven" class="check-mark">&#10003;</span>
           </div>
           <span>I consent to participate in this research study</span>
         </label>
@@ -214,46 +213,41 @@
         :class="{ disabled: !consentGiven }"
       >
         <span v-if="!consentGiven">Please review and consent above</span>
-        <span v-else>
-          Continue to Study
-          <ArrowRight :size="20" />
-        </span>
+        <span v-else>Continue to Study</span>
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, computed, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTraderStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import { useSessionStore } from '@/store/session'
 import NavigationService from '@/services/navigation'
 import axios from '@/api/axios'
-import {
-  ClipboardCheck,
-  Building2,
-  Users,
-  CreditCard,
-  Info,
-  Target,
-  Shield,
-  Database,
-  Lock,
-  FileText,
-  DollarSign,
-  MessageSquare,
-  CheckSquare,
-  Check,
-  ArrowRight,
-} from 'lucide-vue-next'
 
 const router = useRouter()
 const traderStore = useTraderStore()
 const authStore = useAuthStore()
 const sessionStore = useSessionStore()
 const consentGiven = ref(false)
+
+const participantLabel = computed(() => {
+  const user = authStore.user
+  if (!user) return null
+  if (user.isLab) {
+    // Extract token from trader ID: HUMAN_LAB_T1_P1 → T1_P1
+    const traderId = authStore.traderId || ''
+    const match = traderId.match(/LAB_(.+)$/)
+    return match ? match[1] : traderId
+  }
+  if (user.isProlific) {
+    return user.prolificData?.PROLIFIC_PID || 'Prolific Participant'
+  }
+  return null
+})
 
 const emit = defineEmits(['update:canProgress'])
 
@@ -350,57 +344,38 @@ const submitConsent = async () => {
   margin-bottom: 2rem;
 }
 
-.icon-wrapper {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 16px;
-  margin-bottom: 1rem;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-}
-
-.header-icon {
-  color: white;
-}
-
 .header-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-text-primary);
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
 }
 
 .header-subtitle {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 1rem;
   margin: 0;
 }
 
 .content-container {
-  background: white;
-  border-radius: 16px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
   padding: 2rem;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  border: var(--border-width) solid var(--color-border);
   margin-bottom: 2rem;
 }
 
 .project-info {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+  border-bottom: 2px solid var(--color-border);
 }
 
 .project-info h3 {
   font-size: 1.25rem;
-  font-weight: 600;
-  color: #1e293b;
+  font-weight: 700;
+  color: var(--color-text-primary);
   margin-bottom: 1.5rem;
   text-align: center;
 }
@@ -411,29 +386,20 @@ const submitConsent = async () => {
 }
 
 .info-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
   padding: 1rem;
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
-}
-
-.info-item svg {
-  color: #667eea;
-  flex-shrink: 0;
-  margin-top: 2px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .info-item strong {
   display: block;
-  color: #374151;
+  color: var(--color-text-primary);
   margin-bottom: 0.25rem;
 }
 
 .info-item span {
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .content-sections {
@@ -443,27 +409,20 @@ const submitConsent = async () => {
 
 .content-section {
   padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(249, 250, 251, 0.5);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-elevated);
 }
 
 .content-section h4 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   font-size: 1.125rem;
-  font-weight: 600;
-  color: #374151;
+  font-weight: 700;
+  color: var(--color-text-primary);
   margin: 0 0 1rem 0;
 }
 
-.content-section h4 svg {
-  color: #667eea;
-}
-
 .content-section p {
-  color: #4b5563;
+  color: var(--color-text-secondary);
   line-height: 1.6;
   margin: 0 0 0.75rem 0;
 }
@@ -472,37 +431,11 @@ const submitConsent = async () => {
   margin-bottom: 0;
 }
 
-.highlight-section {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-  border-color: rgba(102, 126, 234, 0.2);
-  border-width: 2px;
-}
-
-.earnings-section {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.05));
-  border-color: rgba(16, 185, 129, 0.2);
-  border-width: 2px;
-}
-
-.earnings-section h4 svg {
-  color: #10b981;
-}
-
-.consent-section {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(217, 119, 6, 0.05));
-  border-color: rgba(245, 158, 11, 0.2);
-  border-width: 2px;
-}
-
-.consent-section h4 svg {
-  color: #f59e0b;
-}
-
 .gdpr-content {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-bg-subtle);
   padding: 1rem;
-  border-radius: 8px;
-  border-left: 4px solid #6366f1;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .consent-list {
@@ -517,38 +450,40 @@ const submitConsent = async () => {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
   padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 6px;
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
 }
 
 .consent-list li::before {
-  content: '✓';
-  color: #10b981;
+  content: '\2713';
+  color: var(--color-success);
   font-weight: bold;
   flex-shrink: 0;
 }
 
 .external-link {
-  color: #667eea;
+  color: var(--color-primary);
   text-decoration: underline;
-  text-decoration-color: rgba(102, 126, 234, 0.3);
-  transition: all 0.2s;
-}
-
-.external-link:hover {
-  color: #4f46e5;
-  text-decoration-color: #4f46e5;
 }
 
 .consent-footer {
-  background: white;
-  border-radius: 16px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
   padding: 2rem;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  border: var(--border-width) solid var(--color-border);
   text-align: center;
+}
+
+.identity-confirm {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
 }
 
 .checkbox-container {
@@ -562,12 +497,7 @@ const submitConsent = async () => {
   gap: 0.75rem;
   cursor: pointer;
   font-weight: 500;
-  color: #374151;
-  transition: color 0.2s;
-}
-
-.checkbox-label:hover {
-  color: #1f2937;
+  color: var(--color-text-primary);
 }
 
 .consent-checkbox {
@@ -580,19 +510,20 @@ const submitConsent = async () => {
   justify-content: center;
   width: 24px;
   height: 24px;
-  border: 2px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
-  transition: all 0.2s;
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
 }
 
 .consent-checkbox:checked + .checkbox-label .checkbox-indicator {
-  background: #667eea;
-  border-color: #667eea;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
-.check-icon {
-  color: white;
+.check-mark {
+  color: var(--color-text-inverse);
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .consent-btn {
@@ -601,29 +532,20 @@ const submitConsent = async () => {
   justify-content: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   min-width: 200px;
 }
 
-.consent-btn:hover:not(.disabled) {
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-  transform: translateY(-2px);
-}
-
 .consent-btn.disabled {
-  background: #d1d5db;
-  color: #9ca3af;
+  background: var(--color-text-muted);
+  color: var(--color-bg-elevated);
   cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
 }
 
 /* Responsive design */
@@ -651,7 +573,7 @@ const submitConsent = async () => {
 
 /* Typography improvements */
 .prose {
-  color: #374151;
+  color: var(--color-text-secondary);
   max-width: none;
 }
 
@@ -661,18 +583,18 @@ const submitConsent = async () => {
 }
 
 .prose strong {
-  color: #1f2937;
+  color: var(--color-text-primary);
   font-weight: 600;
 }
 
 .prose h3 {
-  color: #1f2937;
-  font-weight: 600;
+  color: var(--color-text-primary);
+  font-weight: 700;
   margin-bottom: 1rem;
 }
 
 .prose h4 {
-  color: #374151;
+  color: var(--color-text-primary);
   font-weight: 600;
   margin-bottom: 0.75rem;
 }

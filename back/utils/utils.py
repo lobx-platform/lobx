@@ -80,26 +80,6 @@ logger = setup_custom_logger(__name__)
 CONFIG = load_config()
 
 
-def if_active(func):
-    @functools.wraps(func)
-    def sync_wrapper(self, *args, **kwargs):
-        if not self.active:
-            logger.critical(
-                f"{func.__name__} is skipped because the trading market is not active."
-            )
-            return None
-        return func(self, *args, **kwargs)
-
-    async def async_wrapper(self, *args, **kwargs):
-        if not self.active:
-            logger.critical(
-                f"{func.__name__} is skipped because the trading market is not active."
-            )
-            return None
-        return await func(self, *args, **kwargs)
-
-    return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
-
 class CustomEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (UUID, Enum)):

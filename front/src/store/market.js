@@ -59,8 +59,6 @@ export const useMarketStore = defineStore('market', {
         value: null,
       },
     ],
-    currentPrice: null,
-    lastTransactionPrice: null,
     recentTransactions: [],
   }),
 
@@ -105,10 +103,6 @@ export const useMarketStore = defineStore('market', {
       }
       if (history !== undefined) {
         this.history = history
-      }
-      if (transaction_price !== undefined) {
-        this.lastTransactionPrice = transaction_price
-        this.currentPrice = transaction_price
       }
     },
 

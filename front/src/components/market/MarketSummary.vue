@@ -2,102 +2,105 @@
   <v-container fluid class="fill-height">
     <v-row align="center" justify="center" class="fill-height">
       <v-col cols="12" sm="10" md="8" lg="6">
-        <v-card elevation="24" class="market-summary-card">
-          <v-card-title class="text-h4 font-weight-bold text-center py-6 primary white--text">
-            Trading Market Summary
-          </v-card-title>
-          <v-card-text class="pa-6">
-            <v-row>
-              <!-- Your Statistics -->
-              <v-col cols="12">
-                <div v-if="traderSpecificMetrics" class="metric-card pa-4 mb-4">
-                  <h3 class="text-h6 font-weight-medium mb-2">Your Statistics</h3>
-                    <div class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-subtitle-1">Your Trades:</span>
-                      <span class="text-h6 font-weight-bold">{{ formatValue(traderSpecificMetrics.Trades, 'number') }}</span>
-                    </div>
-                    <div class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-subtitle-1">Inventory Imbalance:</span>
-                      <span class="text-h6 font-weight-bold">{{ formatValue(traderSpecificMetrics.Remaining_Trades, 'number') }}</span>
-                    </div>
-                   <!--<div class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-subtitle-1">Penalty :</span>
-                      <span class="text-h6 font-weight-bold">{{ formatValue( (- traderSpecificMetrics.Remaining_Trades * 5) || 0, 'number') }}</span>
-                    </div>  -->
-                    <div class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-subtitle-1">PnL:</span>
-                      <span class="text-h6 font-weight-bold">{{ formatValue(traderSpecificMetrics.PnL, 'number') }}</span>
-                    </div>
-                    <div class="d-flex justify-space-between align-center mb-2">
-                      <span class="text-subtitle-1">Market Reward (if selected):</span>
-                      <span class="text-h6 font-weight-bold">{{ formatValue(traderSpecificMetrics.Reward, 'gbp') }}</span>
-                    </div>
-                </div>
-              </v-col>
-              <v-col cols="12">
-                <div class="metric-card pa-4 mb-4">
-                  <h3 class="text-h6 font-weight-medium mb-2">Market Progress</h3>
-                  <div class="d-flex justify-space-between align-center mb-2">
-                    <span class="text-subtitle-1">Current Market:</span>
-                    <span class="text-h6 font-weight-bold">{{ currentMarket }}</span>
-                  </div>
-                  <div class="d-flex justify-space-between align-center">
-                    <span class="text-subtitle-1">Maximum Markets:</span>
-                    <span class="text-h6 font-weight-bold">{{ maxMarketsDisplay }}</span>
-                  </div>
-                </div>
-              </v-col>
-            </v-row>
-          </v-card-text>
-
-          <!-- Per-market questions (shown after every market) -->
-          <div v-if="traderSpecificMetrics && !questionnaireCompleted" class="pa-6 questionnaire-section">
-            <h3 class="text-h6 mb-3">Answer the following question to continue:</h3>
-            <p class="text-body-2 mb-3 font-italic">
-              Which statement best describes the market?<br>
-            </p>
-            <div class="question-container mb-4">
-              <v-radio-group v-model="perMarketQuestions.marketDescription">
-                <v-radio label="An algorithmic trader consistently bought shares." value="algo_bought"></v-radio>
-                <v-radio label="An algorithmic trader consistently sold shares." value="algo_sold"></v-radio>
-                <v-radio label="There was no algorithmic trader consistently buying or selling shares." value="no_algo"></v-radio>
-              </v-radio-group>
+        <div class="summary-card">
+          <div class="summary-header">Market Summary</div>
+          <div class="summary-body">
+            <!-- Your Statistics -->
+            <div v-if="traderSpecificMetrics" class="stat-section">
+              <div class="section-label">Your Statistics</div>
+              <div class="stat-row">
+                <span class="stat-name">Your Trades</span>
+                <span class="stat-val">{{
+                  formatValue(traderSpecificMetrics.Trades, 'number')
+                }}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Inventory Imbalance</span>
+                <span class="stat-val">{{
+                  formatValue(traderSpecificMetrics.Remaining_Trades, 'number')
+                }}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">PnL</span>
+                <span class="stat-val">{{
+                  formatValue(traderSpecificMetrics.PnL, 'number')
+                }}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Market Reward (if selected)</span>
+                <span class="stat-val">{{
+                  formatValue(traderSpecificMetrics.Reward, 'gbp')
+                }}</span>
+              </div>
             </div>
 
-            <!-- Conditional: inventory imbalance question (only when Remaining_Trades != 0) -->
-            <!-- <div v-if="hasInventoryImbalance" class="mt-4">
-              <h3 class="text-h6 mb-3">Answer the following question to continue:</h3>
-              <p class="text-body-2 mb-3">
-                Your number of shares at the end of the market must equal your initial number of shares. Because they did not match, a penalty was applied.<br>
-                Why did this happen?
-              </p>
-              <div class="question-container mb-4">
-                <v-radio-group v-model="perMarketQuestions.imbalanceReason">
-                  <v-radio label="I did not understand that my final number of shares had to equal my initial number of shares." value="did_not_understand"></v-radio>
-                  <v-radio label="I did not have enough time to adjust my shares so that my final number matched my initial number." value="not_enough_time"></v-radio>
-                  <v-radio label="I lost track of time." value="lost_track_time"></v-radio>
-                </v-radio-group>
+            <div class="stat-section">
+              <div class="section-label">Market Progress</div>
+              <div class="stat-row">
+                <span class="stat-name">Current Market</span>
+                <span class="stat-val">{{ currentMarket }}</span>
               </div>
-            </div> -->
+              <div class="stat-row">
+                <span class="stat-name">Maximum Markets</span>
+                <span class="stat-val">{{ maxMarketsDisplay }}</span>
+              </div>
+            </div>
           </div>
 
-          <v-card-actions class="justify-center pa-6">
-            <template v-if="isLastMarket">
-              <div class="text-center">
-                <h2 class="text-h5 mb-4 primary--text">Thank you for your participation!</h2>
-                <p class="text-subtitle-1 mb-4">
-                  You have completed all trading markets.<br>
-                  Your market reward is {{ formatValue(traderSpecificMetrics?.Accumulated_Reward, 'gbp') }}. Your participation fee is {{ formatValue(5, 'gbp') }}.
-                  <br><br>
-                  Your final payment will be {{ formatValue((traderSpecificMetrics?.Accumulated_Reward || 0) + 5, 'gbp') }}.
-                </p>
-                <!-- Final Questionnaire Section (last market only) -->
-                <div v-if="!questionnaireCompleted" class="questionnaire-section mt-4 mb-4">
-                  <h3 class="text-h6 mb-3">Please complete this short questionnaire before finishing</h3>
+          <!-- Per-market questions (shown after every market) -->
+          <div
+            v-if="traderSpecificMetrics && !questionnaireCompleted"
+            class="questionnaire-section"
+          >
+            <div class="section-label">Answer the following question to continue:</div>
+            <p class="q-prompt">Which statement best describes the market?</p>
+            <div class="q-container">
+              <v-radio-group v-model="perMarketQuestions.marketDescription">
+                <v-radio
+                  label="An algorithmic trader consistently bought shares."
+                  value="algo_bought"
+                ></v-radio>
+                <v-radio
+                  label="An algorithmic trader consistently sold shares."
+                  value="algo_sold"
+                ></v-radio>
+                <v-radio
+                  label="There was no algorithmic trader consistently buying or selling shares."
+                  value="no_algo"
+                ></v-radio>
+              </v-radio-group>
+            </div>
+          </div>
 
-                  <!-- Question 1 -->
-                  <div class="question-container mb-4">
-                    <p class="text-subtitle-1 mb-2">1. Was the overall direction of the price movement clear throughout the markets?</p>
+          <div class="summary-actions">
+            <template v-if="isLastMarket">
+              <div class="final-section">
+                <div class="section-label" style="color: var(--color-primary)">
+                  Thank you for your participation!
+                </div>
+                <p class="final-text">
+                  You have completed all trading markets.<br />
+                  Your market reward is
+                  {{ formatValue(traderSpecificMetrics?.Accumulated_Reward, 'gbp') }}. Your
+                  participation fee is {{ formatValue(5, 'gbp') }}.
+                  <br /><br />
+                  Your final payment will be
+                  {{
+                    formatValue((traderSpecificMetrics?.Accumulated_Reward || 0) + 5, 'gbp')
+                  }}.
+                </p>
+
+                <!-- Final Questionnaire Section (last market only) -->
+                <div v-if="!questionnaireCompleted" class="final-questionnaire">
+                  <div class="section-label">
+                    Please complete this short questionnaire before finishing
+                  </div>
+
+                  <div class="q-container">
+                    <p class="q-prompt">
+                      1. Was the overall direction of the price movement clear throughout the
+                      markets?
+                    </p>
                     <v-radio-group v-model="questionnaire.q1" row>
                       <v-radio label="Yes" value="Yes"></v-radio>
                       <v-radio label="No" value="No"></v-radio>
@@ -105,19 +108,32 @@
                     </v-radio-group>
                   </div>
 
-                  <!-- Question 2 -->
-                  <div class="question-container mb-4">
-                    <p class="text-subtitle-1 mb-2">2. Which window of the trading platform provided the most useful information for your decisions?</p>
+                  <div class="q-container">
+                    <p class="q-prompt">
+                      2. Which window of the trading platform provided the most useful information
+                      for your decisions?
+                    </p>
                     <v-radio-group v-model="questionnaire.q2" row>
-                      <v-radio label="Order Book Chart (Bar Plot)" value="Order Book Chart"></v-radio>
-                      <v-radio label="Price History Chart (Line Plot)" value="Price History Chart"></v-radio>
-                      <v-radio label="Market Info Card (Market Information)" value="Market Info Card"></v-radio>
+                      <v-radio
+                        label="Order Book Chart (Bar Plot)"
+                        value="Order Book Chart"
+                      ></v-radio>
+                      <v-radio
+                        label="Price History Chart (Line Plot)"
+                        value="Price History Chart"
+                      ></v-radio>
+                      <v-radio
+                        label="Market Info Card (Market Information)"
+                        value="Market Info Card"
+                      ></v-radio>
                     </v-radio-group>
                   </div>
 
-                  <!-- Question 3 -->
-                  <div class="question-container mb-4">
-                    <p class="text-subtitle-1 mb-2">3. Were you able to effectively monitor your inventory imbalance using information provided by the platform?</p>
+                  <div class="q-container">
+                    <p class="q-prompt">
+                      3. Were you able to effectively monitor your inventory imbalance using
+                      information provided by the platform?
+                    </p>
                     <v-radio-group v-model="questionnaire.q3" row>
                       <v-radio label="Yes" value="Yes"></v-radio>
                       <v-radio label="No" value="No"></v-radio>
@@ -125,9 +141,11 @@
                     </v-radio-group>
                   </div>
 
-                  <!-- Question 4 -->
-                  <div class="question-container mb-4">
-                    <p class="text-subtitle-1 mb-2">4. Was the Average Price of Buy and Sell trades helpful in informing your decisions?</p>
+                  <div class="q-container">
+                    <p class="q-prompt">
+                      4. Was the Average Price of Buy and Sell trades helpful in informing your
+                      decisions?
+                    </p>
                     <v-radio-group v-model="questionnaire.q4" row>
                       <v-radio label="Yes" value="Yes"></v-radio>
                       <v-radio label="No" value="No"></v-radio>
@@ -137,7 +155,6 @@
 
                   <v-btn
                     color="primary"
-                    x-large
                     @click="submitQuestionnaire"
                     :disabled="!isQuestionnaireComplete"
                     class="mt-2"
@@ -148,18 +165,19 @@
 
                 <!-- Show this after questionnaire is completed -->
                 <div v-if="questionnaireCompleted" class="mt-4">
-                  <p v-if="sessionType === 'prolific'" class="text-subtitle-1 mb-4">
-                    <span class="font-weight-bold">Please click <a :href="prolificRedirectUrl" target="_blank" class="primary--text">here</a> to complete your submission on Prolific.</span>
+                  <p v-if="sessionType === 'prolific'" class="final-text">
+                    <strong
+                      >Please click
+                      <a :href="prolificRedirectUrl" target="_blank">here</a> to complete
+                      your submission on Prolific.</strong
+                    >
                   </p>
-                  <p v-else class="text-subtitle-1 mb-4">
-                    <span class="font-weight-bold">Thank you for your participation. You may now close this page.</span>
+                  <p v-else class="final-text">
+                    <strong
+                      >Thank you for your participation. You may now close this page.</strong
+                    >
                   </p>
-                  <v-btn
-                    color="secondary"
-                    x-large
-                    @click="downloadMarketMetrics"
-                    class="mt-2"
-                  >
+                  <v-btn color="primary" variant="outlined" @click="downloadMarketMetrics" class="mt-2">
                     Download Metrics
                   </v-btn>
                 </div>
@@ -168,7 +186,6 @@
             <template v-else>
               <v-btn
                 color="primary"
-                x-large
                 @click="goToNextMarket"
                 :loading="isNavigating"
                 :disabled="!arePerMarketQuestionsComplete"
@@ -176,16 +193,12 @@
               >
                 Continue to Next Market
               </v-btn>
-              <v-btn
-                color="secondary"
-                x-large
-                @click="downloadMarketMetrics"
-              >
+              <v-btn color="primary" variant="outlined" @click="downloadMarketMetrics">
                 Download Metrics
               </v-btn>
             </template>
-          </v-card-actions>
-        </v-card>
+          </div>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -215,56 +228,53 @@ const sessionStore = useSessionStore()
 const authStore = useAuthStore()
 const { pnl, vwap } = storeToRefs(traderStore)
 
-// Get trader ID from session store
 const traderId = computed(() => sessionStore.traderId || authStore.traderId)
 
 const traderInfo = ref(null)
 const orderBookMetrics = ref(null)
 const traderSpecificMetrics = ref(null)
 const httpUrl = import.meta.env.VITE_HTTP_URL
-const prolificRedirectUrl = import.meta.env.VITE_PROLIFIC_REDIRECT_URL || 'https://app.prolific.com/submissions/complete?cc=C11I8OGE'
+const prolificRedirectUrl =
+  import.meta.env.VITE_PROLIFIC_REDIRECT_URL ||
+  'https://app.prolific.com/submissions/complete?cc=C11I8OGE'
 const showDialog = ref(false)
 const dialogTitle = ref('')
 const dialogMessage = ref('')
 const isNavigating = ref(false)
 
-// Per-market questions state (shown after every market)
 const perMarketQuestions = ref({
   marketDescription: null,
-  imbalanceReason: null
+  imbalanceReason: null,
 })
 
-// Check if inventory is imbalanced
 const hasInventoryImbalance = computed(() => {
   const remaining = traderSpecificMetrics.value?.Remaining_Trades
   return remaining !== undefined && remaining !== null && remaining !== 0
 })
 
-// Check if per-market questions are complete
 const arePerMarketQuestionsComplete = computed(() => {
   if (!perMarketQuestions.value.marketDescription) return false
   return true
 })
 
-// Questionnaire state (last market only)
 const questionnaireCompleted = ref(false)
 const questionnaire = ref({
   q1: null,
   q2: null,
   q3: null,
-  q4: null
+  q4: null,
 })
 
-// Check if all questions are answered (per-market + final questionnaire)
 const isQuestionnaireComplete = computed(() => {
-  return arePerMarketQuestionsComplete.value &&
-         questionnaire.value.q1 &&
-         questionnaire.value.q2 &&
-         questionnaire.value.q3 &&
-         questionnaire.value.q4
+  return (
+    arePerMarketQuestionsComplete.value &&
+    questionnaire.value.q1 &&
+    questionnaire.value.q2 &&
+    questionnaire.value.q3 &&
+    questionnaire.value.q4
+  )
 })
 
-// Submit questionnaire responses
 async function submitQuestionnaire() {
   try {
     const responses = [
@@ -273,22 +283,21 @@ async function submitQuestionnaire() {
       questionnaire.value.q3,
       questionnaire.value.q4,
       perMarketQuestions.value.marketDescription,
-      perMarketQuestions.value.imbalanceReason || 'N/A'
+      perMarketQuestions.value.imbalanceReason || 'N/A',
     ]
-    
+
     let traderIdForSubmit = traderId.value
-    
-    // For prolific users, ensure correct format
+
     if (authStore.user?.isProlific) {
       const prolificPID = authStore.user.prolificData.PROLIFIC_PID
       traderIdForSubmit = `HUMAN_${prolificPID}`
     }
-    
+
     const response = await axios.post(`${httpUrl}save_questionnaire_response`, {
       trader_id: traderIdForSubmit,
-      responses: responses
+      responses: responses,
     })
-    
+
     if (response.data.status === 'success') {
       questionnaireCompleted.value = true
       NavigationService.completeStudy()
@@ -309,17 +318,16 @@ const closeDialog = () => {
   showDialog.value = false
 }
 
-// Download market metrics
 const downloadMarketMetrics = async () => {
   try {
     const response = await axios.get(`${httpUrl}market_metrics`, {
       params: {
         trader_id: traderId.value,
-        market_id: traderId.value
+        market_id: sessionStore.marketId,
       },
-      responseType: 'blob'
+      responseType: 'blob',
     })
-    
+
     const url = window.URL.createObjectURL(new Blob([response.data]))
     const link = document.createElement('a')
     link.href = url
@@ -344,29 +352,26 @@ async function fetchTraderInfo() {
     console.error('No trader ID available')
     return
   }
-  
+
   try {
     const response = await axios.get(`${httpUrl}trader_info/${traderId.value}`)
     traderInfo.value = response.data.data
     orderBookMetrics.value = response.data.data.order_book_metrics
     traderSpecificMetrics.value = response.data.data.trader_specific_metrics
-    //console.log('Trader Specific metrics:', traderSpecificMetrics.value) for printing the traderspecific metrics
-    //console.log('Order Book metrics:', orderBookMetrics.value)
 
-    // Retry for metrics if missing
     if (traderInfo.value && (!orderBookMetrics.value || !traderSpecificMetrics.value)) {
       let retryCount = 0
       const retryMetrics = async () => {
         if (retryCount >= maxRetries) return
-        
-        await new Promise(resolve => setTimeout(resolve, retryDelay))
-        
+
+        await new Promise((resolve) => setTimeout(resolve, retryDelay))
+
         try {
           const retryResponse = await axios.get(`${httpUrl}trader_info/${traderId.value}`)
           if (retryResponse.data.data) {
             orderBookMetrics.value = retryResponse.data.data.order_book_metrics
             traderSpecificMetrics.value = retryResponse.data.data.trader_specific_metrics
-            
+
             if (orderBookMetrics.value && traderSpecificMetrics.value) {
               return
             }
@@ -378,7 +383,7 @@ async function fetchTraderInfo() {
           await retryMetrics()
         }
       }
-      
+
       retryMetrics()
     }
   } catch (error) {
@@ -400,7 +405,6 @@ const formatValue = (value, format) => {
   return value
 }
 
-// Save per-market question responses
 async function savePerMarketResponses() {
   let traderIdForSubmit = traderId.value
   if (authStore.user?.isProlific) {
@@ -412,21 +416,18 @@ async function savePerMarketResponses() {
     trader_id: traderIdForSubmit,
     responses: [
       perMarketQuestions.value.marketDescription,
-      perMarketQuestions.value.imbalanceReason || 'N/A'
+      perMarketQuestions.value.imbalanceReason || 'N/A',
     ],
-    market_number: currentMarket.value
+    market_number: currentMarket.value,
   })
 }
 
-// Navigate to next market
 const goToNextMarket = async () => {
   isNavigating.value = true
 
   try {
-    // Save per-market responses before moving on
-    await savePerMarketResponses().catch(e => console.warn('Failed to save responses:', e))
+    await savePerMarketResponses().catch((e) => console.warn('Failed to save responses:', e))
 
-    // Check if user can start a new market
     if (!sessionStore.canStartNewMarket) {
       dialogTitle.value = 'Maximum Markets Reached'
       dialogMessage.value = 'You have completed the maximum number of markets allowed.'
@@ -435,7 +436,6 @@ const goToNextMarket = async () => {
       return
     }
 
-    // Try NavigationService first, fall back to page reload
     try {
       await NavigationService.startNextMarket()
     } catch (navError) {
@@ -444,24 +444,29 @@ const goToNextMarket = async () => {
     }
   } catch (error) {
     console.error('Error navigating to next market:', error)
-    // Fall back to reload instead of showing error dialog
     window.location.href = window.location.origin + '/onboarding/ready'
+  } finally {
+    isNavigating.value = false
   }
 }
 
 const currentMarket = computed(() => {
-  return traderInfo.value?.all_attributes?.historical_markets_count || 
-         sessionStore.marketsCompleted || 
-         1
+  return (
+    traderInfo.value?.all_attributes?.historical_markets_count ||
+    sessionStore.marketsCompleted ||
+    1
+  )
 })
 
 const maxMarketsDisplay = computed(() => {
   if (traderInfo.value?.all_attributes?.is_admin || authStore.isAdmin) {
-    return '∞'
+    return '\u221E'
   }
-  return traderInfo.value?.all_attributes?.params?.max_markets_per_human || 
-         sessionStore.maxMarkets || 
-         'Loading...'
+  return (
+    traderInfo.value?.all_attributes?.params?.max_markets_per_human ||
+    sessionStore.maxMarkets ||
+    'Loading...'
+  )
 })
 
 const sessionType = computed(() => {
@@ -470,8 +475,14 @@ const sessionType = computed(() => {
 
 const isLastMarket = computed(() => {
   if (traderInfo.value?.all_attributes?.is_admin || authStore.isAdmin) return false
-  const currentCount = traderInfo.value?.all_attributes?.historical_markets_count || sessionStore.marketsCompleted || 1
-  const maxMarkets = traderInfo.value?.all_attributes?.params?.max_markets_per_human || sessionStore.maxMarkets || 4
+  const currentCount =
+    traderInfo.value?.all_attributes?.historical_markets_count ||
+    sessionStore.marketsCompleted ||
+    1
+  const maxMarkets =
+    traderInfo.value?.all_attributes?.params?.max_markets_per_human ||
+    sessionStore.maxMarkets ||
+    4
   return currentCount >= maxMarkets
 })
 
@@ -482,12 +493,14 @@ async function checkQuestionnaireStatus() {
       tid = `HUMAN_${authStore.user.prolificData.PROLIFIC_PID}`
     }
     if (!tid) return
-    const response = await axios.get(`${httpUrl}questionnaire/status`, { params: { trader_id: tid } })
+    const response = await axios.get(`${httpUrl}questionnaire/status`, {
+      params: { trader_id: tid },
+    })
     if (response.data?.data?.completed) {
       questionnaireCompleted.value = true
     }
   } catch (e) {
-    // silently ignore - don't block the page
+    // silently ignore
   }
 }
 
@@ -495,43 +508,114 @@ onMounted(() => {
   fetchTraderInfo()
   checkQuestionnaireStatus()
 })
-
 </script>
 
 <style scoped>
-.market-summary-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  overflow: hidden;
-  transition: all 0.3s ease;
+.summary-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   max-width: 800px;
   width: 100%;
+  overflow: hidden;
 }
 
-.market-summary-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+.summary-header {
+  background: var(--color-bg-elevated);
+  padding: 16px 24px;
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.metric-card {
-  background-color: rgba(245, 247, 250, 0.8);
-  border-radius: 12px;
-  transition: all 0.3s ease;
+.summary-body {
+  padding: 24px;
 }
 
-.metric-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+.stat-section {
+  margin-bottom: 20px;
+}
+
+.section-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  margin-bottom: 8px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.stat-name {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.stat-val {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
 }
 
 .questionnaire-section {
-  text-align: left;
+  padding: 24px;
+  border-top: 1px solid var(--color-border);
 }
 
-.question-container {
-  background: rgba(245, 247, 250, 0.5);
-  padding: 1rem;
-  border-radius: 8px;
+.q-prompt {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.q-container {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+
+.summary-actions {
+  padding: 24px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.final-section {
+  text-align: center;
+  width: 100%;
+}
+
+.final-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+}
+
+.final-text a {
+  color: var(--color-primary);
+}
+
+.final-questionnaire {
+  text-align: left;
+  margin-top: 16px;
 }
 </style>

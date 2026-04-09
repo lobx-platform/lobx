@@ -1,0 +1,32 @@
+{
+  "trader_id": "HUMAN_LAB_29",
+  "premarket_interactions": [],
+  "postmarket_responses": null,
+  "per_market_responses": {
+    "1": {
+      "timestamp": "2026-04-01 10:54:15",
+      "market_description": "algo_bought",
+      "imbalance_reason": "N/A"
+    },
+    "2": {
+      "timestamp": "2026-04-01 10:57:25",
+      "market_description": "algo_bought",
+      "imbalance_reason": "N/A"
+    },
+    "3": {
+      "timestamp": "2026-04-01 11:00:37",
+      "market_description": "algo_bought",
+      "imbalance_reason": "N/A"
+    },
+    "4": {
+      "timestamp": "2026-04-01 11:03:51",
+      "market_description": "algo_bought",
+      "imbalance_reason": "N/A"
+    },
+    "5": {
+      "timestamp": "2026-04-01 11:07:06",
+      "market_description": "algo_bought",
+      "imbalance_reason": "N/A"
+    }
+  }
+}

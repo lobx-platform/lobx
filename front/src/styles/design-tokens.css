@@ -1,123 +1,148 @@
 /**
- * Trading Platform Design System
- * 
- * A minimal, consistent design language inspired by Linear/Notion.
- * Use these tokens throughout the application for visual consistency.
+ * Trading Platform Design System — Refined Minimalist
+ *
+ * Editorial magazine meets Swiss design.
+ * Typography-driven, near-monochrome, zero decoration.
  */
 
 :root {
   /* ========================================
-   * COLOR PALETTE
+   * COLOR PALETTE — Near-monochrome
    * ======================================== */
-  
-  /* Primary - Main brand color for actions and focus states */
-  --color-primary: #4F46E5;
-  --color-primary-hover: #4338CA;
-  --color-primary-light: #EEF2FF;
-  
-  /* Neutral - Text, borders, backgrounds */
-  --color-text-primary: #111827;
-  --color-text-secondary: #4B5563;
-  --color-text-muted: #9CA3AF;
+
+  /* Primary — Blue accent for interactive elements only */
+  --color-primary: #0066FF;
+  --color-primary-hover: #0052CC;
+  --color-primary-light: rgba(0, 102, 255, 0.08);
+  --color-primary-muted: rgba(0, 102, 255, 0.20);
+
+  /* Neutral — Text hierarchy */
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #1a1a1a;
+  --color-text-muted: #1a1a1a;
   --color-text-inverse: #FFFFFF;
-  
-  /* Backgrounds */
-  --color-bg-page: #F9FAFB;
+  --color-text-bright: #1a1a1a;
+
+  /* Backgrounds — Flat, no depth */
+  --color-bg-page: #FAFAFA;
   --color-bg-surface: #FFFFFF;
-  --color-bg-elevated: #FFFFFF;
-  --color-bg-subtle: #F3F4F6;
-  --color-bg-hover: #F9FAFB;
-  
-  /* Borders */
-  --color-border: #E5E7EB;
-  --color-border-light: #F3F4F6;
-  --color-border-focus: #4F46E5;
-  
-  /* Semantic colors - Use sparingly */
-  --color-success: #10B981;
-  --color-success-light: #D1FAE5;
-  --color-warning: #F59E0B;
-  --color-warning-light: #FEF3C7;
-  --color-error: #EF4444;
-  --color-error-light: #FEE2E2;
-  --color-info: #3B82F6;
-  --color-info-light: #DBEAFE;
-  
+  --color-bg-elevated: #F5F5F5;
+  --color-bg-subtle: rgba(0, 0, 0, 0.02);
+  --color-bg-hover: rgba(0, 0, 0, 0.04);
+  --color-bg-active: rgba(0, 102, 255, 0.04);
+
+  /* Borders — Single weight, single color */
+  --color-border: #E5E5E5;
+  --color-border-light: #F0F0F0;
+  --color-border-focus: #0066FF;
+  --color-border-strong: #D4D4D4;
+
+  /* Trading semantic colors — green/red only */
+  --color-bid: #2563EB;
+  --color-bid-bg: rgba(37, 99, 235, 0.06);
+  --color-bid-border: rgba(37, 99, 235, 0.20);
+  --color-ask: #cb2431;
+  --color-ask-bg: rgba(203, 36, 49, 0.06);
+  --color-ask-border: rgba(203, 36, 49, 0.20);
+
+  /* Semantic colors */
+  --color-success: #22863a;
+  --color-success-light: rgba(34, 134, 58, 0.08);
+  --color-warning: #b08800;
+  --color-warning-light: rgba(176, 136, 0, 0.08);
+  --color-error: #cb2431;
+  --color-error-light: rgba(203, 36, 49, 0.08);
+  --color-info: #0066FF;
+  --color-info-light: rgba(0, 102, 255, 0.08);
+
   /* ========================================
    * TYPOGRAPHY
    * ======================================== */
-  
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  
+
+  --font-family: 'Instrument Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
   /* Font sizes */
-  --text-xs: 0.75rem;     /* 12px */
-  --text-sm: 0.8125rem;   /* 13px */
-  --text-base: 0.875rem;  /* 14px */
-  --text-lg: 1rem;        /* 16px */
-  --text-xl: 1.125rem;    /* 18px */
-  --text-2xl: 1.25rem;    /* 20px */
-  --text-3xl: 1.5rem;     /* 24px */
-  
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+
   /* Font weights */
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
-  
+
   /* Line heights */
-  --leading-tight: 1.25;
+  --leading-tight: 1.2;
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
-  
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
   /* ========================================
    * SPACING
    * ======================================== */
-  
+
   --space-0: 0;
-  --space-1: 0.25rem;   /* 4px */
-  --space-2: 0.5rem;    /* 8px */
-  --space-3: 0.75rem;   /* 12px */
-  --space-4: 1rem;      /* 16px */
-  --space-5: 1.25rem;   /* 20px */
-  --space-6: 1.5rem;    /* 24px */
-  --space-8: 2rem;      /* 32px */
-  --space-10: 2.5rem;   /* 40px */
-  --space-12: 3rem;     /* 48px */
-  
+  --space-px: 1px;
+  --space-0-5: 0.125rem;
+  --space-1: 0.25rem;
+  --space-1-5: 0.375rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
   /* ========================================
-   * BORDERS & RADIUS
+   * BORDERS & RADIUS — Minimal
    * ======================================== */
-  
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
   --radius-full: 9999px;
-  
+
   --border-width: 1px;
-  
+
   /* ========================================
-   * SHADOWS
+   * SHADOWS — None
    * ======================================== */
-  
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  
+
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  /* glow shadows removed */
+
   /* ========================================
-   * TRANSITIONS
+   * TRANSITIONS — Instant, no animation
    * ======================================== */
-  
-  --transition-fast: 150ms ease;
-  --transition-base: 200ms ease;
-  --transition-slow: 300ms ease;
-  
+
+  --transition-fast: 100ms ease;
+  --transition-base: 150ms ease;
+  --transition-slow: 200ms ease;
+  --transition-smooth: 150ms ease;
+
   /* ========================================
    * Z-INDEX
    * ======================================== */
-  
+
   --z-dropdown: 100;
   --z-sticky: 200;
   --z-modal: 300;

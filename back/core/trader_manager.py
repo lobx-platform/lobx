@@ -11,12 +11,7 @@ from traders import (
     HumanTrader,
     NoiseTrader,
     InformedTrader,
-    ManipulatorTrader,
     BookInitializer,
-    SimpleOrderTrader,
-    SpoofingTrader,
-    AgenticTrader,
-    AgenticAdvisor,
 )
 from .trading_platform import TradingPlatform
 import asyncio
@@ -44,26 +39,17 @@ class TraderManager:
         
         params_dict = params.model_dump()  # Convert to dict for easier access
         
-        # Create basic traders
+        # Create traders (Human + Informed + Noise only)
         self.book_initializer = self._create_book_initializer(params)
-        self.simple_order_traders = self._create_simple_order_traders(params_dict)  # Pass dict
-        self.noise_traders = self._create_noise_traders(params.num_noise_traders, params_dict)  # Pass dict
-        self.informed_traders = self._create_informed_traders(params.num_informed_traders, params_dict)  # Pass dict
-        self.manipulator_traders = self._create_manipulator_traders(params.num_manipulator_traders, params_dict)  # Pass dict
-        self.spoofing_traders = self._create_spoofing_traders(params.num_spoofing_traders, params_dict)  # Pass dict
-        self.agentic_traders = self._create_agentic_traders(params.num_agentic_traders, params_dict)
-        self.agentic_advisors = []  # Created dynamically when humans join
+        self.noise_traders = self._create_noise_traders(params.num_noise_traders, params_dict)
+        self.informed_traders = self._create_informed_traders(params.num_informed_traders, params_dict)
 
         # Combine all traders into one dict
         self.traders = {
             t.id: t
             for t in self.noise_traders
             + self.informed_traders
-            + self.manipulator_traders
-            + self.spoofing_traders
-            + self.agentic_traders
             + [self.book_initializer]
-            + self.simple_order_traders
         }
         
         # Create trading market
@@ -78,27 +64,6 @@ class TraderManager:
             default_price=params.default_price,
             params=params_dict  # Pass dict
         )
-
-    def _create_simple_order_traders(self, params: dict):
-        traders = []
-        num_traders = params["num_simple_order_traders"]
-        for i in range(num_traders):
-            if i % 2 == 0:  # even numbers do bids
-                trader_orders = [
-                    {"amount": 1, "price": 100 + i, "order_type": OrderType.BID},
-                    {"amount": 1, "price": 101 + i, "order_type": OrderType.BID},
-                    {"amount": 1, "price": 102 + i, "order_type": OrderType.BID},
-                ]
-            else:  # odd numbers do asks
-                trader_orders = [
-                    {"amount": 1, "price": 100 + i, "order_type": OrderType.ASK},
-                    {"amount": 1, "price": 101 + i, "order_type": OrderType.ASK},
-                    {"amount": 1, "price": 102 + i, "order_type": OrderType.ASK},
-                ]
-            traders.append(
-                SimpleOrderTrader(id=f"SIMPLE_ORDER_{i+1}", orders=trader_orders)
-            )
-        return traders
 
     def _create_book_initializer(self, params: TradingParameters):
         return BookInitializer(id="BOOK_INITIALIZER", trader_creation_data=params.model_dump())
@@ -123,56 +88,6 @@ class TraderManager:
             )
             for i in range(n_informed_traders)
         ]
-        
-        return traders
-
-    def _create_manipulator_traders(self, n_manipulator_traders: int, params: dict):
-        if n_manipulator_traders <= 0:
-            return []
-            
-        traders = [
-            ManipulatorTrader(
-                id=f"MANIPULATOR_{i+1}",
-                params=params,
-            )
-            for i in range(n_manipulator_traders)
-        ]
-
-        return traders
-        
-    
-    def _create_spoofing_traders(self, n_spoofing_traders: int, params: dict):
-        return [
-            SpoofingTrader(
-                id=f"SPOOFING_{i+1}",
-                params=params,
-            )
-            for i in range(n_spoofing_traders)
-        ]
-
-    def _create_agentic_traders(self, n_agentic_traders: int, params: dict):
-        """Create autonomous agentic traders using prompt template."""
-        if n_agentic_traders <= 0:
-            return []
-        
-        api_key = os.getenv("OPENROUTER_API_KEY")
-        
-        traders = []
-        for i in range(n_agentic_traders):
-            agentic_params = {
-                **params,
-                "openrouter_api_key": api_key,
-                "agentic_model": params.get("agentic_model", "anthropic/claude-haiku-4.5"),
-                "agentic_prompt_template": params.get("agentic_prompt_template", "buyer_20_default"),
-                "initial_cash": params.get("initial_cash", 100000),
-                "initial_shares": params.get("initial_stocks", 0),
-            }
-            
-            trader = AgenticTrader(
-                id=f"AGENTIC_{i+1}",
-                params=agentic_params,
-            )
-            traders.append(trader)
         
         return traders
 
@@ -201,41 +116,7 @@ class TraderManager:
         self.traders[trader_id] = new_trader
         self.human_traders.append(new_trader)
         
-        # Create advisor for this human if enabled
-        if self.params.agentic_advisor_enabled:
-            await self._create_advisor_for_human(new_trader)
-        
         return trader_id
-
-    async def _create_advisor_for_human(self, human_trader):
-        """Create and start an agentic advisor for a human trader."""
-        params_dict = self.params.model_dump()
-        advisor_params = {
-            **params_dict,
-            "openrouter_api_key": os.getenv("OPENROUTER_API_KEY"),
-            "agentic_model": params_dict.get("agentic_model", "anthropic/claude-haiku-4.5"),
-            "agentic_prompt_template": params_dict.get("agentic_prompt_template", "buyer_20_default"),
-            "advice_for_human_id": human_trader.id,
-        }
-        
-        advisor_id = f"ADVISOR_{human_trader.id}"
-        advisor = AgenticAdvisor(id=advisor_id, params=advisor_params)
-        
-        # Initialize and link
-        await advisor.initialize()
-        advisor.set_human_trader_ref(human_trader)
-        
-        # Store reference on human for easy access
-        human_trader.advisor = advisor
-        
-        # Add to tracking lists
-        self.agentic_advisors.append(advisor)
-        self.traders[advisor_id] = advisor
-        
-        # Start the advisor's run loop
-        asyncio.create_task(advisor.run())
-        
-        logger.info(f"Created advisor {advisor_id} for {human_trader.id}")
 
     async def set_trader_goal(self, trader_id: str, goal: int):
         """give trader a new goal"""

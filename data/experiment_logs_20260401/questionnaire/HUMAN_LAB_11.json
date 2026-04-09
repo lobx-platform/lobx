@@ -1,0 +1,83 @@
+{
+  "trader_id": "HUMAN_LAB_11",
+  "premarket_interactions": [
+    {
+      "timestamp": "2026-04-01 10:25:37",
+      "question_index": 0,
+      "question_text": "If you have a certain buying or selling goal, can you both buy and sell shares in the same market?",
+      "selected_answer": "No",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:25:37",
+      "question_index": 1,
+      "question_text": "What happens when you place a passive order?",
+      "selected_answer": "You must wait for someone to accept it",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:25:38",
+      "question_index": 2,
+      "question_text": "How many shares can you trade in a single order?",
+      "selected_answer": "Only one share per order",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:25:39",
+      "question_index": 3,
+      "question_text": "What happens if you don't complete your trading objective within the time limit?",
+      "selected_answer": "The system automatically completes the trades for you at the prevailing price.",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:25:41",
+      "question_index": 4,
+      "question_text": "What are the other market participants?",
+      "selected_answer": "Artificial (Algorithmic) Agents",
+      "is_correct": true
+    },
+    {
+      "timestamp": "2026-04-01 10:25:42",
+      "question_index": 5,
+      "question_text": "What is the impact on the market price if one of the aritificial agents sells a large number of shares?",
+      "selected_answer": "Mid-Price decreases",
+      "is_correct": true
+    }
+  ],
+  "postmarket_responses": {
+    "timestamp": "2026-04-01 10:48:23",
+    "q1": "Yes",
+    "q2": "Price History Chart",
+    "q3": "Yes",
+    "q4": "Yes",
+    "market_description": "algo_sold",
+    "imbalance_reason": "N/A"
+  },
+  "per_market_responses": {
+    "1": {
+      "timestamp": "2026-04-01 10:30:05",
+      "market_description": "algo_sold",
+      "imbalance_reason": "N/A"
+    },
+    "2": {
+      "timestamp": "2026-04-01 10:33:49",
+      "market_description": "no_algo",
+      "imbalance_reason": "N/A"
+    },
+    "3": {
+      "timestamp": "2026-04-01 10:37:19",
+      "market_description": "algo_bought",
+      "imbalance_reason": "N/A"
+    },
+    "4": {
+      "timestamp": "2026-04-01 10:40:47",
+      "market_description": "algo_sold",
+      "imbalance_reason": "N/A"
+    },
+    "5": {
+      "timestamp": "2026-04-01 10:44:25",
+      "market_description": "algo_sold",
+      "imbalance_reason": "N/A"
+    }
+  }
+}

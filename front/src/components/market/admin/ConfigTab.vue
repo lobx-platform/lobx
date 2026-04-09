@@ -1,314 +1,184 @@
 <template>
   <div class="config-tab">
-    <!-- Market Configuration -->
-    <section class="tp-card mb-4">
-      <header class="tp-card-header">
-        <h2 class="tp-card-title">Market Configuration</h2>
-      </header>
 
-      <div class="tp-card-body">
-        <div class="parameter-grid">
-          <!-- Order Throttling Settings -->
-          <div class="tp-card parameter-card">
-            <header class="tp-card-header">
-              <h3 class="tp-card-title text-sm">Order Throttling</h3>
-            </header>
-            <div class="tp-card-body">
-              <div class="throttle-grid">
-                <template v-for="traderType in traderTypes" :key="traderType">
-                  <div class="throttle-row">
-                    <span class="tp-label">{{ formatTraderType(traderType) }}</span>
-                    <div class="throttle-inputs">
-                      <v-text-field
-                        v-model.number="formState.throttle_settings[traderType].order_throttle_ms"
-                        label="ms"
-                        type="number"
-                        min="0"
-                        hide-details
-                        @input="updatePersistentSettings"
-                      />
-                      <v-text-field
-                        v-model.number="formState.throttle_settings[traderType].max_orders_per_window"
-                        label="Max"
-                        type="number"
-                        min="1"
-                        hide-details
-                        @input="updatePersistentSettings"
-                      />
-                    </div>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </div>
-
-          <!-- Regular Parameter Groups -->
-          <div
-            v-for="(group, hint) in groupedFields"
-            :key="hint"
-            class="tp-card parameter-card"
+    <!-- ===== SECTION 1: Market Settings ===== -->
+    <div class="config-section">
+      <div class="section-header">
+        <h2 class="section-title">Market Settings</h2>
+        <div class="header-actions">
+          <v-text-field
+            v-model="prolificRedirectUrl"
+            label="Prolific Redirect URL"
+            hide-details
+            density="compact"
+            variant="outlined"
+            style="min-width: 300px"
+            placeholder="https://app.prolific.com/submissions/complete?cc=CODE"
+          />
+          <button
+            class="tp-btn tp-btn-secondary"
+            @click="resetState"
+            :disabled="!serverActive || resettingState"
           >
-            <header class="tp-card-header">
-              <h3 class="tp-card-title text-sm">{{ formatGroupTitle(hint) }}</h3>
-            </header>
-            <div class="tp-card-body">
-              <div class="field-grid">
-                <v-tooltip v-for="field in group" :key="field.name" location="top" :text="field.name">
-                <template v-slot:activator="{ props: tooltipProps }">
-                  <div class="field-item" v-bind="tooltipProps">
-                    <!-- Dropdown for agentic_prompt_template -->
-                    <v-select
-                      v-if="field.name === 'agentic_prompt_template'"
-                      :label="field.title || ''"
-                      v-model="formState[field.name]"
-                      :items="agenticTemplates"
-                      item-title="name"
-                      item-value="id"
+            {{ resettingState ? 'Resetting...' : 'Reset Experiment' }}
+          </button>
+          <button
+            class="tp-btn tp-btn-primary"
+            @click="saveSettings"
+            :disabled="!serverActive"
+          >
+            Save &amp; Apply
+          </button>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <!-- Order Throttling -->
+        <div class="config-card">
+          <div class="config-card-header">
+            <span class="config-card-tag">Throttling</span>
+          </div>
+          <div class="config-card-body">
+            <table class="plain-table">
+              <thead>
+                <tr>
+                  <th>Trader Type</th>
+                  <th>Delay (ms)</th>
+                  <th>Max Orders</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="traderType in traderTypes" :key="traderType">
+                  <td class="font-mono">{{ formatTraderType(traderType) }}</td>
+                  <td>
+                    <v-text-field
+                      v-model.number="formState.throttle_settings[traderType].order_throttle_ms"
+                      type="number"
+                      min="0"
                       hide-details
-                      :class="getFieldStyle(field.name)"
-                      @update:modelValue="updatePersistentSettings"
+                      density="compact"
+                      variant="outlined"
+                      @input="updatePersistentSettings"
                     />
-                    <!-- Boolean switch -->
+                  </td>
+                  <td>
+                    <v-text-field
+                      v-model.number="formState.throttle_settings[traderType].max_orders_per_window"
+                      type="number"
+                      min="1"
+                      hide-details
+                      density="compact"
+                      variant="outlined"
+                      @input="updatePersistentSettings"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Dynamic Parameter Group Cards -->
+        <div
+          v-for="(group, hint) in groupedFields"
+          :key="hint"
+          class="config-card"
+        >
+          <div class="config-card-header">
+            <span class="config-card-tag">{{ formatGroupTitle(hint) }}</span>
+          </div>
+          <div class="config-card-body">
+            <div class="param-grid">
+              <v-tooltip v-for="field in group" :key="field.name" location="top" :text="field.name">
+                <template v-slot:activator="{ props: tooltipProps }">
+                  <div class="param-item" v-bind="tooltipProps">
                     <v-switch
-                      v-else-if="field.type === 'boolean'"
+                      v-if="field.type === 'boolean'"
                       :label="field.title || ''"
                       v-model="formState[field.name]"
                       hide-details
                       color="primary"
+                      density="compact"
                       :class="getFieldStyle(field.name)"
                       @update:modelValue="updatePersistentSettings"
                     />
-                    <!-- Array fields -->
                     <v-text-field
                       v-else-if="isArrayField(field)"
                       :label="field.title || ''"
                       v-model="formState[field.name]"
                       hide-details
+                      density="compact"
+                      variant="outlined"
                       :class="getFieldStyle(field.name)"
                       @input="handleArrayInput(field.name, $event)"
                     />
-                    <!-- Regular fields -->
                     <v-text-field
                       v-else
                       :label="field.title || ''"
                       v-model="formState[field.name]"
                       :type="getFieldType(field)"
                       hide-details
+                      density="compact"
+                      variant="outlined"
                       :class="getFieldStyle(field.name)"
                       @input="updatePersistentSettings"
                     />
                   </div>
                 </template>
               </v-tooltip>
-              </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <footer class="tp-card-footer">
-        <button
-          class="tp-btn tp-btn-primary"
-          @click="saveSettings"
-          :disabled="!serverActive"
-        >
-          Save Settings
-        </button>
-      </footer>
-    </section>
+    <!-- ===== SECTION 2: Treatment Sequence ===== -->
+    <div class="config-section">
+      <div class="section-header section-header-toggle" @click="showTreatments = !showTreatments">
+        <h2 class="section-title">Treatment Sequence</h2>
+        <span class="toggle-indicator">{{ showTreatments ? '\u2212' : '+' }}</span>
+      </div>
 
-    <!-- Treatment Sequence -->
-    <section class="tp-card mb-4">
-      <header 
-        class="tp-card-header tp-card-header-collapsible"
-        @click="showTreatments = !showTreatments"
-      >
-        <h2 class="tp-card-title">Treatment Sequence</h2>
-        <v-icon size="20">{{ showTreatments ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </header>
-
-      <v-expand-transition>
-        <div v-show="showTreatments">
-          <div class="tp-card-body">
-            <p class="text-sm text-secondary mb-3">
-              Define different trader compositions for each market.
+      <div v-show="showTreatments" class="section-body">
+        <div class="config-card">
+          <div class="config-card-body">
+            <p class="helper-text">
+              Define different trader compositions for each market in YAML format.
             </p>
-            
+
             <v-textarea
               v-model="treatmentYaml"
               label="Treatment YAML"
               rows="10"
+              variant="outlined"
               class="yaml-editor"
               :error="yamlError !== ''"
               :error-messages="yamlError"
             />
 
-            <div v-if="treatments.length > 0" class="treatment-chips">
+            <div v-if="treatments.length > 0" class="treatment-list">
               <span
                 v-for="(t, i) in treatments"
                 :key="i"
-                class="tp-badge"
+                class="treatment-item"
               >
                 {{ i }}: {{ t.name || `Treatment ${i}` }}
               </span>
             </div>
-          </div>
 
-          <footer class="tp-card-footer">
-            <button class="tp-btn tp-btn-secondary" @click="loadTreatments" :disabled="!serverActive">
-              Load
-            </button>
-            <button class="tp-btn tp-btn-primary" @click="saveTreatments" :disabled="!serverActive">
-              Save
-            </button>
-          </footer>
-        </div>
-      </v-expand-transition>
-    </section>
-
-    <!-- Session & Prolific Settings (Collapsed) -->
-    <section class="tp-card">
-      <header
-        class="tp-card-header tp-card-header-collapsible"
-        @click="showProlific = !showProlific"
-      >
-        <h2 class="tp-card-title">Session & Prolific Settings</h2>
-        <v-icon size="20">{{ showProlific ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </header>
-
-      <v-expand-transition>
-        <div v-show="showProlific">
-          <div class="tp-card-body">
-            <v-select
-              v-model="formState.session_type"
-              :items="['prolific', 'lab']"
-              label="Session Type"
-              hide-details
-              class="mb-3"
-              @update:model-value="updatePersistentSettings"
-            />
-
-            <v-textarea
-              v-model="prolificSettings.credentials"
-              label="Prolific Credentials"
-              hide-details
-              class="mb-3"
-              placeholder="username1,password1&#10;username2,password2"
-              rows="3"
-            />
-
-            <div class="credential-gen mb-3">
-              <v-text-field
-                v-model="numCredentials"
-                label="Count"
-                type="number"
-                min="1"
-                max="20"
-                hide-details
-                style="max-width: 100px"
-              />
-              <button class="tp-btn tp-btn-secondary" @click="generateCredentials" :disabled="generatingCredentials">
-                Generate
+            <div class="card-actions">
+              <button class="tp-btn tp-btn-secondary" @click="loadTreatments" :disabled="!serverActive">
+                Load from Server
+              </button>
+              <button class="tp-btn tp-btn-primary" @click="saveTreatments" :disabled="!serverActive">
+                Save Treatments
               </button>
             </div>
-
-            <v-text-field
-              v-model="prolificSettings.studyId"
-              label="Study ID"
-              hide-details
-              class="mb-3"
-            />
-
-            <v-text-field
-              v-model="prolificSettings.redirectUrl"
-              label="Redirect URL"
-              hide-details
-            />
-          </div>
-
-          <footer class="tp-card-footer">
-            <button
-              class="tp-btn tp-btn-primary"
-              @click="saveProlificSettings"
-              :disabled="savingProlific"
-              style="width: 100%"
-            >
-              Save Prolific Settings
-            </button>
-          </footer>
-
-          <!-- Lab Links Generation (only in lab mode) -->
-          <div v-if="formState.session_type === 'lab'" class="tp-card-body" style="border-top: 1px solid var(--color-border, #e0e0e0)">
-            <h3 class="text-subtitle-1 font-weight-medium mb-2">Lab Session Links</h3>
-            <div class="credential-gen mb-3">
-              <v-text-field
-                v-model="numLabLinks"
-                label="Total Participants"
-                type="number"
-                min="1"
-                max="200"
-                hide-details
-                style="max-width: 150px"
-              />
-              <v-text-field
-                v-model="numTreatments"
-                label="Treatments"
-                type="number"
-                min="1"
-                max="8"
-                hide-details
-                style="max-width: 120px"
-              />
-              <button class="tp-btn tp-btn-secondary" @click="generateLabLinks" :disabled="generatingLabLinks">
-                {{ generatingLabLinks ? 'Generating...' : 'Generate Links' }}
-              </button>
-            </div>
-
-            <!-- Treatment overrides (when more than 1 treatment) -->
-            <div v-if="parseInt(numTreatments) > 1" class="mb-3">
-              <h4 class="text-subtitle-2 font-weight-medium mb-2">Treatment Parameter Overrides</h4>
-              <div v-for="t in parseInt(numTreatments)" :key="t" class="mb-2" style="display: flex; gap: 8px; align-items: center">
-                <span style="min-width: 30px; font-weight: 500">T{{ t }}:</span>
-                <v-text-field
-                  v-model="treatmentOverrides[t-1].informed_trade_intensity"
-                  label="informed_trade_intensity"
-                  type="number"
-                  step="0.01"
-                  hide-details
-                  density="compact"
-                  style="max-width: 180px"
-                />
-                <v-text-field
-                  v-model="treatmentOverrides[t-1].informed_share_passive"
-                  label="informed_share_passive"
-                  type="number"
-                  step="0.01"
-                  hide-details
-                  density="compact"
-                  style="max-width: 180px"
-                />
-              </div>
-              <button class="tp-btn tp-btn-secondary" @click="saveTreatmentOverrides" style="width: 100%">
-                Save Treatment Overrides
-              </button>
-            </div>
-
-            <v-textarea
-              v-if="labLinks"
-              v-model="labLinks"
-              label="Lab Links (one per line)"
-              readonly
-              rows="5"
-              hide-details
-              class="mb-3"
-            />
-            <button v-if="labLinks" class="tp-btn tp-btn-secondary" @click="copyLabLinks" style="width: 100%">
-              Copy Links
-            </button>
           </div>
         </div>
-      </v-expand-transition>
-    </section>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -328,21 +198,18 @@ const props = defineProps({
 const emit = defineEmits(['update:formState'])
 
 const uiStore = useUIStore()
-const haikunator = new Haikunator()
 
 // Treatment state
 const showTreatments = ref(false)
 const treatmentYaml = ref('')
 const treatments = ref([])
 const yamlError = ref('')
-const agenticTemplates = ref([])
 
-// Prolific state
-const showProlific = ref(false)
-const prolificSettings = ref({ credentials: '', studyId: '', redirectUrl: '' })
-const numCredentials = ref(5)
+// Prolific redirect URL
+const prolificRedirectUrl = ref('')
 const generatingCredentials = ref(false)
 const savingProlific = ref(false)
+const resettingState = ref(false)
 
 // Lab links state
 const numLabLinks = ref(100)
@@ -361,22 +228,20 @@ const treatmentOverrides = ref([
   { informed_trade_intensity: '', informed_share_passive: '' },
 ])
 
-const traderTypes = ['HUMAN', 'NOISE', 'INFORMED', 'MARKET_MAKER', 'INITIAL_ORDER_BOOK', 'SIMPLE_ORDER']
+const traderTypes = ['HUMAN', 'NOISE', 'INFORMED', 'MARKET_MAKER', 'INITIAL_ORDER_BOOK']
 
 const formatTraderType = (type) => {
-  return type.replace('_', ' ').toLowerCase().split(' ').map(word => 
+  return type.replace('_', ' ').toLowerCase().split(' ').map(word =>
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ').substring(0, 12)
 }
 
 const formatGroupTitle = (hint) => {
   const titleMap = {
-    'agentic_parameter': 'AI Agentic Traders',
     'model_parameter': 'Model Parameters',
     'noise_parameter': 'Noise Traders',
     'informed_parameter': 'Informed Traders',
     'human_parameter': 'Human Traders',
-    'manipulator_parameter': 'Manipulator Traders',
   }
   return titleMap[hint] || hint.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 }
@@ -457,6 +322,19 @@ const saveSettings = async () => {
   }
 }
 
+const resetState = async () => {
+  resettingState.value = true
+  try {
+    await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/reset_state`)
+    uiStore.showSuccess('Experiment state reset — all sessions, markets, and rewards cleared')
+  } catch (error) {
+    console.error('Error resetting state:', error)
+    uiStore.showError('Failed to reset state')
+  } finally {
+    resettingState.value = false
+  }
+}
+
 // Treatment functions
 const loadTreatments = async () => {
   try {
@@ -480,119 +358,6 @@ const saveTreatments = async () => {
   }
 }
 
-const loadAgenticTemplates = async () => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_HTTP_URL}admin/agentic_templates`)
-    agenticTemplates.value = response.data.templates || []
-  } catch (error) {
-    agenticTemplates.value = [{ id: 'buyer_20_default', name: 'Buyer (20 shares)' }]
-  }
-}
-
-// Prolific functions
-const fetchProlificSettings = async () => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_HTTP_URL}admin/prolific-settings`)
-    if (response.data?.data) {
-      prolificSettings.value = {
-        credentials: response.data.data.PROLIFIC_CREDENTIALS || '',
-        studyId: response.data.data.PROLIFIC_STUDY_ID || '',
-        redirectUrl: response.data.data.PROLIFIC_REDIRECT_URL || '',
-      }
-    }
-  } catch (error) {
-    console.error('Failed to fetch Prolific settings:', error)
-  }
-}
-
-const saveProlificSettings = async () => {
-  try {
-    savingProlific.value = true
-    await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/prolific-settings`, {
-      settings: {
-        PROLIFIC_CREDENTIALS: prolificSettings.value.credentials,
-        PROLIFIC_STUDY_ID: prolificSettings.value.studyId,
-        PROLIFIC_REDIRECT_URL: prolificSettings.value.redirectUrl,
-      },
-    })
-    uiStore.showSuccess('Prolific settings saved')
-  } catch (error) {
-    uiStore.showError('Failed to save Prolific settings')
-  } finally {
-    savingProlific.value = false
-  }
-}
-
-const generateCredentials = () => {
-  generatingCredentials.value = true
-  try {
-    const count = parseInt(numCredentials.value) || 5
-    const generated = []
-    for (let i = 0; i < count; i++) {
-      const username = haikunator.haikunate({ tokenLength: 0, delimiter: '' })
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-      let password = ''
-      for (let j = 0; j < 10; j++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length))
-      }
-      generated.push(`${username},${password}`)
-    }
-    prolificSettings.value.credentials = generated.join('\n')
-    uiStore.showSuccess(`Generated ${count} credentials`)
-  } finally {
-    generatingCredentials.value = false
-  }
-}
-
-// Lab link functions
-const generateLabLinks = async () => {
-  generatingLabLinks.value = true
-  try {
-    const nt = parseInt(numTreatments.value) || 1
-    const payload = {
-      count: parseInt(numLabLinks.value) || 10,
-      num_treatments: nt,
-    }
-    // Include treatment overrides if using multiple treatments
-    if (nt > 1) {
-      const overrides = {}
-      for (let i = 0; i < nt; i++) {
-        const o = {}
-        const t = treatmentOverrides.value[i]
-        if (t.informed_trade_intensity !== '') o.informed_trade_intensity = parseFloat(t.informed_trade_intensity)
-        if (t.informed_share_passive !== '') o.informed_share_passive = parseFloat(t.informed_share_passive)
-        if (Object.keys(o).length > 0) overrides[i] = o
-      }
-      if (Object.keys(overrides).length > 0) payload.treatment_overrides = overrides
-    }
-    const response = await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/generate-lab-links`, payload)
-    labLinks.value = (response.data.data?.links || []).join('\n')
-    uiStore.showSuccess(`Generated ${numLabLinks.value} lab links (${nt} treatments)`)
-  } catch (error) {
-    uiStore.showError('Failed to generate lab links')
-  } finally {
-    generatingLabLinks.value = false
-  }
-}
-
-const saveTreatmentOverrides = async () => {
-  try {
-    const nt = parseInt(numTreatments.value) || 1
-    const overrides = {}
-    for (let i = 0; i < nt; i++) {
-      const o = {}
-      const t = treatmentOverrides.value[i]
-      if (t.informed_trade_intensity !== '') o.informed_trade_intensity = parseFloat(t.informed_trade_intensity)
-      if (t.informed_share_passive !== '') o.informed_share_passive = parseFloat(t.informed_share_passive)
-      if (Object.keys(o).length > 0) overrides[i] = o
-    }
-    await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/treatment-overrides`, { overrides })
-    uiStore.showSuccess('Treatment overrides saved')
-  } catch (error) {
-    uiStore.showError('Failed to save treatment overrides')
-  }
-}
-
 const copyLabLinks = () => {
   navigator.clipboard.writeText(labLinks.value)
   uiStore.showSuccess('Links copied to clipboard')
@@ -601,16 +366,12 @@ const copyLabLinks = () => {
 onMounted(() => {
   if (props.serverActive) {
     loadTreatments()
-    loadAgenticTemplates()
-    fetchProlificSettings()
   }
 })
 
 watch(() => props.serverActive, (newVal) => {
   if (newVal) {
     loadTreatments()
-    loadAgenticTemplates()
-    fetchProlificSettings()
   }
 })
 </script>
@@ -618,67 +379,143 @@ watch(() => props.serverActive, (newVal) => {
 <style scoped>
 .config-tab {
   max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
 }
 
-.mb-3 {
-  margin-bottom: var(--space-3);
+/* ===== Section Layout ===== */
+.config-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.mb-4 {
-  margin-bottom: var(--space-4);
-}
-
-/* Parameter Grid */
-.parameter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+.section-header {
+  display: flex;
+  align-items: center;
   gap: var(--space-3);
 }
 
-.parameter-card {
-  height: fit-content;
+.section-header-toggle {
+  cursor: pointer;
+  user-select: none;
 }
 
-/* Throttle Grid */
-.throttle-grid {
+.section-header-toggle:hover .section-title {
+  color: var(--color-text-secondary);
+}
+
+.section-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: var(--tracking-tight);
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.section-body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-4);
 }
 
-.throttle-row {
+.toggle-indicator {
+  margin-left: auto;
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
+/* ===== Cards Grid ===== */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+/* ===== Config Card ===== */
+.config-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.config-card-header {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.config-card-tag {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+}
+
+.config-card-body {
+  padding: var(--space-4);
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
-.throttle-row .tp-label {
-  min-width: 90px;
-  margin-bottom: 0;
+/* ===== Plain Table ===== */
+.plain-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
 }
 
-.throttle-inputs {
-  display: flex;
-  gap: var(--space-2);
-  flex: 1;
+.plain-table th {
+  text-align: left;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  padding: var(--space-1) var(--space-2) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.throttle-inputs .v-text-field {
-  flex: 1;
+.plain-table td {
+  padding: var(--space-1-5) var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
+  vertical-align: middle;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
 }
 
-/* Field Grid */
-.field-grid {
+.plain-table tr:last-child td {
+  border-bottom: none;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ===== Parameter Grid ===== */
+.param-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-2);
 }
 
-.field-item {
+.param-item {
   min-width: 0;
 }
 
-/* Modified field indicator */
+/* ===== Modified Field Indicator ===== */
 .field-modified :deep(.v-field) {
   border-color: var(--color-warning) !important;
 }
@@ -687,24 +524,109 @@ watch(() => props.serverActive, (newVal) => {
   color: var(--color-warning) !important;
 }
 
-/* Treatment chips */
-.treatment-chips {
+/* ===== Card Actions ===== */
+.card-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  margin-top: var(--space-3);
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border-light);
 }
 
-/* YAML Editor */
+/* ===== Helper Text ===== */
+.helper-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: var(--leading-relaxed);
+}
+
+/* ===== YAML Editor ===== */
 .yaml-editor :deep(textarea) {
+  font-family: var(--font-mono) !important;
+  font-size: var(--text-xs) !important;
+  line-height: 1.6 !important;
+}
+
+/* ===== Credentials ===== */
+.credentials-field :deep(textarea) {
   font-family: var(--font-mono) !important;
   font-size: var(--text-xs) !important;
 }
 
-/* Credential generator */
-.credential-gen {
+/* ===== Treatment List ===== */
+.treatment-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.treatment-item {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+}
+
+/* ===== Form Rows ===== */
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.form-row-inline {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* ===== Overrides Section ===== */
+.overrides-section {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.overrides-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+/* ===== Links Output ===== */
+.links-output {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.links-textarea :deep(textarea) {
+  font-family: var(--font-mono) !important;
+  font-size: var(--text-xs) !important;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 700px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .param-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

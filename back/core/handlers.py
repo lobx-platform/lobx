@@ -285,6 +285,7 @@ class MarketOrchestrator:
         
         # Connect services
         self.broadcast_service.set_trader_registry(self.trader_service.connected_traders)
+        self.broadcast_service._market_id = market_id
         
         # Event system
         from .events import MessageBus, MessageRouter
