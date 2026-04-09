@@ -21,8 +21,8 @@
     </div>
 
     <div class="trading-tip">
-      <div class="tip-row"><span class="tip-label">Price going up?</span> <strong class="bid-color">Buy now</strong> and sell later.</div>
-      <div class="tip-row"><span class="tip-label">Price going down?</span> <strong class="ask-color">Sell now</strong> and buy later.</div>
+      <div class="tip-row">If you believe the market will go up: <strong class="bid-color">Buy now</strong> and sell later.</div>
+      <div class="tip-row">If you believe the market will go down: <strong class="ask-color">Sell now</strong> and buy later.</div>
     </div>
   </div>
 </template>
