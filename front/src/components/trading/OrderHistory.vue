@@ -7,7 +7,7 @@ import { storeToRefs } from 'pinia'
 const traderStore = useTraderStore()
 const marketStore = useMarketStore()
 const { executedOrders, traderUuid } = storeToRefs(traderStore)
-const { recentTransactions } = storeToRefs(marketStore)
+const { recentTransactions, history } = storeToRefs(marketStore)
 
 const filledOrders = computed(() => {
   const relevantTransactions = recentTransactions.value.filter((t) => {
@@ -99,14 +99,17 @@ const tradingSummary = computed(() => {
   }
 })
 
-const firstTradeTime = computed(() => {
-  const all = [...(groupedOrders.value.bids || []), ...(groupedOrders.value.asks || [])]
-  if (!all.length) return 0
-  return Math.min(...all.map(o => o.latestTime))
+// t0 from Price History chart (first market data point) — keeps both in sync
+const t0 = computed(() => {
+  if (history.value && history.value.length) {
+    return new Date(history.value[0].timestamp).getTime()
+  }
+  return 0
 })
 
 const formatTime = (timestamp) => {
-  const elapsed = Math.max(0, Math.floor((timestamp - firstTradeTime.value) / 1000))
+  if (!t0.value) return ''
+  const elapsed = Math.max(0, Math.floor((timestamp - t0.value) / 1000))
   const mins = Math.floor(elapsed / 60)
   const secs = elapsed % 60
   return `${mins}:${secs.toString().padStart(2, '0')}`
@@ -136,6 +139,7 @@ const formatTime = (timestamp) => {
               <span class="trade-price">{{ Math.round(order.price) }}</span>
               <span class="trade-amount">{{ order.amount }} shares</span>
             </div>
+            <div class="trade-time">{{ formatTime(order.latestTime) }}</div>
           </div>
         </div>
         <div class="order-col">
@@ -148,6 +152,7 @@ const formatTime = (timestamp) => {
               <span class="trade-price">{{ Math.round(order.price) }}</span>
               <span class="trade-amount">{{ order.amount }} shares</span>
             </div>
+            <div class="trade-time">{{ formatTime(order.latestTime) }}</div>
           </div>
         </div>
       </div>
