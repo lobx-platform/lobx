@@ -92,36 +92,43 @@ onMounted(() => {
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
 }
 
 .info-cell {
   text-align: center;
-  padding: 4px;
+  padding: 10px 8px;
+  background: var(--color-bg-surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .info-label {
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
-  color: var(--color-text-muted);
-  margin-bottom: 2px;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
+  line-height: 1.2;
 }
 
 .info-hint {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--color-text-muted);
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: help;
   margin-left: 2px;
 }
 
 .info-value {
   font-family: var(--font-mono);
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   color: var(--color-text-primary);
 }
