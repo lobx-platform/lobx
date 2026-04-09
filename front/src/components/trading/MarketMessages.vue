@@ -21,10 +21,7 @@
     </div>
 
     <div class="trading-tip">
-      <ul>
-        <li>If you believe the market will go up: <strong class="bid-color">Buy now</strong> and sell later.</li>
-        <li>If you believe the market will go down: <strong class="ask-color">Sell now</strong> and buy later.</li>
-      </ul>
+      Market up → <strong class="bid-color">Buy now</strong>, sell later. &nbsp; Market down → <strong class="ask-color">Sell now</strong>, buy later.
     </div>
   </div>
 </template>

@@ -233,33 +233,25 @@ const saveActiveOrders = (orders) => {
 }
 
 .action-btn {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-bg-surface);
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font-size: var(--text-lg);
   font-weight: var(--font-bold);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   line-height: 1;
 }
 
 .action-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
-}
-
-.add-btn {
-  color: var(--color-bid);
-}
-
-.cancel-btn {
-  color: var(--color-ask);
 }
 
 .no-orders {
