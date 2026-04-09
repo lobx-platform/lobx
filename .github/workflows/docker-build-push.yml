@@ -42,10 +42,18 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
         script: |
-          grep -q '^TURNSTILE_SECRET_KEY=' /root/trading_platform/.env 2>/dev/null \
-            && sed -i 's|^TURNSTILE_SECRET_KEY=.*|TURNSTILE_SECRET_KEY=${{ secrets.TURNSTILE_SECRET_KEY }}|' /root/trading_platform/.env \
-            || echo 'TURNSTILE_SECRET_KEY=${{ secrets.TURNSTILE_SECRET_KEY }}' >> /root/trading_platform/.env
-          /root/trading_platform/deploy.sh
+          cd /root/trading_platform
+          # Ensure required env vars
+          for VAR_LINE in \
+            "TURNSTILE_SECRET_KEY=${{ secrets.TURNSTILE_SECRET_KEY }}" \
+            "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" \
+          ; do
+            VAR_NAME="${VAR_LINE%%=*}"
+            grep -q "^${VAR_NAME}=" .env 2>/dev/null \
+              && sed -i "s|^${VAR_NAME}=.*|${VAR_LINE}|" .env \
+              || echo "${VAR_LINE}" >> .env
+          done
+          ./deploy.sh
 
   deploy-frontend:
     runs-on: ubuntu-latest
