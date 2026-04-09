@@ -1,18 +1,22 @@
-"""Data routes: /files, /files/grouped, /files/{path}"""
+"""Data routes: /files, /files/grouped, /files/{path}, /files/download-all"""
 
+import io
 import re
+import zipfile
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 
-from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi.responses import FileResponse, StreamingResponse
 
+from ..auth import get_current_admin_user
 from ..shared import ROOT_DIR
 
 router = APIRouter()
 
 
 @router.get("/files")
-async def list_files(path: str = Query("", description="Relative path to browse")):
+async def list_files(path: str = Query("", description="Relative path to browse"), _=Depends(get_current_admin_user)):
     try:
         full_path = (ROOT_DIR / path).resolve()
 
@@ -52,7 +56,7 @@ async def list_files(path: str = Query("", description="Relative path to browse"
 
 
 @router.get("/files/grouped")
-async def list_files_grouped():
+async def list_files_grouped(_=Depends(get_current_admin_user)):
     """Returns log files grouped by session for heatmap display."""
     try:
         multi_market_pattern = re.compile(r'^(?:COHORT\d+_)?SESSION_(\d+_[a-f0-9]+)_MARKET_(\d+)\.log$', re.IGNORECASE)
@@ -108,8 +112,55 @@ async def list_files_grouped():
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
+@router.get("/files/download-all")
+async def download_all_logs(pattern: str = Query("", description="Filter by filename pattern"), _=Depends(get_current_admin_user)):
+    """Download log files as a zip archive. Use ?pattern=T0_ to filter."""
+
+    def create_zip(pattern_filter):
+        buf = io.BytesIO()
+        count = 0
+        try:
+            with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as zf:  # STORED is faster than DEFLATED for streaming
+                # Add log files
+                for item in ROOT_DIR.iterdir():
+                    if not item.is_file() or not item.name.endswith(".log"):
+                        continue
+                    if pattern_filter and pattern_filter not in item.name:
+                        continue
+                    zf.write(item, item.name)
+                    count += 1
+                # Include questionnaire data if exists
+                q_dir = ROOT_DIR / "questionnaire"
+                if q_dir.is_dir():
+                    for item in q_dir.iterdir():
+                        if item.is_file():
+                            zf.write(item, f"questionnaire/{item.name}")
+                            count += 1
+            if count == 0:
+                raise ValueError("No log files found")
+            buf.seek(0)
+            return buf, count
+        except Exception as e:
+            raise
+
+    try:
+        # Run zip creation in thread pool to avoid blocking event loop
+        executor = ThreadPoolExecutor(max_workers=1)
+        loop = __import__('asyncio').get_event_loop()
+        buf, count = await loop.run_in_executor(executor, create_zip, pattern)
+        return StreamingResponse(
+            buf,
+            media_type="application/zip",
+            headers={"Content-Disposition": "attachment; filename=lobx_logs.zip"},
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating zip: {str(e)}")
+
+
 @router.get("/files/{file_path:path}")
-async def get_file(file_path: str):
+async def get_file(file_path: str, _=Depends(get_current_admin_user)):
     try:
         full_path = (ROOT_DIR / file_path).resolve()
 

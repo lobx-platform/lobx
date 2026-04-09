@@ -43,6 +43,25 @@
       </div>
     </div>
 
+    <!-- ===== Download Logs ===== -->
+    <div class="config-section">
+      <div class="section-header">
+        <h2 class="section-title">Experiment Data</h2>
+      </div>
+      <div class="config-card">
+        <div class="config-card-body" style="flex-direction: row; align-items: center; gap: var(--space-3);">
+          <p class="helper-text" style="margin: 0; flex: 1;">Download all log files and questionnaire data as a zip archive.</p>
+          <button
+            class="tp-btn tp-btn-primary"
+            @click="downloadAllLogs"
+            :disabled="downloadingLogs"
+          >
+            {{ downloadingLogs ? 'Downloading...' : 'Download All Logs' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== Machine Market Runner ===== -->
     <div class="config-section">
       <div class="section-header">
@@ -161,6 +180,7 @@ const activeSessions = ref([])
 const runningSessions = ref([])
 const completedSessions = ref([])
 const startingBatch = ref(false)
+const downloadingLogs = ref(false)
 
 const batchConfig = ref({
   numMarkets: 3,
@@ -231,6 +251,28 @@ const startHeadlessBatch = async () => {
     uiStore.showError(error.response?.data?.detail || 'Failed to start batch')
   } finally {
     startingBatch.value = false
+  }
+}
+
+const downloadAllLogs = async () => {
+  downloadingLogs.value = true
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_HTTP_URL}files/download-all`, {
+      responseType: 'blob',
+    })
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'lobx_logs.zip')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    uiStore.showSuccess('Logs downloaded')
+  } catch (error) {
+    uiStore.showError('Failed to download logs')
+  } finally {
+    downloadingLogs.value = false
   }
 }
 
