@@ -21,7 +21,8 @@
     </div>
 
     <div class="trading-tip">
-      Market up → <strong class="bid-color">Buy now</strong>, sell later. &nbsp; Market down → <strong class="ask-color">Sell now</strong>, buy later.
+      <div class="tip-row"><span class="tip-label">Price going up?</span> <strong class="bid-color">Buy now</strong> and sell later.</div>
+      <div class="tip-row"><span class="tip-label">Price going down?</span> <strong class="ask-color">Sell now</strong> and buy later.</div>
     </div>
   </div>
 </template>
@@ -142,16 +143,29 @@ onMounted(() => {
   margin-top: 12px;
   padding: 10px 12px;
   border-top: 1px solid var(--color-border);
-  font-size: var(--text-sm);
-  line-height: 1.5;
+  font-size: var(--text-base);
+  line-height: 1.6;
 }
 
-.trading-tip ul {
-  margin: 0;
-  padding-left: 18px;
+.tip-row {
+  white-space: nowrap;
 }
 
-.trading-tip li {
+.tip-label {
+  font-weight: var(--font-semibold);
+}
+
+.trading-tip .bid-color {
+  font-size: var(--text-lg);
+  text-decoration: underline;
+}
+
+.trading-tip .ask-color {
+  font-size: var(--text-lg);
+  text-decoration: underline;
+}
+
+.trading-tip-placeholder {
   margin-bottom: 4px;
 }
 
