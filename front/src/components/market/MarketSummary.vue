@@ -445,6 +445,8 @@ const goToNextMarket = async () => {
   } catch (error) {
     console.error('Error navigating to next market:', error)
     window.location.href = window.location.origin + '/onboarding/ready'
+  } finally {
+    isNavigating.value = false
   }
 }
 
