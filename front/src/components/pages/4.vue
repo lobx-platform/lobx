@@ -111,7 +111,7 @@
         <!-- Market Dynamics 1: Clear Upward -->
         <v-col cols="12">
           <div class="text-h6 font-weight-bold mb-2">Market Dynamics 1 (Clear Upward Trending)</div>
-          <TradingPreview highlight="price-history" trend="up" caption="Both charts show a clear upward trend in price. The best strategy here is to buy shares early and hold them as the price rises, allowing you to sell at a higher value and maximise your profit." />
+          <TradingPreview highlight="price-history" trend="up" caption="The chart shows a clear upward trend in price. The best strategy here is to buy shares early and hold them as the price rises, allowing you to sell at a higher value and maximise your profit." />
         </v-col>
 
         <!-- Market Dynamics 2: Unclear Upward -->
@@ -123,7 +123,7 @@
         <!-- Market Dynamics 3: Clear Downward -->
         <v-col cols="12">
           <div class="text-h6 font-weight-bold mb-2">Market Dynamics 3 (Clear Downward Trending)</div>
-          <TradingPreview highlight="price-history" trend="down" caption="Both charts show a clear downward trend in price. The best strategy here is to sell shares early and hold them as the price drops, allowing you to buy at a lower value and maximise your profit." />
+          <TradingPreview highlight="price-history" trend="down" caption="The chart shows a clear downward trend in price. The best strategy here is to sell shares early and hold them as the price drops, allowing you to buy at a lower value and maximise your profit." />
         </v-col>
 
         <!-- Market Dynamics 4: Unclear Downward -->
