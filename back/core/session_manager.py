@@ -170,7 +170,12 @@ class SessionManager:
             merged = treatment_manager.get_merged_params(market_count, base_params_dict)
 
         params = TradingParameters(**merged)
-        timestamped_id = f"{session_id}_{int(time.time())}"
+        # Lab room keys are short (T0_M0), so append timestamp for uniqueness.
+        # Prolific room keys already contain a timestamp, so use as-is.
+        if session_id.startswith("T"):
+            timestamped_id = f"{session_id}_{int(time.time())}"
+        else:
+            timestamped_id = session_id
         trader_manager = TraderManager(params, market_id=timestamped_id)
         market_id = trader_manager.trading_market.id
 

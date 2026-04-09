@@ -17,6 +17,13 @@
           />
           <button
             class="tp-btn tp-btn-secondary"
+            @click="downloadAll"
+            :disabled="!serverActive || downloading"
+          >
+            {{ downloading ? 'Downloading...' : 'Download All' }}
+          </button>
+          <button
+            class="tp-btn tp-btn-secondary"
             @click="resetState"
             :disabled="!serverActive || resettingState"
           >
@@ -210,23 +217,8 @@ const prolificRedirectUrl = ref('')
 const generatingCredentials = ref(false)
 const savingProlific = ref(false)
 const resettingState = ref(false)
+const downloading = ref(false)
 
-// Lab links state
-const numLabLinks = ref(100)
-const numTreatments = ref(4)
-const labLinks = ref('')
-const generatingLabLinks = ref(false)
-// Pre-fill with Alessio's T1-T4 defaults
-const treatmentOverrides = ref([
-  { informed_trade_intensity: 0.36, informed_share_passive: '' },
-  { informed_trade_intensity: 0.69, informed_share_passive: '' },
-  { informed_trade_intensity: 0.36, informed_share_passive: 0.4 },
-  { informed_trade_intensity: 0.69, informed_share_passive: 0.1 },
-  { informed_trade_intensity: '', informed_share_passive: '' },
-  { informed_trade_intensity: '', informed_share_passive: '' },
-  { informed_trade_intensity: '', informed_share_passive: '' },
-  { informed_trade_intensity: '', informed_share_passive: '' },
-])
 
 const traderTypes = ['HUMAN', 'NOISE', 'INFORMED', 'MARKET_MAKER', 'INITIAL_ORDER_BOOK']
 
@@ -358,9 +350,28 @@ const saveTreatments = async () => {
   }
 }
 
-const copyLabLinks = () => {
-  navigator.clipboard.writeText(labLinks.value)
-  uiStore.showSuccess('Links copied to clipboard')
+const downloadAll = async () => {
+  downloading.value = true
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_HTTP_URL}files/download-all`, {
+      responseType: 'blob',
+    })
+    const disposition = response.headers['content-disposition'] || ''
+    const match = disposition.match(/filename=(.+)/)
+    const filename = match ? match[1] : 'experiment_data.zip'
+    const url = URL.createObjectURL(response.data)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+    uiStore.showSuccess('Download started')
+  } catch (error) {
+    console.error('Download failed:', error)
+    uiStore.showError('Failed to download data')
+  } finally {
+    downloading.value = false
+  }
 }
 
 onMounted(() => {

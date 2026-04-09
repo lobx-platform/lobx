@@ -1,11 +1,14 @@
-"""Data routes: /files, /files/grouped, /files/{path}"""
+"""Data routes: /files, /files/grouped, /files/{path}, /files/download-all"""
 
+import io
 import re
+import zipfile
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import FileResponse, StreamingResponse
 
+from ..auth import get_current_admin_user
 from ..shared import ROOT_DIR
 
 router = APIRouter()
@@ -106,6 +109,29 @@ async def list_files_grouped():
         return {'sessions': session_list, 'max_market': max_market, 'ungrouped': ungrouped}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@router.get("/files/download-all")
+async def download_all_logs(_=Depends(get_current_admin_user)):
+    """Download all experiment data (logs, parameters, questionnaire, consent) as a single zip."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as zf:
+        for item in ROOT_DIR.rglob("*"):
+            if not item.is_file():
+                continue
+            # skip backup archives
+            if item.suffix in (".gz", ".tar", ".zip"):
+                continue
+            arcname = str(item.relative_to(ROOT_DIR))
+            zf.write(item, arcname)
+
+    buf.seek(0)
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return StreamingResponse(
+        buf,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename=experiment_data_{ts}.zip"},
+    )
 
 
 @router.get("/files/{file_path:path}")

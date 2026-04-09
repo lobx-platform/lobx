@@ -1,4 +1,4 @@
-"""Admin routes: /admin/* settings, treatments, generate-lab-links, reset, headless batch"""
+"""Admin routes: /admin/* settings, treatments, reset, headless batch"""
 
 import asyncio
 from pathlib import Path
@@ -89,48 +89,6 @@ async def get_treatment_for_user(username: str):
         username=username, markets_played=market_count,
         next_treatment_index=market_count, next_treatment=treatment
     )
-
-
-# --- Lab links ---
-
-@router.post("/admin/generate-lab-links")
-async def generate_lab_links(request: Request, current_user: dict = Depends(get_current_admin_user)):
-    from ..lab_auth import generate_lab_tokens, lab_trader_map, LAB_TOKENS
-    try:
-        body = await request.json()
-        count = body.get("count", 10)
-        num_treatments = body.get("num_treatments", 1)
-        treatments_list = body.get("treatments", None)
-
-        LAB_TOKENS.clear()
-        sm = market_handler.session_manager
-        lab_usernames = [u for u in sm.user_historical_markets if u.startswith("LAB_")]
-        for u in lab_usernames:
-            sm.user_historical_markets.pop(u, None)
-            sm.user_sessions.pop(u, None)
-            sm.user_ready_status.pop(u, None)
-            sm.user_treatment_groups.pop(u, None)
-            sm.user_market_count.pop(u, None)
-        lab_trader_map.clear()
-        lab_trader_ids = [t for t in accumulated_rewards if t.startswith("HUMAN_LAB_")]
-        for t in lab_trader_ids:
-            del accumulated_rewards[t]
-
-        # Clear questionnaire data for lab users
-        import glob
-        for f in glob.glob("logs/questionnaire/HUMAN_LAB_*.json"):
-            Path(f).unlink(missing_ok=True)
-
-        origin = request.headers.get("origin", str(request.base_url).rstrip("/"))
-        links = generate_lab_tokens(count, base_url=origin, num_treatments=num_treatments)
-
-        # Store treatments directly via treatment_manager
-        if treatments_list and isinstance(treatments_list, list):
-            treatment_manager.set_treatments(treatments_list)
-
-        return success(message=f"Generated {count} lab links ({num_treatments} treatments)", data={"links": links})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate lab links: {str(e)}")
 
 
 # --- Reset ---

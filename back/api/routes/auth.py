@@ -127,9 +127,6 @@ async def reset_session_for_new_market(request: Request, current_user: dict = De
     gmail_username = current_user['gmail_username']
     await market_handler.remove_user_from_session(gmail_username)
     await market_handler.cleanup_finished_markets()
-    # Increment market count so next join_session creates a new waiting room
-    sm = market_handler.session_manager
-    sm.user_market_count[gmail_username] = sm.user_market_count.get(gmail_username, 0) + 1
     return success(message="Session reset for new market", data={"username": gmail_username})
 
 

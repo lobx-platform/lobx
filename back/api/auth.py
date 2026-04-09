@@ -1,7 +1,7 @@
 import os
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer
-from .lab_auth import LAB_TOKENS, lab_trader_map
+from .lab_auth import validate_lab_token, lab_trader_map
 
 security = HTTPBearer(auto_error=False)
 
@@ -30,12 +30,10 @@ async def get_current_user(request: Request):
     # Legacy: Lab <token> (keep for backward compat)
     if auth_header.startswith('Lab '):
         lab_token = auth_header.split('Lab ', 1)[1]
-        if lab_token in LAB_TOKENS:
-            from .lab_auth import validate_lab_token
-            is_valid, lab_user = validate_lab_token(lab_token)
-            if is_valid:
-                trader_registry[lab_user['trader_id']] = lab_user
-                return lab_user
+        is_valid, lab_user = validate_lab_token(lab_token)
+        if is_valid:
+            trader_registry[lab_user['trader_id']] = lab_user
+            return lab_user
 
     # Path-based lookup (for /trader/<id>/... and /trader_info/<id> routes)
     path = request.url.path
