@@ -139,8 +139,9 @@ watch(
   history,
   (newHistory) => {
     if (newHistory && newHistory.length && chartCanvas.value) {
+      const t0 = newHistory.length ? new Date(newHistory[0].timestamp).getTime() : 0
       const data = newHistory.map((item) => ({
-        x: new Date(item.timestamp),
+        x: new Date(new Date(item.timestamp).getTime() - t0),
         y: Math.round(item.price),
       }))
 
@@ -157,8 +158,9 @@ watch(
 
 onMounted(() => {
   if (history.value && history.value.length) {
+    const t0 = new Date(history.value[0].timestamp).getTime()
     const data = history.value.map((item) => ({
-      x: new Date(item.timestamp),
+      x: new Date(new Date(item.timestamp).getTime() - t0),
       y: Math.round(item.price),
     }))
     createChart(data)

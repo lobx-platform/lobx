@@ -99,9 +99,17 @@ const tradingSummary = computed(() => {
   }
 })
 
+const firstTradeTime = computed(() => {
+  const all = [...(groupedOrders.value.bids || []), ...(groupedOrders.value.asks || [])]
+  if (!all.length) return 0
+  return Math.min(...all.map(o => o.latestTime))
+})
+
 const formatTime = (timestamp) => {
-  const date = new Date(timestamp)
-  return date.toLocaleTimeString()
+  const elapsed = Math.max(0, Math.floor((timestamp - firstTradeTime.value) / 1000))
+  const mins = Math.floor(elapsed / 60)
+  const secs = elapsed % 60
+  return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 </script>
 
