@@ -111,25 +111,25 @@
         <!-- Market Dynamics 1: Clear Upward -->
         <v-col cols="12">
           <div class="text-h6 font-weight-bold mb-2">Market Dynamics 1 (Clear Upward Trending)</div>
-          <TradingPreview trend="up" caption="Both charts show a clear upward trend in price. The best strategy here is to buy shares early and hold them as the price rises, allowing you to sell at a higher value and maximise your profit." />
+          <TradingPreview highlight="price-history" trend="up" caption="Both charts show a clear upward trend in price. The best strategy here is to buy shares early and hold them as the price rises, allowing you to sell at a higher value and maximise your profit." />
         </v-col>
 
         <!-- Market Dynamics 2: Unclear Upward -->
         <v-col cols="12">
           <div class="text-h6 font-weight-bold mb-2">Market Dynamics 2 (Unclear Upward Trending)</div>
-          <TradingPreview trend="unclear-up" caption="Although there is buying pressure, the price direction is not clear. The best strategy here is to wait or send limit orders." />
+          <TradingPreview highlight="price-history" trend="unclear-up" caption="Although there is buying pressure, the price direction is not clear. The best strategy here is to wait or send limit orders." />
         </v-col>
 
         <!-- Market Dynamics 3: Clear Downward -->
         <v-col cols="12">
           <div class="text-h6 font-weight-bold mb-2">Market Dynamics 3 (Clear Downward Trending)</div>
-          <TradingPreview trend="down" caption="Both charts show a clear downward trend in price. The best strategy here is to sell shares early and hold them as the price drops, allowing you to buy at a lower value and maximise your profit." />
+          <TradingPreview highlight="price-history" trend="down" caption="Both charts show a clear downward trend in price. The best strategy here is to sell shares early and hold them as the price drops, allowing you to buy at a lower value and maximise your profit." />
         </v-col>
 
         <!-- Market Dynamics 4: Unclear Downward -->
         <v-col cols="12">
           <div class="text-h6 font-weight-bold mb-2">Market Dynamics 4 (Unclear Downward Trending)</div>
-          <TradingPreview trend="unclear-down" caption="Although there is selling pressure, the price initially dropped, then recovered upward, before dropping again. This volatility makes timing critical. The best strategy is to sell shares when the price is high." />
+          <TradingPreview highlight="price-history" trend="unclear-down" caption="Although there is selling pressure, the price initially dropped, then recovered upward, before dropping again. This volatility makes timing critical. The best strategy is to sell shares when the price is high." />
         </v-col>
 
         <!-- Final Earnings Card -->

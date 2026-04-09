@@ -36,10 +36,16 @@
               <span>|</span>
               <span class="ask-color">Sell: 100.00</span>
             </div>
-            <div class="mock-trade-row bid-border">102 — 1sh</div>
-            <div class="mock-trade-row bid-border">101 — 3sh</div>
-            <div class="mock-trade-row ask-border">100 — 2sh</div>
-            <div class="mock-trade-row ask-border">99 — 1sh</div>
+            <div class="mock-trades-columns">
+              <div class="mock-trades-col">
+                <div class="mock-trade-row bid-border">102 — 1sh</div>
+                <div class="mock-trade-row bid-border">101 — 3sh</div>
+              </div>
+              <div class="mock-trades-col">
+                <div class="mock-trade-row ask-border">100 — 2sh</div>
+                <div class="mock-trade-row ask-border">99 — 1sh</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -278,6 +284,15 @@ const pricePolyline = computed(() => pricePoints.value.map(p => p.join(',')).joi
   margin-bottom: 4px;
   border-bottom: 1px solid var(--color-border);
   font-size: 8px;
+}
+
+.mock-trades-columns {
+  display: flex;
+  gap: 6px;
+}
+
+.mock-trades-col {
+  flex: 1;
 }
 
 .mock-trade-row {
