@@ -46,22 +46,13 @@
         <div class="mock-panel" :class="{ highlighted: highlight === 'chart', dimmed: highlight !== 'chart' && highlight !== 'all' }">
           <div class="mock-panel-title">Buy-Sell Chart</div>
           <div class="mock-panel-body mock-chart">
-            <div class="mock-bar-group">
-              <div class="mock-bar bid-bar" style="height: 60%"></div>
-              <div class="mock-bar ask-bar" style="height: 20%"></div>
-            </div>
-            <div class="mock-bar-group">
-              <div class="mock-bar bid-bar" style="height: 80%"></div>
-              <div class="mock-bar ask-bar" style="height: 40%"></div>
-            </div>
-            <div class="mock-bar-group">
-              <div class="mock-bar bid-bar" style="height: 40%"></div>
-              <div class="mock-bar ask-bar" style="height: 70%"></div>
-            </div>
-            <div class="mock-bar-group">
-              <div class="mock-bar bid-bar" style="height: 10%"></div>
-              <div class="mock-bar ask-bar" style="height: 90%"></div>
-            </div>
+            <!-- Bids decrease left to right, Asks increase left to right -->
+            <div class="mock-bar-group"><div class="mock-bar bid-bar" style="height: 80%"></div></div>
+            <div class="mock-bar-group"><div class="mock-bar bid-bar" style="height: 60%"></div></div>
+            <div class="mock-bar-group"><div class="mock-bar bid-bar" style="height: 30%"></div></div>
+            <div class="mock-bar-group"><div class="mock-bar ask-bar" style="height: 25%"></div></div>
+            <div class="mock-bar-group"><div class="mock-bar ask-bar" style="height: 55%"></div></div>
+            <div class="mock-bar-group"><div class="mock-bar ask-bar" style="height: 75%"></div></div>
             <div class="mock-axis">97 &nbsp; 98 &nbsp; 99 &nbsp; 100 &nbsp; 101 &nbsp; 102</div>
           </div>
         </div>
