@@ -148,7 +148,7 @@ onMounted(() => {
 }
 
 .tip-row {
-  white-space: nowrap;
+  margin-bottom: 4px;
 }
 
 .tip-label {
