@@ -323,7 +323,7 @@ const downloadMarketMetrics = async () => {
     const response = await axios.get(`${httpUrl}market_metrics`, {
       params: {
         trader_id: traderId.value,
-        market_id: traderId.value,
+        market_id: sessionStore.marketId,
       },
       responseType: 'blob',
     })

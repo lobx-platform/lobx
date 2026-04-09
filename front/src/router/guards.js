@@ -77,10 +77,21 @@ export function setupGuards(router) {
       sessionStore._restored = true
     }
 
-    // 1. Handle Lab token in URL — store for auto-login (prefer ?LAB=, fallback ?LAB_TOKEN=)
+    // 1. Handle new login params in URL — if different user, clear old state
     const labParam = to.query.LAB || to.query.LAB_TOKEN
-    if (labParam) {
-      sessionStore.setLabToken(labParam)
+    const prolificParam = to.query.PROLIFIC_PID
+    if (labParam || prolificParam) {
+      const newTraderId = labParam
+        ? `HUMAN_LAB_${labParam}`
+        : `HUMAN_PROLIFIC_${prolificParam}`
+      if (authStore.traderId && authStore.traderId !== newTraderId) {
+        // Different user — clear everything and let auth page handle fresh login
+        sessionStore.reset()
+        authStore.logout()
+      }
+      if (labParam) {
+        sessionStore.setLoginToken(labParam)
+      }
     }
 
     // 2. Guest-only routes — redirect authenticated users

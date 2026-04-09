@@ -65,13 +65,23 @@ const loginLoading = ref(false)
 const password = ref('')
 
 onMounted(async () => {
+  // Clear stale state if switching to a different user
+  const clearIfDifferentUser = (newTraderId) => {
+    const oldTraderId = authStore.traderId
+    if (oldTraderId && oldTraderId !== newTraderId) {
+      sessionStore.reset()
+      authStore.logout()
+    }
+  }
+
   // Auto-detect LAB token in URL (prefer ?LAB=, fallback to legacy ?LAB_TOKEN=)
-  const labToken = route.query.LAB || route.query.LAB_TOKEN || sessionStore.labToken || sessionStore.loadLabToken()
+  const labToken = route.query.LAB || route.query.LAB_TOKEN || sessionStore.loginToken || sessionStore.loadLoginToken()
   if (labToken) {
     isLoading.value = true
     loadingMessage.value = 'Signing in with lab token...'
     try {
-      sessionStore.setLabToken(labToken)
+      clearIfDifferentUser(`HUMAN_LAB_${labToken}`)
+      sessionStore.setLoginToken(labToken)
       await authStore.labLogin(labToken)
       await NavigationService.afterLogin()
       return
@@ -88,6 +98,7 @@ onMounted(async () => {
     isLoading.value = true
     loadingMessage.value = 'Signing in via Prolific...'
     try {
+      clearIfDifferentUser(`HUMAN_PROLIFIC_${prolificPID}`)
       await authStore.prolificLogin(prolificPID, route.query.STUDY_ID, route.query.SESSION_ID)
       await NavigationService.afterLogin()
       return

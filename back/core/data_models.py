@@ -248,12 +248,6 @@ class TradingParameters(BaseModel):
         description="model_parameter",
     )
 
-    admin_users: List[str] = Field(
-        default=['venvoooo', 'asancetta', 'marjonuzaj', 'fra160756', 'expecon', 'w.wu'],
-        title="Admin Users",
-        description="model_parameter",
-    )
-
     # goal settings
     predefined_goals: List[int] = Field(
         default=[0],

@@ -147,10 +147,30 @@ const routes = [
     redirect: { name: 'admin' }
   },
 
+  // Logout — clears all state and redirects to auth
+  {
+    path: '/logout',
+    name: 'logout',
+    beforeEnter: async () => {
+      const { useAuthStore } = await import('@/store/auth')
+      const { useSessionStore } = await import('@/store/session')
+      const { useTraderStore } = await import('@/store/app')
+      const { disconnectSocket } = await import('@/socket')
+
+      disconnectSocket()
+      useTraderStore().clearStore()
+      useSessionStore().reset()
+      useAuthStore().logout()
+      localStorage.clear()
+
+      return { name: 'auth' }
+    },
+  },
+
   // Catch-all - redirect to auth
-  { 
-    path: '/:pathMatch(.*)*', 
-    redirect: { name: 'auth' } 
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'auth' }
   }
 ]
 

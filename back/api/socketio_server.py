@@ -57,7 +57,14 @@ def _authenticate(auth: dict) -> dict | None:
     if not auth:
         return None
 
-    # Lab token (new format: T1_P3)
+    # Unified: trader_id lookup in trader_registry
+    trader_id = auth.get("trader_id")
+    if trader_id:
+        from .auth import trader_registry
+        if trader_id in trader_registry:
+            return trader_registry[trader_id]
+
+    # Legacy: lab_token
     lab_token = auth.get("lab_token")
     if lab_token:
         is_valid, lab_user = validate_lab_token(lab_token)
@@ -65,10 +72,9 @@ def _authenticate(auth: dict) -> dict | None:
             lab_trader_map[lab_user["trader_id"]] = lab_user
             return lab_user
 
-    # Admin token (Bearer style — the frontend sends the raw token)
+    # Admin token
     admin_token = auth.get("admin_token")
     if admin_token:
-        import os
         from .auth import ADMIN_PASSWORD
         if admin_token == ADMIN_PASSWORD:
             return {
@@ -76,22 +82,6 @@ def _authenticate(auth: dict) -> dict | None:
                 "trader_id": "HUMAN_admin",
                 "is_admin": True,
             }
-
-    # Prolific user — authenticate via trader_id lookup in authenticated_users
-    prolific_pid = auth.get("prolific_pid")
-    if prolific_pid:
-        from .auth import authenticated_users
-        gmail_username = f"PROLIFIC_{prolific_pid}"
-        if gmail_username in authenticated_users:
-            return authenticated_users[gmail_username]
-        # Auto-create if not found (Prolific users are pre-validated via HTTP login)
-        trader_id = f"HUMAN_{gmail_username}"
-        return {
-            "gmail_username": gmail_username,
-            "trader_id": trader_id,
-            "is_admin": False,
-            "is_prolific": True,
-        }
 
     return None
 

@@ -52,12 +52,8 @@ def get_trader_info_with_market_data(trader_manager: TraderManager, trader_id: s
 
         params = trader_manager.params.model_dump() if trader_manager.params else {}
 
-        admin_users = params.get('admin_users', [])
-        is_admin = gmail_username in admin_users if gmail_username else False
-
         trader_data['all_attributes'].update({
             'historical_markets_count': historical_markets_count,
-            'is_admin': is_admin,
             'params': params
         })
 

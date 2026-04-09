@@ -8,8 +8,9 @@ security = HTTPBearer(auto_error=False)
 # Admin password from environment (MUST be set in .env or docker-compose)
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
-# Store authenticated users
-authenticated_users = {}
+# Unified trader registry: trader_id → user dict
+# Both lab and prolific users register here on login.
+trader_registry = {}
 
 
 def extract_gmail_username(email):
@@ -17,19 +18,26 @@ def extract_gmail_username(email):
 
 
 async def get_current_user(request: Request):
-    """Authenticate user via Lab token or admin Bearer token."""
-    # Check for lab token in Authorization header
+    """Authenticate user via unified Trader token, or admin Bearer token."""
     auth_header = request.headers.get('Authorization', '')
+
+    # Unified: Trader <trader_id>
+    if auth_header.startswith('Trader '):
+        trader_id = auth_header.split('Trader ', 1)[1]
+        if trader_id in trader_registry:
+            return trader_registry[trader_id]
+
+    # Legacy: Lab <token> (keep for backward compat)
     if auth_header.startswith('Lab '):
         lab_token = auth_header.split('Lab ', 1)[1]
         if lab_token in LAB_TOKENS:
             from .lab_auth import validate_lab_token
             is_valid, lab_user = validate_lab_token(lab_token)
             if is_valid:
-                lab_trader_map[lab_user['trader_id']] = lab_user
+                trader_registry[lab_user['trader_id']] = lab_user
                 return lab_user
 
-    # Check if this is a request for a specific trader (by path)
+    # Path-based lookup (for /trader/<id>/... and /trader_info/<id> routes)
     path = request.url.path
     trader_id = None
     if path.startswith("/trader/"):
@@ -39,23 +47,14 @@ async def get_current_user(request: Request):
     elif path.startswith("/trader_info/"):
         trader_id = path.split("/")[-1]
 
-    # Check if this is a lab user by trader_id
+    if trader_id and trader_id in trader_registry:
+        return trader_registry[trader_id]
+
+    # Legacy fallback: lab_trader_map
     if trader_id and trader_id in lab_trader_map:
         return lab_trader_map[trader_id]
 
-    # Check if we have it in authenticated_users
-    if trader_id and trader_id.startswith("HUMAN_"):
-        gmail_username = trader_id.split('_', 1)[1]
-        if gmail_username in authenticated_users:
-            return authenticated_users[gmail_username]
-
-    # Check for Prolific users by trader_id in authenticated_users
-    if trader_id and trader_id.startswith("HUMAN_PROLIFIC_"):
-        prolific_username = trader_id.split('_', 1)[1]  # "PROLIFIC_xxx"
-        if prolific_username in authenticated_users:
-            return authenticated_users[prolific_username]
-
-    # Check for admin Bearer token
+    # Admin Bearer token
     if auth_header.startswith('Bearer '):
         token = auth_header.split('Bearer ')[1]
         if token == ADMIN_PASSWORD:

@@ -33,9 +33,8 @@ export const useWebSocketStore = defineStore('websocket', {
       const authStore = useAuthStore()
 
       connectSocket(traderUuid, {
-        labToken: authStore.labToken,
+        userToken: authStore.userToken,
         adminToken: authStore.adminToken,
-        prolificPid: authStore.prolificPid,
       })
     },
 

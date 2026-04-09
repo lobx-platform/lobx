@@ -185,6 +185,11 @@
 
     <!-- Consent checkbox and button -->
     <div class="consent-footer">
+      <!-- Lab identity confirmation -->
+      <div v-if="participantLabel" class="identity-confirm">
+        You are participant <strong>{{ participantLabel }}</strong>. If this is not correct, please contact the researcher.
+      </div>
+
       <div class="checkbox-container">
         <input
           id="consent-checkbox"
@@ -215,7 +220,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, computed, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTraderStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
@@ -228,6 +233,21 @@ const traderStore = useTraderStore()
 const authStore = useAuthStore()
 const sessionStore = useSessionStore()
 const consentGiven = ref(false)
+
+const participantLabel = computed(() => {
+  const user = authStore.user
+  if (!user) return null
+  if (user.isLab) {
+    // Extract token from trader ID: HUMAN_LAB_T1_P1 → T1_P1
+    const traderId = authStore.traderId || ''
+    const match = traderId.match(/LAB_(.+)$/)
+    return match ? match[1] : traderId
+  }
+  if (user.isProlific) {
+    return user.prolificData?.PROLIFIC_PID || 'Prolific Participant'
+  }
+  return null
+})
 
 const emit = defineEmits(['update:canProgress'])
 
@@ -453,6 +473,17 @@ const submitConsent = async () => {
   padding: 2rem;
   border: var(--border-width) solid var(--color-border);
   text-align: center;
+}
+
+.identity-confirm {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
 }
 
 .checkbox-container {

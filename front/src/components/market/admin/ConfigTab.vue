@@ -5,13 +5,31 @@
     <div class="config-section">
       <div class="section-header">
         <h2 class="section-title">Market Settings</h2>
-        <button
-          class="tp-btn tp-btn-primary"
-          @click="saveSettings"
-          :disabled="!serverActive"
-        >
-          Save &amp; Apply
-        </button>
+        <div class="header-actions">
+          <v-text-field
+            v-model="prolificRedirectUrl"
+            label="Prolific Redirect URL"
+            hide-details
+            density="compact"
+            variant="outlined"
+            style="min-width: 300px"
+            placeholder="https://app.prolific.com/submissions/complete?cc=CODE"
+          />
+          <button
+            class="tp-btn tp-btn-secondary"
+            @click="resetState"
+            :disabled="!serverActive || resettingState"
+          >
+            {{ resettingState ? 'Resetting...' : 'Reset Experiment' }}
+          </button>
+          <button
+            class="tp-btn tp-btn-primary"
+            @click="saveSettings"
+            :disabled="!serverActive"
+          >
+            Save &amp; Apply
+          </button>
+        </div>
       </div>
 
       <div class="cards-grid">
@@ -161,181 +179,6 @@
       </div>
     </div>
 
-    <!-- ===== SECTION 3: Session & Lab Settings ===== -->
-    <div class="config-section">
-      <div class="section-header section-header-toggle" @click="showProlific = !showProlific">
-        <h2 class="section-title">Session &amp; Lab Settings</h2>
-        <span class="toggle-indicator">{{ showProlific ? '\u2212' : '+' }}</span>
-      </div>
-
-      <div v-show="showProlific" class="section-body">
-
-        <!-- Session Type + Credentials -->
-        <div class="config-card">
-          <div class="config-card-header">
-            <span class="config-card-tag">Credentials &amp; Session</span>
-          </div>
-          <div class="config-card-body">
-            <div class="form-row-2">
-              <v-select
-                v-model="formState.session_type"
-                :items="['prolific', 'lab']"
-                label="Session Type"
-                hide-details
-                density="compact"
-                variant="outlined"
-                @update:model-value="updatePersistentSettings"
-              />
-              <v-text-field
-                v-model="prolificSettings.studyId"
-                label="Study ID"
-                hide-details
-                density="compact"
-                variant="outlined"
-              />
-            </div>
-
-            <v-textarea
-              v-model="prolificSettings.credentials"
-              label="Participant Credentials"
-              hide-details
-              variant="outlined"
-              placeholder="username1,password1&#10;username2,password2"
-              rows="3"
-              class="credentials-field"
-            />
-
-            <div class="form-row-inline">
-              <v-text-field
-                v-model="numCredentials"
-                label="Count"
-                type="number"
-                min="1"
-                max="20"
-                hide-details
-                density="compact"
-                variant="outlined"
-                style="max-width: 100px"
-              />
-              <button class="tp-btn tp-btn-secondary" @click="generateCredentials" :disabled="generatingCredentials">
-                Generate Credentials
-              </button>
-            </div>
-
-            <v-text-field
-              v-model="prolificSettings.redirectUrl"
-              label="Redirect URL"
-              hide-details
-              density="compact"
-              variant="outlined"
-            />
-
-            <div class="card-actions">
-              <button
-                class="tp-btn tp-btn-primary"
-                @click="saveProlificSettings"
-                :disabled="savingProlific"
-                style="width: 100%"
-              >
-                Save Session Settings
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Lab Link Generation -->
-        <div v-if="formState.session_type === 'lab'" class="config-card">
-          <div class="config-card-header">
-            <span class="config-card-tag">Lab Link Generator</span>
-          </div>
-          <div class="config-card-body">
-            <div class="form-row-inline">
-              <v-text-field
-                v-model="numLabLinks"
-                label="Total Participants"
-                type="number"
-                min="1"
-                max="200"
-                hide-details
-                density="compact"
-                variant="outlined"
-                style="max-width: 160px"
-              />
-              <v-text-field
-                v-model="numTreatments"
-                label="Treatments"
-                type="number"
-                min="1"
-                max="8"
-                hide-details
-                density="compact"
-                variant="outlined"
-                style="max-width: 120px"
-              />
-              <button class="tp-btn tp-btn-primary" @click="generateLabLinks" :disabled="generatingLabLinks">
-                {{ generatingLabLinks ? 'Generating...' : 'Generate Links' }}
-              </button>
-            </div>
-
-            <!-- Treatment Overrides -->
-            <div v-if="parseInt(numTreatments) > 1" class="overrides-section">
-              <span class="overrides-label">Treatment Parameter Overrides</span>
-              <table class="plain-table">
-                <thead>
-                  <tr>
-                    <th style="width: 50px">T#</th>
-                    <th>informed_trade_intensity</th>
-                    <th>informed_share_passive</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="t in parseInt(numTreatments)" :key="t">
-                    <td class="font-mono">T{{ t }}</td>
-                    <td>
-                      <v-text-field
-                        v-model="treatmentOverrides[t-1].informed_trade_intensity"
-                        type="number"
-                        step="0.01"
-                        hide-details
-                        density="compact"
-                        variant="outlined"
-                      />
-                    </td>
-                    <td>
-                      <v-text-field
-                        v-model="treatmentOverrides[t-1].informed_share_passive"
-                        type="number"
-                        step="0.01"
-                        hide-details
-                        density="compact"
-                        variant="outlined"
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Generated Links Output -->
-            <div v-if="labLinks" class="links-output">
-              <v-textarea
-                v-model="labLinks"
-                label="Generated Lab Links"
-                readonly
-                rows="5"
-                hide-details
-                variant="outlined"
-                class="links-textarea"
-              />
-              <button class="tp-btn tp-btn-primary" @click="copyLabLinks" style="width: 100%">
-                Copy All Links
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
   </div>
 </template>
 
@@ -355,19 +198,18 @@ const props = defineProps({
 const emit = defineEmits(['update:formState'])
 
 const uiStore = useUIStore()
-const haikunator = new Haikunator()
 
 // Treatment state
 const showTreatments = ref(false)
 const treatmentYaml = ref('')
 const treatments = ref([])
 const yamlError = ref('')
-// Prolific state
-const showProlific = ref(false)
-const prolificSettings = ref({ credentials: '', studyId: '', redirectUrl: '' })
-const numCredentials = ref(5)
+
+// Prolific redirect URL
+const prolificRedirectUrl = ref('')
 const generatingCredentials = ref(false)
 const savingProlific = ref(false)
+const resettingState = ref(false)
 
 // Lab links state
 const numLabLinks = ref(100)
@@ -480,6 +322,19 @@ const saveSettings = async () => {
   }
 }
 
+const resetState = async () => {
+  resettingState.value = true
+  try {
+    await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/reset_state`)
+    uiStore.showSuccess('Experiment state reset — all sessions, markets, and rewards cleared')
+  } catch (error) {
+    console.error('Error resetting state:', error)
+    uiStore.showError('Failed to reset state')
+  } finally {
+    resettingState.value = false
+  }
+}
+
 // Treatment functions
 const loadTreatments = async () => {
   try {
@@ -502,78 +357,6 @@ const saveTreatments = async () => {
     yamlError.value = error.response?.data?.detail || 'Failed to save'
   }
 }
-
-const saveProlificSettings = async () => {
-  try {
-    savingProlific.value = true
-    await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/prolific-settings`, {
-      settings: {
-        PROLIFIC_CREDENTIALS: prolificSettings.value.credentials,
-        PROLIFIC_STUDY_ID: prolificSettings.value.studyId,
-        PROLIFIC_REDIRECT_URL: prolificSettings.value.redirectUrl,
-      },
-    })
-    uiStore.showSuccess('Prolific settings saved')
-  } catch (error) {
-    uiStore.showError('Failed to save Prolific settings')
-  } finally {
-    savingProlific.value = false
-  }
-}
-
-const generateCredentials = () => {
-  generatingCredentials.value = true
-  try {
-    const count = parseInt(numCredentials.value) || 5
-    const generated = []
-    for (let i = 0; i < count; i++) {
-      const username = haikunator.haikunate({ tokenLength: 0, delimiter: '' })
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-      let password = ''
-      for (let j = 0; j < 10; j++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length))
-      }
-      generated.push(`${username},${password}`)
-    }
-    prolificSettings.value.credentials = generated.join('\n')
-    uiStore.showSuccess(`Generated ${count} credentials`)
-  } finally {
-    generatingCredentials.value = false
-  }
-}
-
-// Lab link functions
-const generateLabLinks = async () => {
-  generatingLabLinks.value = true
-  try {
-    const nt = parseInt(numTreatments.value) || 1
-    const payload = {
-      count: parseInt(numLabLinks.value) || 10,
-      num_treatments: nt,
-    }
-    // Build treatments list from UI
-    if (nt > 1) {
-      const treatments = []
-      for (let i = 0; i < nt; i++) {
-        const t = treatmentOverrides.value[i]
-        const treatment = { name: `T${i + 1}` }
-        if (t.informed_trade_intensity !== '') treatment.informed_trade_intensity = parseFloat(t.informed_trade_intensity)
-        if (t.informed_share_passive !== '') treatment.informed_share_passive = parseFloat(t.informed_share_passive)
-        treatments.push(treatment)
-      }
-      payload.treatments = treatments
-    }
-    const response = await axios.post(`${import.meta.env.VITE_HTTP_URL}admin/generate-lab-links`, payload)
-    labLinks.value = (response.data.data?.links || []).join('\n')
-    uiStore.showSuccess(`Generated ${numLabLinks.value} lab links (${nt} treatments)`)
-  } catch (error) {
-    uiStore.showError('Failed to generate lab links')
-  } finally {
-    generatingLabLinks.value = false
-  }
-}
-
-// saveTreatmentOverrides removed — treatments are sent with Generate Links
 
 const copyLabLinks = () => {
   navigator.clipboard.writeText(labLinks.value)
@@ -631,7 +414,9 @@ watch(() => props.serverActive, (newVal) => {
   letter-spacing: var(--tracking-tight);
 }
 
-.section-header .tp-btn {
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
   margin-left: auto;
 }
 

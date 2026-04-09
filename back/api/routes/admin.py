@@ -110,7 +110,6 @@ async def generate_lab_links(request: Request, current_user: dict = Depends(get_
             sm.user_sessions.pop(u, None)
             sm.user_ready_status.pop(u, None)
             sm.user_treatment_groups.pop(u, None)
-            sm.user_group_index.pop(u, None)
             sm.user_market_count.pop(u, None)
         lab_trader_map.clear()
         lab_trader_ids = [t for t in accumulated_rewards if t.startswith("HUMAN_LAB_")]

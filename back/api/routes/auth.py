@@ -3,7 +3,7 @@
 import os
 from fastapi import APIRouter, HTTPException, Depends, Request
 from core.data_models import TradingParameters
-from ..auth import get_current_user, ADMIN_PASSWORD
+from ..auth import get_current_user, ADMIN_PASSWORD, trader_registry
 from ..shared import base_settings, market_handler, get_historical_markets_count
 from utils.api_responses import success
 
@@ -22,19 +22,16 @@ async def user_login(request: Request):
         gmail_username = lab_user['gmail_username']
         trader_id = lab_user['trader_id']
         treatment_group = lab_user.get('treatment_group')
-        group_index = lab_user.get('group_index', 0)
         lab_trader_map[trader_id] = lab_user
+        trader_registry[trader_id] = lab_user
         await market_handler.remove_user_from_session(gmail_username)
-        # Register forced cohort assignment if treatment_group is set
+        # Register treatment group for waiting room assignment
         if treatment_group is not None:
             market_handler.session_manager.user_treatment_groups[gmail_username] = treatment_group
-        # Register group_index for deterministic goal assignment
-        market_handler.session_manager.user_group_index[gmail_username] = group_index
         return success(
             message="Lab login successful",
             data={"trader_id": trader_id, "username": gmail_username, "is_admin": False,
-                  "is_lab": True, "lab_token": lab_token, "treatment_group": treatment_group,
-                  "group_index": group_index}
+                  "is_lab": True, "treatment_group": treatment_group}
         )
 
     # Check for Prolific params
@@ -42,19 +39,25 @@ async def user_login(request: Request):
     if prolific_pid:
         study_id = request.query_params.get('STUDY_ID', '')
         session_id = request.query_params.get('SESSION_ID', '')
+        treatment_group = request.query_params.get('TREATMENT')
         gmail_username = f"PROLIFIC_{prolific_pid}"
         trader_id = f"HUMAN_{gmail_username}"
         await market_handler.remove_user_from_session(gmail_username)
-        # Store in authenticated_users so subsequent requests work
-        from ..auth import authenticated_users
+        # Register treatment group if provided (e.g. &TREATMENT=0)
+        if treatment_group is not None:
+            try:
+                market_handler.session_manager.user_treatment_groups[gmail_username] = int(treatment_group)
+            except ValueError:
+                pass
         prolific_user = {"gmail_username": gmail_username, "trader_id": trader_id,
                          "is_admin": False, "is_prolific": True, "prolific_pid": prolific_pid}
-        authenticated_users[gmail_username] = prolific_user
+        trader_registry[trader_id] = prolific_user
         return success(
             message="Prolific login successful",
             data={"trader_id": trader_id, "username": gmail_username, "is_admin": False,
                   "is_prolific": True, "prolific_pid": prolific_pid,
-                  "study_id": study_id, "session_id": session_id}
+                  "study_id": study_id, "session_id": session_id,
+                  "treatment_group": int(treatment_group) if treatment_group is not None else None}
         )
 
     raise HTTPException(status_code=401, detail="Invalid authentication method")

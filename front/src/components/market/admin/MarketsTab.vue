@@ -43,10 +43,10 @@
       </div>
     </div>
 
-    <!-- ===== AI-Only Market Runner ===== -->
+    <!-- ===== Machine Market Runner ===== -->
     <div class="config-section">
       <div class="section-header">
-        <h2 class="section-title">AI-Only Market Runner</h2>
+        <h2 class="section-title">Machine Market Runner</h2>
       </div>
 
       <div class="config-card">
@@ -55,7 +55,7 @@
         </div>
         <div class="config-card-body">
           <p class="helper-text">
-            Run markets with only AI traders for testing and data collection.
+            Run markets with only machine traders for testing and data collection.
           </p>
 
           <div class="batch-controls">
@@ -110,7 +110,7 @@
             :disabled="!serverActive || startingBatch"
             style="width: 100%"
           >
-            {{ startingBatch ? 'Starting...' : `Start ${batchConfig.numMarkets} AI-Only Market${batchConfig.numMarkets > 1 ? 's' : ''}` }}
+            {{ startingBatch ? 'Starting...' : `Start ${batchConfig.numMarkets} Machine Market${batchConfig.numMarkets > 1 ? 's' : ''}` }}
           </button>
 
           <!-- Running Sessions -->

@@ -24,15 +24,15 @@ export const useSessionStore = defineStore('session', {
     isSyncing: false,
     lastSyncTime: null,
 
-    // Lab-specific
-    labToken: null,
+    // Login token for auto-re-login (lab token string, e.g. "T1_P1")
+    loginToken: null,
   }),
 
   getters: {
     canTrade: (state) => state.status === 'trading',
     canStartNewMarket: (state) => state.marketsCompleted < state.maxMarkets,
     isLastMarket: (state) => state.marketsCompleted >= state.maxMarkets,
-    isLabUser: (state) => !!state.labToken,
+    isLabUser: (state) => !!state.loginToken,
     
     // Get the route name for current onboarding step
     currentOnboardingRoute: (state) => {
@@ -113,29 +113,15 @@ export const useSessionStore = defineStore('session', {
       }
     },
 
-    // Store Lab token
-    setLabToken(token) {
-      this.labToken = token
-      if (token) {
-        localStorage.setItem('lab_token', token)
-      } else {
-        localStorage.removeItem('lab_token')
-      }
+    // Store login token (lab token string for auto-re-login)
+    setLoginToken(token) {
+      this.loginToken = token
       this.saveToLocalStorage()
     },
 
-    // Load Lab token from localStorage
-    loadLabToken() {
-      try {
-        const stored = localStorage.getItem('lab_token')
-        if (stored) {
-          this.labToken = stored
-          return stored
-        }
-      } catch (e) {
-        localStorage.removeItem('lab_token')
-      }
-      return null
+    // Load login token
+    loadLoginToken() {
+      return this.loginToken
     },
 
     // Called when market is completed
@@ -162,9 +148,8 @@ export const useSessionStore = defineStore('session', {
         marketsCompleted: 0,
         isSyncing: false,
         lastSyncTime: null,
-        labToken: null,
+        loginToken: null,
       })
-      localStorage.removeItem('lab_token')
       this.saveToLocalStorage()
     },
 
@@ -178,7 +163,7 @@ export const useSessionStore = defineStore('session', {
         hasCompletedOnboarding: this.hasCompletedOnboarding,
         marketsCompleted: this.marketsCompleted,
         maxMarkets: this.maxMarkets,
-        labToken: this.labToken,
+        loginToken: this.loginToken,
       }
       localStorage.setItem('session_store', JSON.stringify(dataToSave))
     },
@@ -206,7 +191,7 @@ export const useSessionStore = defineStore('session', {
       'hasCompletedOnboarding',
       'marketsCompleted',
       'maxMarkets',
-      'labToken',
+      'loginToken',
     ],
   }
 })

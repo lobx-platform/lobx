@@ -51,10 +51,10 @@ const ROUTED_EVENTS = [
  * Create a Socket.IO connection and wire events to the bus.
  *
  * @param {string} traderUuid – trader ID to auto-join after connect
- * @param {{ labToken?: string, adminToken?: string, prolificPid?: string }} auth – credentials
+ * @param {{ userToken?: string, adminToken?: string }} auth – credentials
  * @returns {object} the raw socket instance
  */
-export function connectSocket(traderUuid, { labToken, adminToken, prolificPid } = {}) {
+export function connectSocket(traderUuid, { userToken, adminToken } = {}) {
   // Tear down any stale connection first
   if (_socket) {
     _socket.disconnect()
@@ -66,9 +66,8 @@ export function connectSocket(traderUuid, { labToken, adminToken, prolificPid } 
   const sioPath = (url.pathname.replace(/\/$/, '') || '') + '/socket.io/'
 
   const auth = {}
-  if (labToken) auth.lab_token = labToken
+  if (userToken) auth.trader_id = userToken
   else if (adminToken) auth.admin_token = adminToken
-  else if (prolificPid) auth.prolific_pid = prolificPid
 
   console.log(`[Socket.IO] Connecting to ${url.origin} path=${sioPath} auth=`, auth)
   _socket = io(url.origin, {

@@ -22,9 +22,9 @@ instance.interceptors.request.use(
       const { useAuthStore } = await import('@/store/auth')
       const authStore = useAuthStore()
 
-      // Lab token
-      if (authStore.labToken) {
-        config.headers.Authorization = `Lab ${authStore.labToken}`
+      // Unified user token (trader_id) — works for both lab and prolific
+      if (authStore.userToken) {
+        config.headers.Authorization = `Trader ${authStore.userToken}`
       }
       // Admin password as Bearer token
       else if (authStore.adminToken) {

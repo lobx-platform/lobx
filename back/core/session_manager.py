@@ -69,8 +69,6 @@ class SessionManager:
         # Persistent random goal signs (so direction doesn't flip between markets)
         self._goal_signs: Dict[str, int] = {}
 
-        # Multi-participant: deterministic goal assignment
-        self.user_group_index: Dict[str, int] = {}               # username -> index into predefined_goals
         self.user_market_count: Dict[str, int] = {}              # username -> markets completed in current sequence
 
         # Concurrency control
@@ -90,7 +88,6 @@ class SessionManager:
 
         async with self._session_join_lock:
             treatment_group = self.user_treatment_groups.get(username)
-            group_index = self.user_group_index.get(username, 0)
             market_count = self.user_market_count.get(username, 0)
 
             if treatment_group is not None:
@@ -105,11 +102,13 @@ class SessionManager:
             if room_key not in self.session_pools:
                 self.session_pools[room_key] = []
 
-            role, goal = self._assign_role(username, room_key, params, group_index)
+            # Goal index = position in the waiting room (join order)
+            position = len(self.session_pools[room_key])
+            role, goal = self._assign_role(username, room_key, params, position)
             self.user_sessions[username] = room_key
 
         trader_id = f"HUMAN_{username}"
-        logger.info(f"User {username} joined room {room_key} role={role} goal={goal} group_index={group_index}")
+        logger.info(f"User {username} joined room {room_key} role={role} goal={goal} position={position}")
         return room_key, trader_id, role, goal
 
     async def mark_user_ready(self, username: str) -> Tuple[bool, Dict]:
@@ -279,7 +278,6 @@ class SessionManager:
         self.active_markets.clear()
         self.user_sessions.clear()
         self.user_ready_status.clear()
-        self.user_group_index.clear()
         self.user_market_count.clear()
         logger.info("Session manager state reset")
 
@@ -300,31 +298,22 @@ class SessionManager:
     # --- Private helpers ---
 
     async def _can_user_join(self, username: str, params: TradingParameters) -> bool:
-        admin_users = params.admin_users or []
-        if username in admin_users:
-            return True
         return len(self.user_historical_markets.get(username, set())) < params.max_markets_per_human
 
     def _assign_role(self, username: str, session_id: str, params: TradingParameters,
-                     group_index: int = 0) -> Tuple[TraderRole, int]:
-        """Assign role and goal deterministically by group_index.
+                     position: int = 0) -> Tuple[TraderRole, int]:
+        """Assign role and goal by position in the waiting room.
 
-        group_index maps directly into predefined_goals:
-          P1 (group_index=0) → goals[0]
-          P2 (group_index=1) → goals[1]
-          P3 (group_index=2) → goals[2]
+        Position is simply the join order:
+          first to join  (position=0) → goals[0]
+          second to join (position=1) → goals[1]
+          third to join  (position=2) → goals[2]
         """
         goals = params.predefined_goals
-
-        if group_index < len(goals):
-            goal = goals[group_index]
-        else:
-            # Fallback: wrap around or use 0
-            goal = goals[group_index % len(goals)] if goals else 0
+        goal = goals[position % len(goals)] if goals else 0
 
         # Random direction flipping (only on first assignment, then persisted)
         if goal != 0 and params.allow_random_goals:
-            # Check if we already assigned a direction for this user
             persist_key = f"{username}_goal_sign"
             if persist_key not in self._goal_signs:
                 self._goal_signs[persist_key] = random.choice([-1, 1])
@@ -338,5 +327,5 @@ class SessionManager:
             session_id=session_id, params=params
         ))
 
-        logger.info(f"Assigned {username} role={role.value} goal={goal} (group_index={group_index})")
+        logger.info(f"Assigned {username} role={role.value} goal={goal} position={position}")
         return role, goal

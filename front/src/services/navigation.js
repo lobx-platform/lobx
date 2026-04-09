@@ -86,9 +86,13 @@ export const NavigationService = {
     const { useWebSocketStore } = await import('@/store/websocket')
     const wsStore = useWebSocketStore()
 
+    // Prevent double-call (closure event + remainingTime watch can both fire)
+    if (sessionStore.status === 'summary') return
+
     sessionStore.setStatus('summary')
-    sessionStore.incrementMarketsCompleted()
     wsStore.disconnect()
+    // Sync market count from backend (authoritative) instead of local increment
+    try { await sessionStore.syncFromBackend() } catch {}
     return router.push({ name: 'summary' })
   },
 
