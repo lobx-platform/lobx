@@ -40,7 +40,6 @@ class UserRegistration(BaseModel):
 # trader types
 class TraderType(str, Enum):
     NOISE = "NOISE"
-    MARKET_MAKER = "MARKET_MAKER"
     INFORMED = "INFORMED"
     HUMAN = "HUMAN"
     INITIAL_ORDER_BOOK = "INITIAL_ORDER_BOOK"
@@ -227,26 +226,6 @@ class TradingParameters(BaseModel):
         description="human_parameter",
         ge=1,
     )
-    
-    market_sizes: List[int] = Field(
-        default=[],
-        title="Market Sizes (Cohorts)",
-        description="human_parameter",
-    )
-
-    # session type (prolific or lab)
-    session_type: str = Field(
-        default="prolific",
-        title="Session Type",
-        description="human_parameter",
-    )
-
-    # admin stuff
-    google_form_id: str = Field(
-        default='1yDf7vd5wLaPhm30IiGKTkPw4s5spb3Xlm86Li81YDXI',
-        title="Google Form ID",
-        description="model_parameter",
-    )
 
     # goal settings
     predefined_goals: List[int] = Field(
@@ -266,7 +245,6 @@ class TradingParameters(BaseModel):
             TraderType.HUMAN: ThrottleConfig(order_throttle_ms=100, max_orders_per_window=1),
             TraderType.NOISE: ThrottleConfig(),
             TraderType.INFORMED: ThrottleConfig(),
-            TraderType.MARKET_MAKER: ThrottleConfig(),
             TraderType.INITIAL_ORDER_BOOK: ThrottleConfig(),
         },
         title="Throttle Settings Per Trader Type",
@@ -290,24 +268,6 @@ class TradingParameters(BaseModel):
         else:
             raise ValueError("Predefined goals must be comma-separated string or number list!")
     
-    @field_validator('market_sizes', mode='before')
-    def validate_market_sizes(cls, v):
-        if isinstance(v, str):
-            if not v.strip():
-                return []
-            try:
-                sizes = [int(x.strip()) for x in v.split(',') if x.strip()]
-                return sizes
-            except ValueError:
-                raise ValueError("Market sizes must be comma-separated numbers!")
-        elif isinstance(v, list):
-            if not v:
-                return []
-            sizes = [int(x) for x in v]
-            return sizes
-        else:
-            return []
-
     def dump_params_by_description(self) -> dict:
         """organize params by their type"""
         result = {}

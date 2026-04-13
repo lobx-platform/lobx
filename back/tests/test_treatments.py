@@ -9,35 +9,17 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 SAMPLE_YAML = """
 treatments:
-  - name: "Market 1 - Noise Only"
+  - name: "1"
     num_noise_traders: 5
     num_informed_traders: 0
-    num_spoofing_traders: 0
-    num_manipulator_traders: 0
-    
-  - name: "Market 2 - With Spoofer"
-    num_noise_traders: 3
-    num_spoofing_traders: 1
-    num_informed_traders: 0
-    num_manipulator_traders: 0
-    
-  - name: "Market 3 - With Informed"
+
+  - name: "2"
     num_noise_traders: 3
     num_informed_traders: 1
-    num_spoofing_traders: 0
-    num_manipulator_traders: 0
-    
-  - name: "Market 4 - With Manipulator"
-    num_noise_traders: 3
-    num_manipulator_traders: 1
-    num_informed_traders: 0
-    num_spoofing_traders: 0
-    
-  - name: "Market 5 - Mixed"
+
+  - name: "3"
     num_noise_traders: 2
-    num_spoofing_traders: 1
-    num_informed_traders: 1
-    num_manipulator_traders: 0
+    num_informed_traders: 2
 """
 
 
@@ -133,7 +115,6 @@ async def test_treatment_lookup():
                 treatment = result.get('next_treatment')
                 if treatment:
                     print(f"  Treatment: noise={treatment.get('num_noise_traders')}, "
-                          f"spoof={treatment.get('num_spoofing_traders')}, "
                           f"informed={treatment.get('num_informed_traders')}")
                 else:
                     print("  Treatment: None (will use base settings)")
@@ -153,9 +134,7 @@ async def test_treatment_application():
             predefined_goals=[0],
             trading_day_duration=0.1,
             num_noise_traders=1,
-            num_informed_traders=0,
-            num_spoofing_traders=0,
-            num_manipulator_traders=0
+            num_informed_traders=0
         )
         print("Base settings: 1 noise trader")
         
@@ -183,11 +162,8 @@ async def test_treatment_application():
             if market_info and market_info.get('status') == 'success':
                 traders = market_info.get('data', {}).get('traders', [])
                 noise_count = sum(1 for t in traders if t.startswith('NOISE_'))
-                spoof_count = sum(1 for t in traders if t.startswith('SPOOFING_'))
                 informed_count = sum(1 for t in traders if t.startswith('INFORMED_'))
-                manip_count = sum(1 for t in traders if t.startswith('MANIPULATOR_'))
-                print(f"Actual traders: noise={noise_count}, spoof={spoof_count}, "
-                      f"informed={informed_count}, manip={manip_count}")
+                print(f"Actual traders: noise={noise_count}, informed={informed_count}")
                 
                 if expected_treatment:
                     expected_noise = expected_treatment.get('num_noise_traders', 1)

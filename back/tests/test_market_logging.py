@@ -81,11 +81,9 @@ async def main():
         # Upload a simple treatment
         yaml_content = """
 treatments:
-  - name: "Test Market - Quick"
+  - name: "1"
     num_noise_traders: 1
     num_informed_traders: 0
-    num_spoofing_traders: 0
-    num_manipulator_traders: 0
 """
         await upload_treatments(session, yaml_content)
         print("✓ Uploaded test treatment")
@@ -96,9 +94,7 @@ treatments:
             predefined_goals=[0],  # Single speculator
             trading_day_duration=3,  # 3 seconds
             num_noise_traders=1,
-            num_informed_traders=0,
-            num_spoofing_traders=0,
-            num_manipulator_traders=0
+            num_informed_traders=0
         )
         print("✓ Settings: 3-second market, 1 participant")
         

@@ -142,7 +142,6 @@ async def create_test_session(request: Request):
     params_dict["num_noise_traders"] = 1
     params_dict["num_informed_traders"] = 0
     params_dict["predefined_goals"] = [0]
-    params_dict["market_sizes"] = [1]
 
     params = TradingParameters(**params_dict)
     manager = TraderManager(params, market_id=test_session_id)

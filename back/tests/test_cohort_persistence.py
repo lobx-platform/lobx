@@ -94,13 +94,10 @@ treatments:
         await update_settings(
             session,
             predefined_goals=[100, 50, 0],  # 3 goals for 3 participants per cohort
-            market_sizes=[3, 3, 3, 3],       # 4 cohorts of 3 (12 users)
             max_markets_per_human=3,         # 3 markets per participant
             trading_day_duration=0.25,       # 15 seconds
             num_noise_traders=1,
-            num_informed_traders=0,
-            num_spoofing_traders=0,
-            num_manipulator_traders=0
+            num_informed_traders=0
         )
         print("✓ Settings: 4 cohorts of 3, 3 markets each, 15-second duration")
         

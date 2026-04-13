@@ -1,5 +1,5 @@
 treatments:
-- name: Low
+- name: "1"
   informed_trade_intensity: 0.36
-- name: High
+- name: "2"
   informed_trade_intensity: 0.69
