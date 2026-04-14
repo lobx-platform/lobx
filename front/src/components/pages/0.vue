@@ -24,8 +24,8 @@
               <div>
                 <strong>Researchers:</strong>
                 <span
-                  >Prof. Alessio Sancetta, Prof. Francesco Feri, Prof. Michael Naef, Dr. Wenbin Wu,
-                  Dr. Mariol Jonuzaj</span
+                  > Prof. Alessio Sancetta (PI), Prof. Francesco Feri (CoI), Prof. Michael Naef (CoI), Dr. Mariol Jonuzaj, 
+                  Dr. Wenbin Wu </span
                 >
               </div>
             </div>
