@@ -58,8 +58,8 @@ This starts both the backend (port 8000) and frontend (port 3000) via Docker Com
 
 ## Alternative Installation without Docker
 
-Clone the repositiory
-Ensure you are in the directory where the repo has been placed
+Clone the repositiory. 
+Ensure you are in the directory where the repo has been placed.
 Open a terminal. Run the front end executing the following:
 ```
 cd front
