@@ -47,15 +47,7 @@ const tabs = [
 ]
 
 const activeTab = ref('config')
-const formState = ref({
-  throttle_settings: {
-    HUMAN: { order_throttle_ms: 1000, max_orders_per_window: 2 },
-    NOISE: { order_throttle_ms: 0, max_orders_per_window: 1 },
-    INFORMED: { order_throttle_ms: 0, max_orders_per_window: 1 },
-    MARKET_MAKER: { order_throttle_ms: 0, max_orders_per_window: 1 },
-    INITIAL_ORDER_BOOK: { order_throttle_ms: 0, max_orders_per_window: 1 },
-  },
-})
+const formState = ref({ throttle_settings: {} })
 const formFields = ref([])
 const serverActive = ref(false)
 
@@ -82,15 +74,7 @@ const fetchData = async () => {
       }
     }
 
-    const defaultThrottleSettings = {
-      HUMAN: { order_throttle_ms: 100, max_orders_per_window: 1 },
-      NOISE: { order_throttle_ms: 0, max_orders_per_window: 1 },
-      INFORMED: { order_throttle_ms: 0, max_orders_per_window: 1 },
-      MARKET_MAKER: { order_throttle_ms: 0, max_orders_per_window: 1 },
-      INITIAL_ORDER_BOOK: { order_throttle_ms: 0, max_orders_per_window: 1 },
-      }
-
-    formState.value.throttle_settings = persistentSettings.throttle_settings || defaultThrottleSettings
+    formState.value.throttle_settings = persistentSettings.throttle_settings || {}
     serverActive.value = true
   } catch (error) {
     serverActive.value = false

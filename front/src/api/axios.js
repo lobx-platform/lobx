@@ -49,7 +49,17 @@ instance.interceptors.response.use(
       const detail = error.response.data?.detail || error.response.data?.message || ''
 
       if (status === 401) {
-        router.push('/')
+        try {
+          const { useAuthStore } = await import('@/store/auth')
+          const { useSessionStore } = await import('@/store/session')
+          useAuthStore().logout()
+          useSessionStore().reset()
+        } catch (e) {
+          // Store import failed — still redirect
+        }
+        if (router.currentRoute.value.name !== 'auth') {
+          router.push('/')
+        }
         return Promise.reject(error)
       }
 

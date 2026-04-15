@@ -24,7 +24,7 @@ export const ONBOARDING_ROUTES = [
  * Replaces NavigationService.getRedirectForStatus().
  */
 export function resolveDestination(sessionStore, authStore = null) {
-  if (authStore?.isAdmin) {
+  if (authStore?.isAdmin && authStore?.adminToken) {
     return { name: 'admin' }
   }
   switch (sessionStore.status) {

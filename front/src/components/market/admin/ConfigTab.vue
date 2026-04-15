@@ -220,7 +220,7 @@ const resettingState = ref(false)
 const downloading = ref(false)
 
 
-const traderTypes = ['HUMAN', 'NOISE', 'INFORMED', 'MARKET_MAKER', 'INITIAL_ORDER_BOOK']
+const traderTypes = computed(() => Object.keys(props.formState.throttle_settings || {}))
 
 const formatTraderType = (type) => {
   return type.replace('_', ' ').toLowerCase().split(' ').map(word =>

@@ -121,10 +121,14 @@ export const useAuthStore = defineStore('auth', {
     },
   },
   getters: {
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => {
+      if (!state.user) return false
+      if (state.isAdmin && state.adminToken) return true
+      return !!state.userToken
+    },
     isLabUser: (state) => !!state.user?.isLab,
   },
   persist: {
-    pick: ['isAdmin', 'traderId', 'marketId', 'userToken', 'adminToken', 'user'],
+    pick: ['traderId', 'marketId', 'userToken', 'user'],
   },
 })
