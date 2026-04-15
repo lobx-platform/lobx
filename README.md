@@ -61,13 +61,15 @@ This starts both the backend (port 8000) and frontend (port 3000) via Docker Com
 Clone the repositiory
 Ensure you are in the directory where the repo has been placed
 Open a terminal. Run the front end executing the following:
-```cd front
+```
+cd front
 npm install
 npm audit fix
 npm run dev
 ```
-Open a terminal. Run the front end executing the following:
-```cd back
+Open a terminal. Run the back end end executing the following:
+```
+cd back
 uv sync
 uv run uvicorn api.endpoints:app --reload
 ```
