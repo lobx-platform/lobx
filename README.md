@@ -56,6 +56,22 @@ sh run.sh dev
 
 This starts both the backend (port 8000) and frontend (port 3000) via Docker Compose.
 
+## Alternative Installation without Docker
+
+Clone the repositiory
+Ensure you are in the directory where the repo has been placed
+Open a terminal. Run the front end executing the following:
+```cd front
+npm install
+npm audit fix
+npm run dev
+```
+Open a terminal. Run the front end executing the following:
+```cd back
+uv sync
+uv run uvicorn api.endpoints:app --reload
+```
+
 ## Documentation
 
 For detailed documentation, feature explanations, and API references, visit the [Wiki](https://github.com/lobx-platform/lobx/wiki).
