@@ -23,7 +23,10 @@ export const ONBOARDING_ROUTES = [
  * Determine the correct destination for a user based on session status.
  * Replaces NavigationService.getRedirectForStatus().
  */
-export function resolveDestination(sessionStore) {
+export function resolveDestination(sessionStore, authStore = null) {
+  if (authStore?.isAdmin) {
+    return { name: 'admin' }
+  }
   switch (sessionStore.status) {
     case 'unauthenticated':
     case 'unknown':
@@ -96,7 +99,7 @@ export function setupGuards(router) {
 
     // 2. Guest-only routes — redirect authenticated users
     if (to.meta.requiresGuest && authStore.isAuthenticated) {
-      return resolveDestination(sessionStore)
+      return resolveDestination(sessionStore, authStore)
     }
 
     // 3. Auth required — redirect unauthenticated users
@@ -122,7 +125,7 @@ export function setupGuards(router) {
         }
 
         if (sessionStore.status !== 'trading') {
-          return resolveDestination(sessionStore)
+          return resolveDestination(sessionStore, authStore)
         }
       }
     }
