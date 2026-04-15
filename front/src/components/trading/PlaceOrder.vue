@@ -350,6 +350,14 @@ onUnmounted(() => {
   color: var(--color-primary);
 }
 
+/* add AGG next to the top of book prices */
+.best-price .price-value::after {
+  content: " AGG";
+  font-size: 0.75em;
+  margin-left: 4px;
+}
+
+  
 .locked {
   opacity: 0.35;
 }
