@@ -90,3 +90,7 @@ CORE.md
 FRONTEND-DESIGN.md
 SKILL.md
 audits/
+
+# Experiment data (PII: consent, payment, questionnaires — never commit)
+data/
+!data/.gitkeep
