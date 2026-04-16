@@ -74,6 +74,16 @@ uv sync
 uv run uvicorn api.endpoints:app --reload
 ```
 
+An admin password is required for setup. 
+```
+cd back
+nano .env
+```
+Choose one, say yourdaminpassword. Inside the file type:
+```
+ADMIN_PASSWORD=yourdaminpassword
+```
+
 ## Documentation
 
 For detailed documentation, feature explanations, and API references, visit the [Wiki](https://github.com/lobx-platform/lobx/wiki).
