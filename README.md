@@ -79,9 +79,9 @@ An admin password is required for setup.
 cd back
 nano .env
 ```
-Choose one, say yourdaminpassword. Inside the file type:
+Choose one, say xyz123. Inside the file type:
 ```
-ADMIN_PASSWORD=yourdaminpassword
+ADMIN_PASSWORD=xyz123
 ```
 
 ## Documentation
