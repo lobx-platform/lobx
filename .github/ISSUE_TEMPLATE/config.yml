@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Platform concept discussion
+  - name: Platform concept / question discussion
     url: https://github.com/lobx-platform/lobx/discussions
-    about: For open-ended questions, design ideas, or anything you want to talk through before it becomes a concrete fix or request.
+    about: For questions about how the platform works, open-ended design ideas, or anything you want to talk through before it becomes a concrete bug or feature request.
