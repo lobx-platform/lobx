@@ -2,6 +2,11 @@ name: Feature Request
 description: Suggest a new feature or improvement.
 labels: ["enhancement"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in every field. A screenshot or mockup is required — even a photo of a hand-drawn sketch works.
+
   - type: textarea
     id: description
     attributes:
@@ -17,6 +22,15 @@ body:
       description: Why is this feature needed? What problem does it solve?
     validations:
       required: true
+
+  - type: upload
+    id: screenshot
+    attributes:
+      label: Screenshot or mockup
+      description: Attach a screenshot, mockup, or photo of a hand-drawn sketch showing what you have in mind. Drag-and-drop or click to browse.
+    validations:
+      required: true
+      accept: ".png,.jpg,.jpeg,.gif,.webp"
 
   - type: textarea
     id: solution

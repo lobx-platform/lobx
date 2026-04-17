@@ -2,19 +2,16 @@ name: Bug Report
 description: Report a bug or unexpected behavior.
 labels: ["bug"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in every field. A screenshot is required.
+
   - type: input
     id: title
     attributes:
       label: Bug title
       placeholder: Brief summary of the issue
-    validations:
-      required: true
-
-  - type: textarea
-    id: description
-    attributes:
-      label: Description
-      description: A clear description of the bug.
     validations:
       required: true
 
@@ -33,10 +30,25 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: Expected behavior
-      description: What you expected to happen instead.
+      label: What you expected to happen
     validations:
       required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+    validations:
+      required: true
+
+  - type: upload
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Attach a screenshot showing the bug. Drag-and-drop or click to browse.
+    validations:
+      required: true
+      accept: ".png,.jpg,.jpeg,.gif,.webp"
 
   - type: textarea
     id: environment

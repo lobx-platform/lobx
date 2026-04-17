@@ -1,0 +1,35 @@
+name: Platform Question
+description: Ask a specific question about how something on the platform works.
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when you want to understand how a specific part of the platform behaves. A screenshot is required so we're looking at the same thing.
+
+        For open-ended research or design discussions, use [Discussions](https://github.com/lobx-platform/lobx/discussions) instead.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What do you want to understand?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: What you were trying to do
+      description: What were you doing when the question came up?
+    validations:
+      required: true
+
+  - type: upload
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Attach a screenshot of what you are looking at. Drag-and-drop or click to browse.
+    validations:
+      required: true
+      accept: ".png,.jpg,.jpeg,.gif,.webp"
