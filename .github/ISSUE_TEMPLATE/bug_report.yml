@@ -7,14 +7,6 @@ body:
       value: |
         Please fill in every field. A screenshot is required.
 
-  - type: input
-    id: title
-    attributes:
-      label: Bug title
-      placeholder: Brief summary of the issue
-    validations:
-      required: true
-
   - type: textarea
     id: steps
     attributes:
