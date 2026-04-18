@@ -4,22 +4,15 @@ version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
     "aiohttp>=3.13.2",
-    "fastapi<0.116.0",
-    "firebase-admin",
-    "google-api-python-client",
-    "httpx",
-    "matplotlib",
+    "fastapi",
     "numpy",
     "pandas",
     "polars",
-    "prefect",
     "pydantic",
     "pytest",
     "python-socketio[asgi]",
     "pyyaml",
-    "requests",
     "sortedcontainers",
-    "starlette<0.41.0",
     "termcolor",
     "uvicorn",
 ]
