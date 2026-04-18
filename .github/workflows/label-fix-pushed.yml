@@ -1,0 +1,34 @@
+name: Label linked issues on PR merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  label-fix-pushed:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add fix-pushed label to referenced issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+            const issueNumbers = [...body.matchAll(/(?:Ref|ref|Related to|related to)\s+#(\d+)/g)]
+              .map(m => parseInt(m[1]));
+            for (const issue_number of issueNumbers) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                labels: ['fix-pushed']
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body: `Fix deployed via #${context.payload.pull_request.number}. This issue will auto-close in 7 days if no further feedback. Reopen if the issue persists.`
+              });
+            }
