@@ -52,8 +52,8 @@
             </div>
             <div class="time-display">
               <vue-countdown
-                v-if="remainingTime"
-                :time="remainingTime * 1000"
+                v-if="countdownTime"
+                :time="countdownTime"
                 v-slot="{ minutes, seconds }"
               >
                 {{ minutes }}:{{ seconds.toString().padStart(2, '0') }}
@@ -162,13 +162,14 @@ const formatDelta = computed(() => {
   return halfChange >= 0 ? '+' + halfChange : halfChange.toString()
 })
 
-const finalizingDay = () => {
-  NavigationService.onTradingEnded()
-}
+const countdownTime = ref(null)
 
 watch(remainingTime, (newValue) => {
+  if (newValue !== null && newValue > 0 && countdownTime.value === null) {
+    countdownTime.value = newValue * 1000
+  }
   if (newValue !== null && newValue <= 0 && isTradingStarted.value) {
-    finalizingDay()
+    NavigationService.onTradingEnded()
   }
 })
 
