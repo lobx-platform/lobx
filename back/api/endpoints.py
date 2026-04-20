@@ -10,9 +10,6 @@ so both HTTP/REST routes and Socket.IO events are served on the same port.
 
 import asyncio
 
-from dotenv import load_dotenv
-load_dotenv()
-
 import socketio
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
