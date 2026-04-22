@@ -112,12 +112,12 @@
                     <v-text-field
                       v-else-if="isArrayField(field)"
                       :label="field.title || ''"
-                      v-model="formState[field.name]"
+                      :model-value="getArrayDisplayValue(field.name)"
                       hide-details
                       density="compact"
                       variant="outlined"
                       :class="getFieldStyle(field.name)"
-                      @input="handleArrayInput(field.name, $event)"
+                      @update:model-value="(v) => { arrayDisplayStrings[field.name] = v; handleArrayInput(field.name, v) }"
                     />
                     <v-text-field
                       v-else
@@ -190,7 +190,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import axios from '@/api/axios'
 import { debounce } from 'lodash'
 import { useUIStore } from '@/store/ui'
@@ -219,6 +219,15 @@ const savingProlific = ref(false)
 const resettingState = ref(false)
 const downloading = ref(false)
 
+const arrayDisplayStrings = reactive({})
+
+const getArrayDisplayValue = (fieldName) => {
+  if (!(fieldName in arrayDisplayStrings)) {
+    const val = props.formState[fieldName]
+    arrayDisplayStrings[fieldName] = Array.isArray(val) ? val.join(', ') : String(val ?? '')
+  }
+  return arrayDisplayStrings[fieldName]
+}
 
 const traderTypes = computed(() => Object.keys(props.formState.throttle_settings || {}))
 
@@ -256,8 +265,7 @@ const getFieldType = (field) => {
 
 const isArrayField = (field) => field.type === 'array'
 
-const handleArrayInput = (fieldName, event) => {
-  const value = typeof event === 'object' && event?.target ? event.target.value : String(event ?? '')
+const handleArrayInput = (fieldName, value) => {
   if (fieldName === 'predefined_goals') {
     props.formState[fieldName] = value === '' ? [] : value.split(',').map((v) => parseInt(v.trim())).filter((n) => !isNaN(n))
   } else {
