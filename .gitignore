@@ -76,6 +76,8 @@ papers/
 analysis/
 designs/
 docs/
+agentic-paper/
+platform-paper/
 
 # Temporary screenshots
 *.png
