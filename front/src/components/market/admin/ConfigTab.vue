@@ -365,7 +365,7 @@ const downloadAll = async () => {
       responseType: 'blob',
     })
     const disposition = response.headers['content-disposition'] || ''
-    const match = disposition.match(/filename=(.+)/)
+    const match = disposition.match(/filename="?([^";]+)"?/)
     const filename = match ? match[1] : 'experiment_data.zip'
     const url = URL.createObjectURL(response.data)
     const a = document.createElement('a')
