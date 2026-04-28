@@ -342,7 +342,7 @@ export const useTraderCoreStore = defineStore('traderCore', {
 
         // Update order book
         if (order_book) {
-          useMarketStore().updateOrderBook(order_book, this.gameParams)
+          useMarketStore().updateOrderBook(order_book)
         }
 
         // Update trader orders

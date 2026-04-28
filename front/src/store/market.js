@@ -70,14 +70,14 @@ export const useMarketStore = defineStore('market', {
   },
 
   actions: {
-    updateOrderBook(orderBook, gameParams) {
+    updateOrderBook(orderBook) {
       if (!orderBook) return
 
       const { bids, asks } = orderBook
-      const depthBookShown = gameParams?.depth_book_shown || 3
+      const DEPTH_BOOK_SHOWN = 5
 
-      this.orderBook.bids = bids.slice(0, depthBookShown)
-      this.orderBook.asks = asks.slice(0, depthBookShown)
+      this.orderBook.bids = bids.slice(0, DEPTH_BOOK_SHOWN)
+      this.orderBook.asks = asks.slice(0, DEPTH_BOOK_SHOWN)
       this.orderBook.midpoint = findMidpoint(this.orderBook.bids, this.orderBook.asks)
 
       this.chartData = [
