@@ -200,9 +200,6 @@ const startButtonText = computed(() => {
   if (hasClickedStart.value) return `Waiting for ${Math.max(0, waitingRoom.needed - waitingRoom.joined)} more...`
   if (isLoading.value) return 'Starting...'
   if (traderStore.isWaitingForOthers) return 'Waiting for others...'
-  if (waitingRoom.needed > 1 && waitingRoom.joined < waitingRoom.needed) {
-    return `Waiting for ${waitingRoom.needed - waitingRoom.joined} more...`
-  }
   return 'Start Trading'
 })
 
