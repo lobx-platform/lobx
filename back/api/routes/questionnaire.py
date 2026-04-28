@@ -2,15 +2,14 @@
 
 import asyncio
 import csv
-import io
 import json
-import zipfile
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, Query, Response
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from ..auth import get_current_admin_user
@@ -149,16 +148,15 @@ async def download_questionnaire_data(current_user: dict = Depends(get_current_a
         if not json_files:
             return Response(content="No questionnaire data found", media_type="text/plain")
 
-        buf = io.BytesIO()
-        with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as zf:
-            for f in json_files:
-                zf.write(f, f.name)
-        buf.seek(0)
-
-        return StreamingResponse(
-            buf, media_type="application/zip",
-            headers={"Content-Disposition": "attachment; filename=questionnaire_data.zip"}
+        out = Path(tempfile.gettempdir()) / "questionnaire_data.zip"
+        proc = await asyncio.create_subprocess_exec(
+            "zip", "-qj", str(out), *(str(f) for f in json_files),
         )
+        rc = await proc.wait()
+        if rc != 0:
+            return Response(content="Failed to build archive", media_type="text/plain", status_code=500)
+
+        return FileResponse(out, media_type="application/zip", filename="questionnaire_data.zip")
     except Exception as e:
         return Response(content=f"Error downloading questionnaire data: {str(e)}", media_type="text/plain", status_code=500)
 

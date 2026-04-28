@@ -1,12 +1,13 @@
 """Data routes: /files, /files/grouped, /files/{path}, /files/download-all"""
 
-import io
+import asyncio
 import re
-import zipfile
+import tempfile
 from datetime import datetime
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse
 
 from ..auth import get_current_admin_user
 from ..shared import ROOT_DIR
@@ -114,24 +115,20 @@ async def list_files_grouped():
 @router.get("/files/download-all")
 async def download_all_logs(_=Depends(get_current_admin_user)):
     """Download all experiment data (logs, parameters, questionnaire, consent) as a single zip."""
-    buf = io.BytesIO()
-    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as zf:
-        for item in ROOT_DIR.rglob("*"):
-            if not item.is_file():
-                continue
-            # skip backup archives
-            if item.suffix in (".gz", ".tar", ".zip"):
-                continue
-            arcname = str(item.relative_to(ROOT_DIR))
-            zf.write(item, arcname)
-
-    buf.seek(0)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return StreamingResponse(
-        buf,
-        media_type="application/zip",
-        headers={"Content-Disposition": f"attachment; filename=experiment_data_{ts}.zip"},
+    filename = f"experiment_data_{ts}.zip"
+    out = Path(tempfile.gettempdir()) / filename
+
+    proc = await asyncio.create_subprocess_exec(
+        "zip", "-r0q", str(out), ".",
+        "-x", "*.gz", "*.tar", "*.zip",
+        cwd=str(ROOT_DIR),
     )
+    rc = await proc.wait()
+    if rc != 0:
+        raise HTTPException(status_code=500, detail="Failed to build archive")
+
+    return FileResponse(out, media_type="application/zip", filename=filename)
 
 
 @router.get("/files/{file_path:path}")
