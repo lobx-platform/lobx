@@ -17,7 +17,7 @@ jobs:
           days-before-stale: -1
           days-before-close: 7
           close-issue-message: 'No feedback after 7 days — closing as verified. Reopen if the issue persists.'
-          stale-issue-label: ''
+          stale-issue-label: 'stale-unused'
           exempt-issue-labels: ''
           days-before-pr-stale: -1
           days-before-pr-close: -1
