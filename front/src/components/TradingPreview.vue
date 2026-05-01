@@ -117,12 +117,22 @@
           <div class="mock-panel-body">
             <div class="mock-button-grid">
               <div class="mock-buy-col">
-                <div class="mock-price-btn"><span>101</span><span class="mock-btn-buy">Buy</span></div>
+                  <!-- Row 1 -->
+                  <div class="mock-price-btn">
+                    <span class="bid-color">101 <small style="font-size: 7px;">AGG</small></span>
+                    <span class="mock-btn-buy">Buy</span>
+                  </div>
+                
                 <div class="mock-price-btn"><span>100</span><span class="mock-btn-buy">Buy</span></div>
                 <div class="mock-price-btn"><span>99</span><span class="mock-btn-buy">Buy</span></div>
               </div>
               <div class="mock-sell-col">
-                <div class="mock-price-btn"><span>100</span><span class="mock-btn-sell">Sell</span></div>
+                <!-- Row 1 -->
+                <div class="mock-price-btn">
+                  <span class="ask-color">100 <small style="font-size: 7px;">AGG</small></span>
+                  <span class="mock-btn-sell">Sell</span>
+                </div>
+
                 <div class="mock-price-btn"><span>101</span><span class="mock-btn-sell">Sell</span></div>
                 <div class="mock-price-btn"><span>102</span><span class="mock-btn-sell">Sell</span></div>
               </div>
