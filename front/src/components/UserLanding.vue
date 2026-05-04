@@ -61,6 +61,8 @@ import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 import NavigationService from '@/services/navigation'
 import { Toaster } from 'vue-sonner'
+import { LAST_ONBOARDING_STEP } from '@/router/guards'
+
 
 const router = useRouter()
 const route = useRoute()
@@ -74,9 +76,7 @@ const pages = [
   { name: 'consent', title: 'Research Participant Consent Form' },
   { name: 'welcome', title: 'Welcome' },
   { name: 'platform', title: 'LOBX Platform' },
-  { name: 'setup', title: 'Setup' },
-  { name: 'earnings', title: 'Your Earnings' },
-  { name: 'participants', title: 'Other Participants' },
+  { name: 'dynamics', title: 'Market Dynamics' },
   { name: 'questions', title: 'Control Questions' },
   { name: 'ready', title: 'Ready to Trade' },
 ]
@@ -151,7 +151,7 @@ watch(currentRouteName, (newRoute, oldRoute) => {
 
   // Mark onboarding as complete when reaching ready page
   if (newRoute === 'ready') {
-    sessionStore.setOnboardingStep(7)
+    sessionStore.setOnboardingStep(LAST_ONBOARDING_STEP)
   }
 })
 

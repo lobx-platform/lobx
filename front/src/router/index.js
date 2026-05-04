@@ -49,35 +49,41 @@ const routes = [
         component: () => import('@/components/pages/2.vue'), 
         meta: { step: 2, requiresAuth: true } 
       },
+      
+      /**
       { 
         path: 'setup', 
         name: 'setup', 
         component: () => import('@/components/pages/3.vue'), 
         meta: { step: 3, requiresAuth: true } 
       },
+      */
+      
       { 
-        path: 'earnings', 
-        name: 'earnings', 
+        path: 'dynamics',
+        name: 'dynamics',
         component: () => import('@/components/pages/4.vue'), 
-        meta: { step: 4, requiresAuth: true } 
+        meta: { step: 3, requiresAuth: true } 
       },
+      /**
       { 
         path: 'participants', 
         name: 'participants', 
         component: () => import('@/components/pages/6.vue'), 
         meta: { step: 5, requiresAuth: true } 
       },
+      */
       { 
         path: 'questions', 
         name: 'questions', 
         component: () => import('@/components/pages/7.vue'), 
-        meta: { step: 6, requiresAuth: true } 
+        meta: { step: 4, requiresAuth: true } 
       },
       { 
         path: 'ready', 
         name: 'ready', 
         component: () => import('@/components/pages/8.vue'), 
-        meta: { step: 7, requiresAuth: true } 
+        meta: { step: 5, requiresAuth: true } 
       },
     ],
   },
@@ -93,6 +99,9 @@ const routes = [
       }
       return '/onboarding/consent'
     },
+
+
+    /** old 
     children: [
       { path: 'consent', redirect: { name: 'consent' } },
       { path: 'welcome', redirect: { name: 'welcome' } },
@@ -104,7 +113,16 @@ const routes = [
       { path: 'practice', redirect: { name: 'ready' } },
     ]
   },
-
+  */
+    children: [
+      { path: 'consent', redirect: { name: 'consent' } },
+      { path: 'welcome', redirect: { name: 'welcome' } },
+      { path: 'platform', redirect: { name: 'platform' } },
+      { path: 'dynamics', redirect: { name: 'dynamics' } },
+      { path: 'questions', redirect: { name: 'questions' } },
+      { path: 'practice', redirect: { name: 'ready' } },
+    ]
+  },
   // Protected - Trading dashboard
   {
     path: '/trading',

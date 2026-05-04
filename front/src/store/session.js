@@ -1,6 +1,8 @@
 // Session state management - single source of truth for user flow state
 import { defineStore } from 'pinia'
 import axios from '@/api/axios'
+import { ONBOARDING_ROUTES } from '@/router/guards'
+
 
 export const useSessionStore = defineStore('session', {
   state: () => ({
@@ -33,12 +35,19 @@ export const useSessionStore = defineStore('session', {
     canStartNewMarket: (state) => state.marketsCompleted < state.maxMarkets,
     isLastMarket: (state) => state.marketsCompleted >= state.maxMarkets,
     isLabUser: (state) => !!state.loginToken,
+  
     
     // Get the route name for current onboarding step
+    /**  
     currentOnboardingRoute: (state) => {
       const stepRoutes = ['consent', 'welcome', 'platform', 'setup', 'earnings', 'participants', 'questions', 'ready']
-      return stepRoutes[state.onboardingStep] || 'consent'
+      return stepRoutes[state.onboardingStep] || 'platform'
     },
+    */
+    currentOnboardingRoute: (state) => {
+      return ONBOARDING_ROUTES[state.onboardingStep] || 'consent'
+    },
+  
   },
 
   actions: {

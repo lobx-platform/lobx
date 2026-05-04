@@ -9,15 +9,15 @@ import { useSessionStore } from '@/store/session'
 
 // Single source of truth for onboarding step -> route name mapping
 export const ONBOARDING_ROUTES = [
-  'consent',      // 0
-  'welcome',      // 1
-  'platform',     // 2
-  'setup',        // 3
-  'earnings',     // 4
-  'participants', // 5
-  'questions',    // 6
-  'ready',        // 7
+  'consent',    // 0
+  'welcome',    // 1
+  'platform',   // 2
+  'dynamics',   // 3
+  'questions',  // 4
+  'ready',      // 5
 ]
+
+export const LAST_ONBOARDING_STEP = ONBOARDING_ROUTES.length - 1
 
 /**
  * Determine the correct destination for a user based on session status.
@@ -68,9 +68,9 @@ export function setupGuards(router) {
           const saved = localStorage.getItem(`onboarding_step_${uid}`)
           if (saved !== null) {
             const step = parseInt(saved, 10)
-            if (!isNaN(step) && step >= 0 && step <= 7) {
+            if (!isNaN(step) && step >= 0 && step <= LAST_ONBOARDING_STEP) {
               sessionStore.onboardingStep = step
-              sessionStore.hasCompletedOnboarding = step >= 7
+              sessionStore.hasCompletedOnboarding = step >= LAST_ONBOARDING_STEP
             }
           }
         } catch (e) {
@@ -136,7 +136,7 @@ export function setupGuards(router) {
       const currentProgress = sessionStore.onboardingStep
 
       // Completed users can't go back to earlier pages
-      if (currentProgress >= 7 && targetStep < 7) {
+      if (currentProgress >= LAST_ONBOARDING_STEP && targetStep < LAST_ONBOARDING_STEP) {
         return { name: 'ready' }
       }
 

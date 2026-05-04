@@ -4,164 +4,79 @@
       <h2 class="text-h4 page-heading">Market Mechanics</h2>
     </div>
 
-    <v-container class="content-grid">
-      <v-row>
-        <!-- Time Limit Card -->
-        <v-col cols="12" v-if="goalStatus !== 'noGoal'">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Time Limit Not Met</span>
-              </div>
-              <p class="text-body-1">
-                If you do not achieve the objective within the time limit of the market, the
-                trading platform will automatically execute additional trades.
-              </p>
-            </v-card-text>
-          </v-card>
-        </v-col>
+    <div v-if="goalStatus !== 'noGoal'" class="section">
+      <span class="text-h6 font-weight-bold">Time Limit Not Met</span>
+      <p class="text-body-1">
+        If you do not achieve the objective within the time limit of the market, the
+        trading platform will automatically execute additional trades.
+      </p>
+    </div>
 
-        <!-- Market Earnings Card -->
-        <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Market Earnings Calculation</span>
-              </div>
-              <div class="earnings-formula pa-4 rounded-lg">
-                <div class="formula-title text-h6 mb-2">Market earnings =</div>
-                <div
-                  v-if="goalStatus === 'noGoal' || goalStatus === 'unknown'"
-                  class="formula-content"
-                >
-                  Net profit or loss from all trades
-                </div>
-                <div v-else-if="goalStatus === 'selling'" class="formula-content">
-                  Revenue from sales
-                  <span class="formula-note">(incl. automatically sold shares)</span> <br />−
-                  <span class="formula-highlight">(Number of shares)</span> ×
-                  <span class="formula-highlight">(Mid-price at the beginning)</span>
-                </div>
-                <div v-else class="formula-content">
-                  <span class="formula-highlight">(Number of shares)</span> ×
-                  <span class="formula-highlight">(Mid-price at the beginning)</span>
-                  <br />− Cost of purchases
-                  <span class="formula-note">(incl. automatically bought shares)</span>
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
+    <div class="section">
+      <span class="text-h6 font-weight-bold">
+        {{ goalStatus === 'noGoal' ? 'Market Dynamics' : 'Trading Objective' }}
+      </span>
 
-        <!-- Trading Dynamics Card -->
-        <v-col cols="12" md="6">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">
-                  {{ goalStatus === 'noGoal' ? 'Market Dynamics' : 'Trading Objective' }}
-                </span>
-              </div>
-              <p class="text-body-1" v-if="goalStatus === 'noGoal' || goalStatus === 'unknown'">
-                The market price may fluctuate above or below the initial mid-price.
-                These fluctuations can lead to potential gains or losses on your trades.
-              </p>
-              <template v-else-if="hasGoal">
-                <p class="text-body-1">
-                  <span v-if="remainingShares !== '' && remainingShares > 0">
-                    You need to {{ tradeVerb }}
-                    <span class="highlight-text">{{ remainingShares }} shares</span> to reach your
-                    goal.
-                  </span>
-                  <span v-else>
-                    Your task is to {{ tradeVerb }}
-                    <span class="highlight-text">{{ targetShares }} shares</span>.
-                  </span>
-                </p>
-              </template>
-            </v-card-text>
-          </v-card>
-        </v-col>
+      <p class="text-body-1" v-if="goalStatus === 'noGoal' || goalStatus === 'unknown'">
+        The market price may fluctuate above or below the initial mid-price.
+        These fluctuations can lead to potential gains or losses on your trades.
+      </p>
 
-        <!-- Initial Resources Card -->
-        <v-col cols="12" md="6">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Initial Resources</span>
-              </div>
-              <p class="text-body-1">
-                <span v-if="goalStatus === 'noGoal'">
-                  You will be given
-                  <span class="highlight-text">{{ initialLiras }} Liras</span> and
-                  <span class="highlight-text">{{ numShares }} shares</span>.
-                </span>
-                <span v-else-if="tradeAction === 'Selling'">
-                  You will be given
-                  <span class="highlight-text">{{ Math.abs(numShares) }} shares</span>.
-                </span>
-                <span v-else>
-                  You will be given <span class="highlight-text">{{ initialLiras }} Liras</span>.
-                </span>
-              </p>
-            </v-card-text>
-          </v-card>
-        </v-col>
+      <p class="text-body-1" v-else-if="hasGoal">
+        <span v-if="remainingShares !== '' && remainingShares > 0">
+          You need to {{ tradeVerb }}
+          <span class="highlight-text">{{ remainingShares }} shares</span>
+          to reach your goal.
+        </span>
+        <span v-else>
+          Your task is to {{ tradeVerb }}
+          <span class="highlight-text">{{ targetShares }} shares</span>.
+        </span>
+      </p>
+    </div>
 
-        <!-- Market Dynamics 1: Clear Upward -->
-        <v-col cols="12">
-          <div class="text-h6 font-weight-bold mb-2">Market Dynamics 1 (Clear Upward Trending)</div>
-          <TradingPreview highlight="price-history" trend="up" caption="The chart shows a clear upward trend in price. The best strategy here is to buy shares early and hold them as the price rises, allowing you to sell at a higher value and maximise your profit." />
-        </v-col>
+    <div class="section">
+      <span class="text-h6 font-weight-bold">Initial Resources</span>
+      <p class="text-body-1">
+        <span v-if="goalStatus === 'noGoal'">
+          You will be given
+          <span class="highlight-text">{{ initialLiras }} Liras</span> and
+          <span class="highlight-text">{{ numShares }} shares</span>.
+        </span>
+        <span v-else-if="tradeAction === 'Selling'">
+          You will be given
+          <span class="highlight-text">{{ Math.abs(numShares) }} shares</span>.
+        </span>
+        <span v-else>
+          You will be given <span class="highlight-text">{{ initialLiras }} Liras</span>.
+        </span>
+      </p>
+    </div>
 
-        <!-- Market Dynamics 2: Unclear Upward -->
-        <v-col cols="12">
-          <div class="text-h6 font-weight-bold mb-2">Market Dynamics 2 (Unclear Upward Trending)</div>
-          <TradingPreview highlight="price-history" trend="unclear-up" caption="Although there is buying pressure, the price direction is not clear. The best strategy here is to wait or send limit orders." />
-        </v-col>
+    <div class="section">
+      <div class="text-h6 font-weight-bold mb-2">Market Dynamics 1 (Clear Upward Trending)</div>
+      <TradingPreview highlight="price-history" trend="up" caption="The chart shows a clear upward trend in price. The best strategy here is to buy shares early and hold them as the price rises, allowing you to sell at a higher value and maximise your profit." />
+    </div>
 
-        <!-- Market Dynamics 3: Clear Downward -->
-        <v-col cols="12">
-          <div class="text-h6 font-weight-bold mb-2">Market Dynamics 3 (Clear Downward Trending)</div>
-          <TradingPreview highlight="price-history" trend="down" caption="The chart shows a clear downward trend in price. The best strategy here is to sell shares early and hold them as the price drops, allowing you to buy at a lower value and maximise your profit." />
-        </v-col>
+    <div class="section">
+      <div class="text-h6 font-weight-bold mb-2">Market Dynamics 2 (Unclear Upward Trending)</div>
+      <TradingPreview highlight="price-history" trend="unclear-up" caption="Although there is buying pressure, the price direction is not clear. The best strategy here is to wait or send limit orders." />
+    </div>
 
-        <!-- Market Dynamics 4: Unclear Downward -->
-        <v-col cols="12">
-          <div class="text-h6 font-weight-bold mb-2">Market Dynamics 4 (Unclear Downward Trending)</div>
-          <TradingPreview highlight="price-history" trend="unclear-down" caption="Although there is selling pressure, the price initially dropped, then recovered upward, before dropping again. This volatility makes timing critical. The best strategy is to sell shares when the price is high." />
-        </v-col>
+    <div class="section">
+      <div class="text-h6 font-weight-bold mb-2">Market Dynamics 3 (Clear Downward Trending)</div>
+      <TradingPreview highlight="price-history" trend="down" caption="The chart shows a clear downward trend in price. The best strategy here is to sell shares early and hold them as the price drops, allowing you to buy at a lower value and maximise your profit." />
+    </div>
 
-        <!-- Final Earnings Card -->
-        <v-col cols="12">
-          <v-card class="info-card" flat>
-            <v-card-text>
-              <div class="mb-4">
-                <span class="text-h6 font-weight-bold">Final Earnings</span>
-              </div>
-              <p class="text-body-1">
-                At the end of the study, you will be awarded earnings from one randomly selected
-                market.
-                <br /><br />
-                Your earnings will be converted at a rate of
-                <span class="highlight-text">{{ conversionRate }} Liras = 1 GBP</span>.
-                <br /><br />
-                The minimum earning is your participation fee, which is
-                <strong>5 GBP</strong>.
-                <br /><br />
-                For each market, your earnings will be capped at
-                <strong>10 GBP</strong>.
-                <br /><br />
-                Thus, from each market you can earn up to
-                <strong>15 GBP</strong>.
-              </p>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+    <div class="section">
+      <div class="text-h6 font-weight-bold mb-2">Market Dynamics 4 (Unclear Downward Trending)</div>
+      <TradingPreview highlight="price-history" trend="unclear-down" caption="Although there is selling pressure, the price initially dropped, then recovered upward, before dropping again. This volatility makes timing critical. The best strategy is to sell shares when the price is high." />
+    </div>
+
+    
   </div>
 </template>
+
 
 <script setup>
 import { computed } from 'vue'
