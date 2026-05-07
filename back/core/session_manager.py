@@ -284,6 +284,9 @@ class SessionManager:
         self.user_sessions.clear()
         self.user_ready_status.clear()
         self.user_market_count.clear()
+        self.user_historical_markets.clear()
+        self.user_treatment_groups.clear()
+        self._goal_signs.clear()
         logger.info("Session manager state reset")
 
     async def remove_user_from_session(self, username: str):

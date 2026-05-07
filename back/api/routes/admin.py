@@ -111,7 +111,6 @@ async def test_reset_state():
     try:
         current_settings = base_settings.copy()
         await market_handler.reset_state()
-        market_handler.session_manager.user_historical_markets.clear()
         base_settings.update(current_settings)
         accumulated_rewards.clear()
         return success(message="Test reset completed (including historical markets)")
