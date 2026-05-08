@@ -52,6 +52,18 @@ def _get_questionnaire_dir():
     return d
 
 
+def clear_questionnaire_data():
+    """Archive questionnaire JSON files into a timestamped subdirectory. Called on experiment reset."""
+    d = _get_questionnaire_dir()
+    json_files = list(d.glob("*.json"))
+    if json_files:
+        archive_dir = d / "archive" / datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        for f in json_files:
+            f.rename(archive_dir / f.name)
+    _trader_locks.clear()
+
+
 def _get_trader_json_path(trader_id: str) -> Path:
     return _get_questionnaire_dir() / f"{trader_id}.json"
 

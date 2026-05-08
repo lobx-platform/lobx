@@ -13,6 +13,7 @@ from core.treatment_manager import treatment_manager
 from ..auth import get_current_user, get_current_admin_user
 from ..shared import base_settings, market_handler, accumulated_rewards
 from utils.api_responses import success, not_found
+from .questionnaire import clear_questionnaire_data
 
 router = APIRouter()
 
@@ -100,6 +101,7 @@ async def reset_state(current_user: dict = Depends(get_current_admin_user)):
         await market_handler.reset_state()
         base_settings.update(current_settings)
         accumulated_rewards.clear()
+        clear_questionnaire_data()
         return success(message="Application state reset successfully")
     except Exception:
         raise HTTPException(status_code=500, detail="Error resetting application state")
@@ -113,6 +115,7 @@ async def test_reset_state():
         await market_handler.reset_state()
         base_settings.update(current_settings)
         accumulated_rewards.clear()
+        clear_questionnaire_data()
         return success(message="Test reset completed (including historical markets)")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Reset failed: {str(e)}")

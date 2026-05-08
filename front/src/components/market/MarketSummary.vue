@@ -47,9 +47,9 @@
             </div>
           </div>
 
-          <!-- Per-market questions (shown after every market) -->
+          <!-- Per-market questions (shown after every market, hidden only on last market after final questionnaire) -->
           <div
-            v-if="traderSpecificMetrics && !questionnaireCompleted"
+            v-if="traderSpecificMetrics && !(isLastMarket && questionnaireCompleted)"
             class="questionnaire-section"
           >
             <div class="section-label">Answer the following question to continue:</div>
