@@ -20,10 +20,17 @@
       </div>
     </div>
 
+    <div class="task-display" :class="taskClass">
+      {{ taskText }}
+    </div>
+
+    <!-- Trading tips removed per issue #56 to avoid suggesting strategy -->
+    <!--
     <div class="trading-tip">
       <div class="tip-row">If you believe the market will go up: <strong class="bid-color">Buy now</strong> and sell later.</div>
       <div class="tip-row">If you believe the market will go down: <strong class="ask-color">Sell now</strong> and buy later.</div>
     </div>
+    -->
   </div>
 </template>
 
@@ -32,7 +39,28 @@ import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMarketStore } from '@/store/market'
 
+const props = defineProps({
+  isGoalAchieved: { type: Boolean, default: false },
+  goalType: { type: String, default: 'free' },
+  goal: { type: Number, default: null },
+})
+
 const { extraParams } = storeToRefs(useMarketStore())
+
+const taskText = computed(() => {
+  if (!props.goal || props.goal === 0) {
+    return 'Your Task is Maximise Profits'
+  }
+  if (props.goal > 0) {
+    return `Your Task is To Buy ${props.goal} Shares`
+  }
+  return `Your Task is To Sell ${Math.abs(props.goal)} Shares`
+})
+
+const taskClass = computed(() => {
+  if (!props.goal || props.goal === 0) return 'task-speculator'
+  return props.goal > 0 ? 'task-buy' : 'task-sell'
+})
 
 const filteredParams = computed(() => {
   return extraParams.value.filter((p) => p.var_name !== 'imbalance')
@@ -136,6 +164,28 @@ onMounted(() => {
 }
 
 .val-red {
+  color: var(--color-ask);
+}
+
+.task-display {
+  margin-top: 12px;
+  padding: 14px 12px;
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  text-align: center;
+  letter-spacing: var(--tracking-wide);
+}
+
+.task-speculator {
+  color: var(--color-text-primary);
+}
+
+.task-buy {
+  color: var(--color-bid);
+}
+
+.task-sell {
   color: var(--color-ask);
 }
 

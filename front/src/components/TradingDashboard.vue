@@ -78,7 +78,7 @@
               <div class="panel mb-4">
                 <div class="panel-title">Market Info</div>
                 <div class="panel-body">
-                  <MarketMessages :isGoalAchieved="isGoalAchieved" :goalType="goalType" />
+                  <MarketMessages :isGoalAchieved="isGoalAchieved" :goalType="goalType" :goal="goal" />
                 </div>
               </div>
             </v-col>
