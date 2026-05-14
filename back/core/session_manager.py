@@ -65,9 +65,10 @@ class SessionManager:
 
         # Treatment groups: lab users can be assigned specific treatment groups
         self.user_treatment_groups: Dict[str, int] = {}          # username -> treatment_group
+        self.user_group_indices: Dict[str, int] = {}             # username -> group_index (P number, 0-based)
 
-        # Persistent random goal signs (so direction doesn't flip between markets)
-        self._goal_signs: Dict[str, int] = {}
+        # Per-market shuffled goal permutations (for allow_random_goals mode)
+        self._market_goal_permutations: Dict[str, List[int]] = {}  # room_key -> shuffled goals
 
         self.user_market_count: Dict[str, int] = {}              # username -> markets completed in current sequence
 
@@ -189,8 +190,9 @@ class SessionManager:
 
         self.active_markets[market_id] = trader_manager
 
-        # Clean up waiting pool
+        # Clean up waiting pool and per-market permutation
         self.session_pools.pop(session_id, None)
+        self._market_goal_permutations.pop(session_id, None)
 
         for u in users:
             self.user_sessions[u.username] = market_id
@@ -286,7 +288,8 @@ class SessionManager:
         self.user_market_count.clear()
         self.user_historical_markets.clear()
         self.user_treatment_groups.clear()
-        self._goal_signs.clear()
+        self.user_group_indices.clear()
+        self._market_goal_permutations.clear()
         logger.info("Session manager state reset")
 
     async def remove_user_from_session(self, username: str):
@@ -299,6 +302,7 @@ class SessionManager:
             self.session_pools[session_id] = [u for u in self.session_pools[session_id] if u.username != username]
             if not self.session_pools[session_id]:
                 del self.session_pools[session_id]
+                self._market_goal_permutations.pop(session_id, None)
 
         self.user_sessions.pop(username, None)
         self.user_ready_status.pop(username, None)
@@ -310,22 +314,26 @@ class SessionManager:
 
     def _assign_role(self, username: str, session_id: str, params: TradingParameters,
                      position: int = 0) -> Tuple[TraderRole, int]:
-        """Assign role and goal by position in the waiting room.
+        """Assign role and goal based on participant index or join order.
 
-        Position is simply the join order:
-          first to join  (position=0) → goals[0]
-          second to join (position=1) → goals[1]
-          third to join  (position=2) → goals[2]
+        Lab users (with group_index from P number): P1→goals[0], P2→goals[1], etc.
+        Non-lab users: fall back to join order.
+
+        allow_random_goals=True: each market gets a fresh random permutation of goals,
+        then mapped by the same index logic above.
         """
         goals = params.predefined_goals
-        goal = goals[position % len(goals)] if goals else 0
+        group_index = self.user_group_indices.get(username)
+        idx = group_index if group_index is not None else position
 
-        # Random direction flipping (only on first assignment, then persisted)
-        if goal != 0 and params.allow_random_goals:
-            persist_key = f"{username}_goal_sign"
-            if persist_key not in self._goal_signs:
-                self._goal_signs[persist_key] = random.choice([-1, 1])
-            goal = abs(goal) * self._goal_signs[persist_key]
+        if goals and params.allow_random_goals:
+            if session_id not in self._market_goal_permutations:
+                shuffled = list(goals)
+                random.shuffle(shuffled)
+                self._market_goal_permutations[session_id] = shuffled
+            goal = self._market_goal_permutations[session_id][idx % len(goals)]
+        else:
+            goal = goals[idx % len(goals)] if goals else 0
 
         role = TraderRole.INFORMED if goal != 0 else TraderRole.SPECULATOR
 
