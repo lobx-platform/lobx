@@ -25,9 +25,12 @@ async def user_login(request: Request):
         lab_trader_map[trader_id] = lab_user
         trader_registry[trader_id] = lab_user
         await market_handler.remove_user_from_session(gmail_username)
-        # Register treatment group for waiting room assignment
+        # Register treatment group and participant index for goal assignment
         if treatment_group is not None:
             market_handler.session_manager.user_treatment_groups[gmail_username] = treatment_group
+        group_index = lab_user.get('group_index')
+        if group_index is not None:
+            market_handler.session_manager.user_group_indices[gmail_username] = group_index
         return success(
             message="Lab login successful",
             data={"trader_id": trader_id, "username": gmail_username, "is_admin": False,
