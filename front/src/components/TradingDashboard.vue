@@ -17,7 +17,6 @@
         <div class="header-inner">
           <h1 class="dashboard-title">LOBX</h1>
           <div class="dashboard-stats">
-            <span class="role-label">{{ roleDisplay.text }}</span>
             <div class="stats-row">
               <div class="stat-item">
                 <span class="stat-label">PnL</span>
@@ -78,7 +77,7 @@
               <div class="panel mb-4">
                 <div class="panel-title">Market Info</div>
                 <div class="panel-body">
-                  <MarketMessages :isGoalAchieved="isGoalAchieved" :goalType="goalType" />
+                  <MarketMessages :isGoalAchieved="isGoalAchieved" :goalType="goalType" :goal="goal" />
                 </div>
               </div>
             </v-col>
@@ -238,18 +237,6 @@ watch(isGoalAchieved, (newValue) => {
 const marketTimeRemaining = ref(null)
 const marketTimeoutInterval = ref(null)
 
-const roleDisplay = computed(() => {
-  if (!goalLoaded.value) {
-    return { text: 'Loading...' }
-  }
-  if (!hasGoal.value) {
-    return { text: 'SPECULATOR' }
-  }
-  if (goal.value > 0) {
-    return { text: 'INFORMED (BUY)' }
-  }
-  return { text: 'INFORMED (SELL)' }
-})
 
 watch(isTradingStarted, (newValue) => {
   if (newValue && marketTimeoutInterval.value) {
@@ -356,15 +343,6 @@ onMounted(() => {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-}
-
-.role-label {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: var(--font-bold);
-  color: var(--color-text-secondary);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
 }
 
 .stats-row {
