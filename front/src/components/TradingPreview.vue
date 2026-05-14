@@ -15,7 +15,6 @@
       <div class="mock-header" :class="{ highlighted: highlight === 'header', dimmed: highlight !== 'header' && highlight !== 'all' }">
         <span class="mock-title">LOBX</span>
         <div class="mock-stats">
-          <span>SPECULATOR</span>
           <span>PnL: -5</span>
           <span>Shares: 10 +0</span>
           <span>Cash: 1195</span>
@@ -91,12 +90,7 @@
                 <div class="mock-info-value">1</div>
               </div>
             </div>
-            <div class="mock-tip">
-              <ul>
-                <li>Market up → <strong class="bid-color">Buy now</strong>, sell later</li>
-                <li>Market down → <strong class="ask-color">Sell now</strong>, buy later</li>
-              </ul>
-            </div>
+            <div class="mock-task">Your Task is Maximise Profits</div>
           </div>
         </div>
 
