@@ -2,7 +2,7 @@ name: Auto-close stale discussions
 
 on:
   schedule:
-    - cron: '0 9 * * 1' # Every Monday 9am UTC
+    - cron: '0 9 * * *' # Every day 9am UTC
   workflow_dispatch:
 
 jobs:
