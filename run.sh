@@ -98,10 +98,11 @@ elif [ "$MODE" = "batch" ]; then
 
 elif [ "$MODE" = "deploy" ]; then
     set -e
-    echo "🚀 deploying from refactoring-v2..."
+    DEPLOY_BRANCH=${DEPLOY_BRANCH:-main}
+    echo "🚀 deploying from origin/${DEPLOY_BRANCH}..."
     
-    git fetch origin
-    git reset --hard origin/refactoring-v2
+    git fetch origin "$DEPLOY_BRANCH"
+    git reset --hard "origin/${DEPLOY_BRANCH}"
     
     docker compose down
     docker compose pull || echo "⚠️  no remote images, using local build"
