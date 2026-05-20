@@ -22,7 +22,7 @@ services:
       - FIREBASE_MEASUREMENT_ID=${FIREBASE_MEASUREMENT_ID}
       - GOOGLE_APPLICATION_CREDENTIALS=/app/config/auth/firebase-service-account.json
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-    command: sh -c "uv run uvicorn api.endpoints:app --host 0.0.0.0 --port 8000 --root-path $${ROOT_PATH:-/api}"
+    command: sh -c 'uv run uvicorn api.endpoints:app --host 0.0.0.0 --port 8000 --root-path "$${ROOT_PATH:-}"'
     restart: unless-stopped
     networks:
       - server-network
