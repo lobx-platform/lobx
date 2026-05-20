@@ -155,20 +155,21 @@ class SessionManager:
         # Build merged params: base -> treatment (by treatment_group index)
         base_params_dict = users[0].params.model_dump()
         treatment_group = self.user_treatment_groups.get(first_user)
+        applied_treatment_index = treatment_group if treatment_group is not None else market_count
 
         if treatment_group is not None:
             # Use treatment_group as index into treatments list
-            treatment_settings = treatment_manager.get_treatment_for_market(treatment_group)
+            treatment_settings = treatment_manager.get_treatment_for_market(applied_treatment_index)
             if treatment_settings:
                 merged = base_params_dict.copy()
                 merged.update(treatment_settings)
-                logger.info(f"Applied treatment_group {treatment_group}: {treatment_settings}")
+                logger.info(f"Applied treatment_group {applied_treatment_index}: {treatment_settings}")
             else:
                 merged = base_params_dict.copy()
-                logger.warning(f"No treatment found for treatment_group {treatment_group}")
+                logger.warning(f"No treatment found for treatment_group {applied_treatment_index}")
         else:
             # No treatment_group: fall back to market_count-based treatment
-            merged = treatment_manager.get_merged_params(market_count, base_params_dict)
+            merged = treatment_manager.get_merged_params(applied_treatment_index, base_params_dict)
 
         params = TradingParameters(**merged)
         # Lab room keys are short (T0_M0), so append timestamp for uniqueness.
@@ -198,14 +199,14 @@ class SessionManager:
             self.user_sessions[u.username] = market_id
 
         # Log market start
-        treatment_info = treatment_manager.get_treatment(market_count)
+        treatment_info = treatment_manager.get_treatment(applied_treatment_index)
         treatment_name = treatment_info.get("name") if treatment_info else None
         parameter_logger.log_market_start(
             market_id=market_id,
             participants=[u.username for u in users],
             session_id=session_id,
             treatment_name=treatment_name,
-            treatment_index=market_count,
+            treatment_index=applied_treatment_index,
             parameters=merged
         )
 

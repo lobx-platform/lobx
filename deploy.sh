@@ -27,6 +27,11 @@ if ! grep -q '^NGROK_AUTHTOKEN=' .env && [ -z "${NGROK_AUTHTOKEN:-}" ]; then
   exit 1
 fi
 
+if ! grep -q '^ADMIN_PASSWORD=' .env && [ -z "${ADMIN_PASSWORD:-}" ]; then
+  echo "Missing ADMIN_PASSWORD in .env or environment"
+  exit 1
+fi
+
 echo "Updating repository from origin/${DEPLOY_BRANCH}..."
 git fetch origin "$DEPLOY_BRANCH"
 git reset --hard "origin/${DEPLOY_BRANCH}"
