@@ -24,6 +24,8 @@ services:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
     command: sh -c "uv run uvicorn api.endpoints:app --host 0.0.0.0 --port 8000 --root-path $${ROOT_PATH:-/api}"
     restart: unless-stopped
+    networks:
+      - server-network
     logging:
       driver: "json-file"
       options:
@@ -50,3 +52,8 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+networks:
+  server-network:
+    name: trading_platform_server
+    driver: bridge
