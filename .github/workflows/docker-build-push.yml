@@ -70,6 +70,9 @@ jobs:
 
           git fetch origin main
           git reset --hard origin/main
+          echo '${{ secrets.DOCKERHUB_TOKEN }}' | docker login docker.io \
+            --username '${{ secrets.DOCKERHUB_USERNAME }}' \
+            --password-stdin
           chmod +x ./deploy.sh
           ./deploy.sh
 
