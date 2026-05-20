@@ -32,7 +32,7 @@ git fetch origin "$DEPLOY_BRANCH"
 git reset --hard "origin/${DEPLOY_BRANCH}"
 
 echo "Pulling backend image..."
-docker compose -f "$COMPOSE_FILE" pull back
+docker compose -f "$COMPOSE_FILE" pull back || echo "Backend image pull failed; continuing with any existing local image"
 
 echo "Starting services..."
 docker compose -f "$COMPOSE_FILE" up -d --build --remove-orphans
