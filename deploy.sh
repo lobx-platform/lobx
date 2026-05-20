@@ -37,11 +37,21 @@ docker compose -f "$COMPOSE_FILE" pull back || echo "Backend image pull failed; 
 echo "Stopping existing compose services..."
 docker compose -f "$COMPOSE_FILE" down --remove-orphans || true
 
+echo "Removing stale trading_platform containers..."
+OLD_NGROK_CONTAINERS="$(docker ps -a --format '{{.ID}} {{.Names}}' | awk '/ngrok/ {print $1}')"
+if [ -n "$OLD_NGROK_CONTAINERS" ]; then
+  docker rm -f $OLD_NGROK_CONTAINERS || true
+fi
+
+OLD_PLATFORM_CONTAINERS="$(docker ps -a --format '{{.ID}} {{.Names}}' | awk '/trading_platform/ {print $1}')"
+if [ -n "$OLD_PLATFORM_CONTAINERS" ]; then
+  docker rm -f $OLD_PLATFORM_CONTAINERS || true
+fi
+
 echo "Freeing containers that still publish port 8000..."
 PORT_8000_CONTAINERS="$(docker ps --format '{{.ID}} {{.Ports}}' | awk '/127\.0\.0\.1:8000|0\.0\.0\.0:8000|:8000->/ {print $1}')"
 if [ -n "$PORT_8000_CONTAINERS" ]; then
-  docker stop $PORT_8000_CONTAINERS
-  docker rm $PORT_8000_CONTAINERS
+  docker rm -f $PORT_8000_CONTAINERS || true
 fi
 
 echo "Starting services..."
