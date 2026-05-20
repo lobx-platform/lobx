@@ -91,9 +91,9 @@ services:
       - "http"
       - "localhost:8000"
       - "--hostname"
-      - "dthinkr.ngrok.app"
+      - "${NGROK_DOMAIN:-dthinkr.ngrok.app}"
       - "--authtoken"
-      - "2j4K90jU5KvNPr1zFNnOes5QnU9_334pieyQKiRBBb6WFpsDp"
+      - "${NGROK_AUTHTOKEN:?NGROK_AUTHTOKEN_required}"
     network_mode: host  # This gives direct localhost access like your working setup
     depends_on:
       - back
@@ -113,4 +113,3 @@ volumes: {}
 networks:
   app-network:
     driver: bridge
-

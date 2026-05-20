@@ -1,4 +1,18 @@
-# .dockerignore
+# Keep local secrets and generated runtime state out of Docker build contexts
+.git
+.env
+.env.*
+*.secrets
+.secrets/
+*service-account*.json
 
-# Include everything
-!**
+back/config/auth/
+back/logs/
+front/.env
+front/.env.*
+front/.firebase/
+
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
