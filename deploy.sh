@@ -34,6 +34,16 @@ git reset --hard "origin/${DEPLOY_BRANCH}"
 echo "Pulling backend image..."
 docker compose -f "$COMPOSE_FILE" pull back || echo "Backend image pull failed; continuing with any existing local image"
 
+echo "Stopping existing compose services..."
+docker compose -f "$COMPOSE_FILE" down --remove-orphans || true
+
+echo "Freeing containers that still publish port 8000..."
+PORT_8000_CONTAINERS="$(docker ps --format '{{.ID}} {{.Ports}}' | awk '/127\.0\.0\.1:8000|0\.0\.0\.0:8000|:8000->/ {print $1}')"
+if [ -n "$PORT_8000_CONTAINERS" ]; then
+  docker stop $PORT_8000_CONTAINERS
+  docker rm $PORT_8000_CONTAINERS
+fi
+
 echo "Starting services..."
 docker compose -f "$COMPOSE_FILE" up -d --build --remove-orphans
 
