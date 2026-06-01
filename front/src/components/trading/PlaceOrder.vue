@@ -69,6 +69,8 @@ import { useMarketStore } from '@/store/market'
 import { useUIStore } from '@/store/ui'
 import { storeToRefs } from 'pinia'
 
+const TRADING_PANEL_PRICE_LEVELS = 7
+
 const props = defineProps({
   isGoalAchieved: {
     type: Boolean,
@@ -101,12 +103,12 @@ const orderBookLevels = computed(() => gameParams.value.order_book_levels || 5)
 const buyPrices = computed(() => {
   if (bestAsk.value === null || !orderBookLevels.value) {
     return Array.from(
-      { length: 6 },
+      { length: TRADING_PANEL_PRICE_LEVELS  },
       (_, i) => bestBid.value + step.value * 1 - step.value * i
     )
   } else {
     return Array.from(
-      { length: 6},
+      { length: TRADING_PANEL_PRICE_LEVELS},
       (_, i) => bestAsk.value - step.value * i)
   }
 })
@@ -114,12 +116,12 @@ const buyPrices = computed(() => {
 const sellPrices = computed(() => {
   if (bestBid.value === null || !orderBookLevels.value) {
     return Array.from(
-      { length: 6 },
+      { length: TRADING_PANEL_PRICE_LEVELS },
       (_, i) => bestAsk.value - step.value * 1 + step.value * i
     )
   } else {
     return Array.from(
-      { length: 6},
+      { length: TRADING_PANEL_PRICE_LEVELS},
       (_, i) => bestBid.value + step.value * i)
   }
 })
