@@ -115,32 +115,6 @@ class InformedTrader(PausingTrader):
     def get_remaining_time(self) -> float:
         return self.params["trading_day_duration"] * 60 - self.get_elapsed_time()
 
-    def should_place_aggressive_order(
-        self, order_side: OrderType, top_bid: float, top_ask: float
-    ) -> bool:
-        if order_side == OrderType.BID:
-            proposed_price = top_bid + self.informed_edge
-            return proposed_price >= top_ask
-        else:  # OrderType.ASK
-            proposed_price = top_ask - self.informed_edge
-            return top_bid + self.informed_edge >= proposed_price
-
-    async def place_aggressive_order(
-        self, order_side: OrderType, top_bid: float, top_ask: float
-    ) -> str:
-        if order_side == OrderType.BID:
-            proposed_price = top_bid + self.informed_edge
-            
-        else:  # OrderType.ASK
-            proposed_price = top_ask - self.informed_edge
-
-        return await self.place_order(self.order_multiplier, proposed_price, order_side)
-
-    async def place_order(
-        self, amount: int, price: float, order_side: OrderType
-    ) -> str:
-        order_id = await self.post_new_order(amount, price, order_side)
-        return order_id
 
     async def cancel_order(self, order_ids: Union[str, List[str]]) -> None:
         if isinstance(order_ids, str):
@@ -171,169 +145,6 @@ class InformedTrader(PausingTrader):
         else:
             sleep_time = max(0.5,(remaining_time - 7) / (goal - number_trades))
         return sleep_time
-        
-    async def manage_passive_aggresive_orders(self):
-        if not self.use_passive_orders:
-            return
-
-        trade_direction = self.params["informed_trade_direction"]
-        order_side = OrderType.BID if trade_direction == TradeDirection.BUY else OrderType.ASK
-        
-        self.number_trades = len(self.filled_orders)
-        # print('total goal', self.goal)
-        # print('number of trades', self.number_trades)
-
-        # Get order placement levels
-        #levels = self.order_placement_levels
-        #print('order placement levels:',levels)
-        
-        ###################################
-        # step one: cancel orders that
-        # are in level>self.informed_order_book_cancel
-
-        if order_side == OrderType.BID:
-            top_bid_price = self.get_best_price(OrderType.BID)
-            for order in self.orders:
-                if top_bid_price - order['price'] >self.informed_order_book_cancel:
-                    order_id = order['id']
-                    await self.send_cancel_order_request(order_id)
-        else:
-            top_ask_price = self.get_best_price(OrderType.ASK)
-            for order in self.orders:
-                if order['price'] - top_ask_price > self.informed_order_book_cancel:
-                    order_id = order['id']
-                    await self.send_cancel_order_request(order_id)
-
-        ###################################
-        # step two: cancel orders if 
-        # remaining_trades to achieve goal
-        # are less than the number of passive orders at the top levels
-
-        remaining_trades = max(self.goal - self.number_trades,0)
-        total_passive_are_all_levels =  sum(order['amount'] for order in self.orders)   
-
-        if remaining_trades < total_passive_are_all_levels:
-            num_orders_to_cancel = int(total_passive_are_all_levels - remaining_trades)
-            if order_side == OrderType.BID:
-                sorted_orders = sorted(self.orders,
-                        key=lambda x: (
-                            x["price"],-datetime.strptime(x["timestamp"], "%Y-%m-%d %H:%M:%S.%f").timestamp()))
-                orders_to_cancel = sorted_orders[:num_orders_to_cancel]
-                for order in orders_to_cancel:
-                    order_id = order['id']
-                    await self.send_cancel_order_request(order_id)
-            else:
-                sorted_orders = sorted(self.orders,
-                        key=lambda x: (
-                            -x["price"],-datetime.strptime(x["timestamp"], "%Y-%m-%d %H:%M:%S.%f").timestamp()))
-                orders_to_cancel = sorted_orders[:num_orders_to_cancel]
-                for order in orders_to_cancel:
-                    order_id = order['id']
-                    await self.send_cancel_order_request(order_id)
-
-        
-        # calculate how many passive orders i need to send
-        # the number of passive orders should belong to
-        # informed_order_book_levels
-
-        #this calculates how many passive orders already exist 
-        #on top levels
-        if order_side == OrderType.BID:
-            top_bid_price = self.get_best_price(OrderType.BID)
-            prices_to_check = [top_bid_price - i for i in range(self.informed_order_book_levels)]
-            self.total_number_passive_orders = sum(order['price'] in prices_to_check for order in self.orders)
-        else:
-            top_ask_price = self.get_best_price(OrderType.ASK)
-            prices_to_check = [top_ask_price + i for i in range(self.informed_order_book_levels)]
-            self.total_number_passive_orders = sum(order['price'] in prices_to_check for order in self.orders)
-
-
-        # print('number of passive orders exist:', self.total_number_passive_orders)
-
-        
-        if self.total_number_passive_orders < self.num_passive_to_keep:
-            remaining_trades = max(self.goal - self.number_trades,0)
-            if remaining_trades >= self.num_passive_to_keep:
-                num_passive_order_to_send = self.num_passive_to_keep - self.total_number_passive_orders
-            else:
-                num_passive_order_to_send = max(remaining_trades -  self.total_number_passive_orders,0)
-        else:
-            num_passive_order_to_send = 0
-       
-
-        # if i fulfilled the goal
-        # if goal fulfilled cancel all active orders
-        # and do not send aggresive order
-
-        flag_send_aggresive = True
-        if self.number_trades >= (self.goal * self.order_multiplier):
-            num_passive_order_to_send = 0
-            flag_send_aggresive = False
-            for order in self.orders:
-                order_id = order['id']
-                await self.send_cancel_order_request(order_id)
-
-        #if remaining_trades <= self.total_number_passive_orders:
-        #    flag_send_aggresive = False
-
-
-        # print('num_passive_order_to_send',num_passive_order_to_send)
-        # send passive orders at the top self.informed_order_book_levels levels
-        if int(num_passive_order_to_send) > 0:
-            for jj in range(int(num_passive_order_to_send)):
-                if order_side == OrderType.BID:
-                    level_to_send = random.randint(1,self.informed_order_book_levels)
-                    top_ask_price = self.get_best_price(OrderType.ASK)
-                    top_bid_price = self.get_best_price(OrderType.BID)
-                    if top_ask_price is not None:
-                        price_to_send = top_ask_price - level_to_send * self.params.get('step')
-                    else:
-                        price_to_send = top_bid_price + self.params.get('step') - level_to_send * self.params.get('step')
-                    # Increase order amount by multiplier
-                    amount = self.order_multiplier
-                    await self.post_new_order(amount, price_to_send, order_side)
-                    flag_send_aggresive = False
-                else:
-                    level_to_send = random.randint(1,self.informed_order_book_levels)
-                    top_bid_price = self.get_best_price(OrderType.BID)
-                    top_ask_price = self.get_best_price(OrderType.ASK)
-                    if top_bid_price is not None:
-                        price_to_send = top_bid_price + level_to_send * self.params.get('step')
-                    else:
-                        price_to_send = top_ask_price - self.params.get('step') + level_to_send * self.params.get('step')
-
-                    # Increase order amount by multiplier
-                    amount = self.order_multiplier
-                    await self.post_new_order(amount, price_to_send, order_side)
-                    flag_send_aggresive = False
-
-        # last send aggresive order if needed
-        top_bid_price = self.get_best_price(OrderType.BID)
-        top_ask_price = self.get_best_price(OrderType.ASK)
-            
-        spread = self.calculate_spread(top_bid_price, top_ask_price)
-
-        # print('flag_send aggresive',flag_send_aggresive)
-        if flag_send_aggresive:
-            if order_side == OrderType.BID:
-                if spread <= self.informed_edge:
-                    price_to_send = top_ask_price
-                    # Increase order amount by multiplier
-                    amount = self.order_multiplier
-                    await self.post_new_order(amount, price_to_send, order_side)
-            else:
-                if spread <= self.informed_edge:
-                    price_to_send = top_bid_price
-                    # Increase order amount by multiplier
-                    amount = self.order_multiplier
-                    await self.post_new_order(amount, price_to_send, order_side)
-        
-        self.number_trades = len(self.filled_orders)
-        if self.number_trades >= (self.goal * self.order_multiplier):
-            for order in self.orders:
-                order_id = order['id']
-                await self.send_cancel_order_request(order_id)
-
 
 
     async def _place_passive_orders(self, amt: int, side: str) -> None:
@@ -406,7 +217,7 @@ class InformedTrader(PausingTrader):
         trade_direction = self.params["informed_trade_direction"]
         order_side = OrderType.BID if trade_direction == TradeDirection.BUY else OrderType.ASK
         step = self.params["step"]
-        self.number_trades = len(self.filled_orders)
+        self.number_trades = sum(fill["amount"] for fill in self.filled_orders)
         # print('total goal', self.goal)
         #print('number of trades', self.number_trades)
     
@@ -416,13 +227,13 @@ class InformedTrader(PausingTrader):
       
         ###################################
         # step one: cancel orders that
-        # are in level>self.informed_order_book_cancel
+        # are in level>=self.informed_order_book_cancel (equality because levels start from 0)
     
         if order_side == OrderType.BID:
             top_bid_price = self.get_best_price(OrderType.BID)
             for order in self.orders:
                 levels_from_best = int((top_bid_price - order['price'])/step)
-                if levels_from_best >self.informed_order_book_cancel:
+                if levels_from_best >=self.informed_order_book_cancel:
                     order_id = order['id']
                     await self.send_cancel_order_request(order_id)
       
@@ -430,19 +241,20 @@ class InformedTrader(PausingTrader):
             top_ask_price = self.get_best_price(OrderType.ASK)
             for order in self.orders:
                 levels_from_best = int((order['price'] - top_ask_price)/step)
-                if levels_from_best > self.informed_order_book_cancel:
+                if levels_from_best >= self.informed_order_book_cancel:
                     order_id = order['id']
                     await self.send_cancel_order_request(order_id)
     
         ###################################
         # step two: cancel orders if 
         # remaining_trades to achieve goal
-        # are less than the number of passive orders at the top levels
+        # are less than or equal to the number of passive orders at the top levels
         remaining_trades = max(self.goal - self.number_trades,0)
         total_passive_are_all_levels =  sum(order['amount'] for order in self.orders)   
     
-        if remaining_trades < total_passive_are_all_levels:
-            num_orders_to_cancel = int(total_passive_are_all_levels - remaining_trades)
+        if remaining_trades <= total_passive_are_all_levels:
+            num_orders_to_cancel_raw = int(total_passive_are_all_levels - remaining_trades+1)
+            num_orders_to_cancel     = int(min(num_orders_to_cancel_raw ,total_passive_are_all_levels))
             if order_side == OrderType.BID:
                 sorted_orders = sorted(self.orders,
                       key=lambda x: (
@@ -459,7 +271,7 @@ class InformedTrader(PausingTrader):
                 for order in orders_to_cancel:
                     order_id = order['id']
                     await self.send_cancel_order_request(order_id)
-    
+            return
       
         # calculate how many passive orders i need to send
         # the number of passive orders should belong to
@@ -506,55 +318,9 @@ class InformedTrader(PausingTrader):
                 await self._place_passive_orders(amt, side)
         
 
-    async def check1(self) -> None:
-        remaining_time = self.get_remaining_time()
-        self.number_trades = len(self.filled_orders)
-        
-        if remaining_time < 2 or (abs(self.goal * self.order_multiplier - self.number_trades) <= 0):
-            #print(f'Informed trader fullfilled goal with {self.number_trades} trades')
-            return
-
-        trade_direction = self.params["informed_trade_direction"]
-        order_side = OrderType.BID if trade_direction == TradeDirection.BUY else OrderType.ASK
-
-        top_bid_price = self.get_best_price(OrderType.BID)
-        top_ask_price = self.get_best_price(OrderType.ASK)
-        
-        if top_bid_price is None or top_ask_price is None:
-            return
-            
-        spread = self.calculate_spread(top_bid_price, top_ask_price)
-
-        if self.use_passive_orders:
-            # Manage passive orders if enabled
-            await self.manage_passive_aggresive_orders()
-        else:
-            # Original aggressive-only behavior
-            if order_side == OrderType.BID:
-                if spread <= self.informed_edge:
-                    price_to_send = top_ask_price
-                    # Increase order amount by multiplier
-                    amount = self.order_multiplier
-                    await self.post_new_order(amount, price_to_send, order_side)
-                else:
-                    return
-            else:
-                if spread <= self.informed_edge:
-                    price_to_send = top_bid_price
-                    # Increase order amount by multiplier
-                    amount = self.order_multiplier
-                    await self.post_new_order(amount, price_to_send, order_side)
-                else:
-                    return
-        
-        self.number_trades = sum(order['amount'] for order in self.filled_orders)
-        # Adjust sleep time calculation to account for increased order volume
-        self.next_sleep_time = self.calculate_sleep_time(remaining_time, self.number_trades, self.goal * self.order_multiplier)
-        # print('next sleep time', self.next_sleep_time)
-
     async def check(self) -> None:
         remaining_time = self.get_remaining_time()
-        self.number_trades = len(self.filled_orders)
+        self.number_trades = sum(fill["amount"] for fill in self.filled_orders)
            
         if remaining_time < 2 or (abs(self.goal * self.order_multiplier - self.number_trades) <= 0):
             #print(f'Informed trader fullfilled goal with {self.number_trades} trades')
@@ -577,7 +343,7 @@ class InformedTrader(PausingTrader):
             await self._manage_passive_orders()
            
         #I think this is executed trades
-        self.number_trades = sum(order['amount'] for order in self.filled_orders)
+        self.number_trades = sum(fill["amount"] for fill in self.filled_orders)
 
         cond_aggressive = ( (self.number_trades < (self.goal * self.order_multiplier)) and (spread_ticks < self.informed_edge))
 
@@ -604,17 +370,37 @@ class InformedTrader(PausingTrader):
             await self.post_new_order(amount, price_to_send, order_side)
            
         #cancel any outstanding order if the goal is reached
-        self.number_trades = len(self.filled_orders)
+        self.number_trades = sum(fill["amount"] for fill in self.filled_orders)
         if self.number_trades >= (self.goal * self.order_multiplier):
             for order in self.orders:
                 order_id = order['id']
                 await self.send_cancel_order_request(order_id)
          
            
-        self.number_trades = sum(order['amount'] for order in self.filled_orders)
+        self.number_trades = sum(fill["amount"] for fill in self.filled_orders)
         # Adjust sleep time calculation to account for increased order volume
         self.next_sleep_time = self.calculate_sleep_time(remaining_time, self.number_trades, self.goal * self.order_multiplier)
         #print('next sleep time', self.next_sleep_time)
+        # DEBUG: true end-of-check state
+        print(
+            "[INFORMED TRUE END CHECK]",
+            "len_fills=", len(self.filled_orders),
+            "sum_amount=", sum(fill["amount"] for fill in self.filled_orders),
+            "target=", self.goal * self.order_multiplier,
+            "remaining_time=", remaining_time,
+            "open_orders=", len(self.orders),
+            "open_order_prices=", [order["price"] for order in self.orders],
+            "top_bid=", self.get_best_price(OrderType.BID),
+            "top_ask=", self.get_best_price(OrderType.ASK),
+            "use_passive_orders=", self.use_passive_orders,
+            "num_passive_to_keep", self.num_passive_to_keep,
+            "cond_aggressive=", cond_aggressive,
+            "spread=", spread,
+            "spread_ticks=", spread_ticks,
+            "informed_edge=", self.informed_edge,
+            "next_sleep_time=", self.next_sleep_time,
+        )
+        ###end of degub code
     
     
     async def run(self) -> None:
