@@ -176,6 +176,8 @@ export const useTraderCoreStore = defineStore('traderCore', {
           if (response.data.status === 'success' || response.data.status === 'waiting' || response.data.status === 'not_in_session') {
             const marketData = response.data.data
             this.tradingMarketData = marketData
+          
+            this.gameParams = marketData.game_params || {}
 
             if (response.data.status === 'waiting' || response.data.status === 'not_in_session') {
               this.$patch({
@@ -341,8 +343,15 @@ export const useTraderCoreStore = defineStore('traderCore', {
         }
 
         // Update order book
+        //if (order_book) {
+        //  useMarketStore().updateOrderBook(order_book)
+        //  }
+
         if (order_book) {
-          useMarketStore().updateOrderBook(order_book)
+          useMarketStore().updateOrderBook({
+            ...order_book,
+            step: this.gameParams?.step || 1,
+          })
         }
 
         // Update trader orders

@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 
+const DEPTH_PRICE_STEPS_SHOWN = 6
+
 function findMidpoint(bids, asks) {
   if (!bids.length || !asks.length) {
     return 0
@@ -74,10 +76,27 @@ export const useMarketStore = defineStore('market', {
       if (!orderBook) return
 
       const { bids, asks } = orderBook
-      const DEPTH_BOOK_SHOWN = 5
+      const step = orderBook.step || 1
+      
+      const bestBid = bids.length ? bids[0].x : null
+      const bestAsk = asks.length ? asks[0].x : null
 
-      this.orderBook.bids = bids.slice(0, DEPTH_BOOK_SHOWN)
-      this.orderBook.asks = asks.slice(0, DEPTH_BOOK_SHOWN)
+      this.orderBook.bids = bestBid === null
+        ? []
+        : Array.from({ length: DEPTH_PRICE_STEPS_SHOWN }, (_, i) => {
+            const price = bestBid - i * step
+            const level = bids.find((bid) => bid.x === price)
+            return level || { x: price, y: 0 }
+          })
+
+      this.orderBook.asks = bestAsk === null
+        ? []
+        : Array.from({ length: DEPTH_PRICE_STEPS_SHOWN }, (_, i) => {
+            const price = bestAsk + i * step
+            const level = asks.find((ask) => ask.x === price)
+            return level || { x: price, y: 0 }
+          })
+
       this.orderBook.midpoint = findMidpoint(this.orderBook.bids, this.orderBook.asks)
 
       this.chartData = [
