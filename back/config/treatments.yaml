@@ -3,3 +3,12 @@ treatments:
   informed_trade_intensity: 0.36
 - name: "2"
   informed_trade_intensity: 0.69
+- name: "3"
+  informed_trade_intensity: 0.36
+  informed_use_passive_orders: True
+  informed_share_passive: 0.4
+- name: "4"
+  informed_trade_intensity: 0.69
+  informed_use_passive_orders: True
+  informed_share_passive: 0.1
+
