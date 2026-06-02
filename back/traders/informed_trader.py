@@ -384,24 +384,26 @@ class InformedTrader(PausingTrader):
         # Adjust sleep time calculation to account for increased order volume
         self.next_sleep_time = self.calculate_sleep_time(remaining_time, self.number_trades, self.goal * self.order_multiplier)
         #print('next sleep time', self.next_sleep_time)
-        print(
-            "[INFORMED TRUE END CHECK]",
-            "len_fills=", len(self.filled_orders),
-            "sum_amount=", sum(fill["amount"] for fill in self.filled_orders),
-            "target=", self.goal * self.order_multiplier,
-            "remaining_time=", remaining_time,
-            "open_orders=", len(self.orders),
-            "open_order_prices=", [order["price"] for order in self.orders],
-            "top_bid=", self.get_best_price(OrderType.BID),
-            "top_ask=", self.get_best_price(OrderType.ASK),
-            "use_passive_orders=", self.use_passive_orders,
-            "num_passive_to_keep", self.num_passive_to_keep,
-            "cond_aggressive=", cond_aggressive,
-            "spread=", spread,
-            "spread_ticks=", spread_ticks,
-            "informed_edge=", self.informed_edge,
-            "next_sleep_time=", self.next_sleep_time,
-        )
+        
+        # print(
+        #     "[INFORMED TRUE END CHECK]",
+        #     "len_fills=", len(self.filled_orders),
+        #     "sum_amount=", sum(fill["amount"] for fill in self.filled_orders),
+        #     "target=", self.goal * self.order_multiplier,
+        #     "remaining_time=", remaining_time,
+        #     "open_orders=", len(self.orders),
+        #     "open_order_prices=", [order["price"] for order in self.orders],
+        #     "top_bid=", self.get_best_price(OrderType.BID),
+        #     "top_ask=", self.get_best_price(OrderType.ASK),
+        #     "use_passive_orders=", self.use_passive_orders,
+        #     "num_passive_to_keep", self.num_passive_to_keep,
+        #     "cond_aggressive=", cond_aggressive,
+        #     "spread=", spread,
+        #     "spread_ticks=", spread_ticks,
+        #     "informed_edge=", self.informed_edge,
+        #     "next_sleep_time=", self.next_sleep_time,
+        # )
+
                 
 
     
