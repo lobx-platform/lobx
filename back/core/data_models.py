@@ -214,7 +214,7 @@ class TradingParameters(BaseModel):
     )
 
     conversion_rate: float = Field(
-        default=1,
+        default=2,
         title="Lira-GBP Conversion Rate",
         description="model_parameter",
         gt=0,
@@ -242,7 +242,7 @@ class TradingParameters(BaseModel):
 
     throttle_settings: Dict[TraderType, ThrottleConfig] = Field(
         default_factory=lambda: {
-            TraderType.HUMAN: ThrottleConfig(order_throttle_ms=100, max_orders_per_window=1),
+            TraderType.HUMAN: ThrottleConfig(order_throttle_ms=250, max_orders_per_window=1),
             TraderType.NOISE: ThrottleConfig(),
             TraderType.INFORMED: ThrottleConfig(),
             TraderType.INITIAL_ORDER_BOOK: ThrottleConfig(),
