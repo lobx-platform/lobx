@@ -148,6 +148,7 @@ class InformedTrader(PausingTrader):
 
 
     async def _place_passive_orders(self, amt: int, side: str) -> None:
+        amt = int(amt)
         order_book_levels = self.informed_order_book_levels
         step = self.params["step"]
         default_price = self.params["default_price"]
@@ -172,6 +173,8 @@ class InformedTrader(PausingTrader):
             await self.post_new_order(1, price, order_type)
     
     async def _place_tightening_passive_orders(self, amt: int, side: str, spread_ticks: int) -> None:
+        
+        amt = int(amt)
         order_book_levels = self.informed_order_book_levels
         step = self.params["step"]
         default_price = self.params["default_price"]
@@ -310,7 +313,7 @@ class InformedTrader(PausingTrader):
         
             spread = self.calculate_spread(top_bid_price, top_ask_price)
             spread_ticks = int(spread /step)
-            amt = num_passive_order_to_send
+            amt = int(num_passive_order_to_send)
             side = "bids" if trade_direction == TradeDirection.BUY else "asks"  
             if spread >= self.informed_edge:#tighten spread
                 await self._place_tightening_passive_orders(amt, side, spread_ticks)
@@ -381,7 +384,6 @@ class InformedTrader(PausingTrader):
         # Adjust sleep time calculation to account for increased order volume
         self.next_sleep_time = self.calculate_sleep_time(remaining_time, self.number_trades, self.goal * self.order_multiplier)
         #print('next sleep time', self.next_sleep_time)
-        # DEBUG: true end-of-check state
         print(
             "[INFORMED TRUE END CHECK]",
             "len_fills=", len(self.filled_orders),
@@ -400,8 +402,8 @@ class InformedTrader(PausingTrader):
             "informed_edge=", self.informed_edge,
             "next_sleep_time=", self.next_sleep_time,
         )
-        ###end of degub code
-    
+                
+
     
     async def run(self) -> None:
         while not self._stop_requested.is_set():
@@ -413,8 +415,8 @@ class InformedTrader(PausingTrader):
                 #print("Run method cancelled, performing cleanup...")
                 break
             except Exception as e:
-                #print(f"An error occurred in InformedTrader run loop: {e}")
-                #traceback.print_exc()
+                print(f"An error occurred in InformedTrader run loop: {e}")
+                traceback.print_exc()
                 break
 
         await self.cancel_all_outstanding_orders()
