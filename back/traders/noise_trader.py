@@ -8,6 +8,7 @@ import sys
 import traceback
 from datetime import datetime, timedelta
 
+SPARSE_BOOK_THRESH = 3
 
 class NoiseTrader(PausingTrader):
     def __init__(self, id: str, params: dict):
@@ -51,7 +52,9 @@ class NoiseTrader(PausingTrader):
         self.bias_thresh = self.params["noise_bias_thresh"]
         # ============================================================
 
-        
+        self.noise_sparse_book_thresh = self.params.get("noise_sparse_book_thresh",
+                                                        SPARSE_BOOK_THRESH)
+                    
         
     @property
     def elapsed_time(self) -> float:
@@ -170,7 +173,57 @@ class NoiseTrader(PausingTrader):
             )
             self.historical_placed_orders += 1
 
-    
+    ########new function
+    def which_side_sparse(self, best_bid: float, best_ask: float) -> int:
+        step = self.step
+        weights = self.noise_choise_weights_passive
+        active_levels = sum(w > 0 for w in weights)
+
+        if active_levels == 0:
+            return 0
+
+        def count_missing(side: str) -> int:
+            if side == "bids":
+                anchor = best_bid
+                sign = -1
+                book_side = "bids"
+            else:
+                anchor = best_ask
+                sign = +1
+                book_side = "asks"
+
+            existing_prices = {lvl["x"] for lvl in self.order_book[book_side]}
+
+            missing = 0
+
+            for k in range(1, active_levels + 1):
+                price = anchor + sign * k * step
+                if price not in existing_prices:
+                    missing += 1
+
+            return missing
+
+        missing_bids = count_missing("bids")
+        missing_asks = count_missing("asks")
+
+        bid_sparse = missing_bids >= self.noise_sparse_book_thresh
+        ask_sparse = missing_asks >= self.noise_sparse_book_thresh
+
+        if not bid_sparse and not ask_sparse:
+            return 0
+
+        if bid_sparse and not ask_sparse:
+            return 1
+
+        if ask_sparse and not bid_sparse:
+            return -1
+
+        # Both sides are sparse: choose the most sparse side.
+        # If equal, choose bids.
+        if missing_bids >= missing_asks:
+            return 1
+        else:
+            return -1
 
     ########new function
     async def  place_tightening_passive_orders(self, max_order_amount: int, side: str, best_bid: float, best_ask: float) -> None:
@@ -222,12 +275,15 @@ class NoiseTrader(PausingTrader):
             sign = -1
             book_side = "bids"
             order_type = OrderType.BID
-        else:
+        elif side == "asks":
             anchor = best_ask
             sign = +1
             book_side = "asks"
             order_type = OrderType.ASK
-    
+        else:
+            return
+
+
         existing_prices = {lvl["x"] for lvl in self.order_book[book_side]}
     
         for k in range(1, active_levels + 1):
@@ -292,7 +348,12 @@ class NoiseTrader(PausingTrader):
         # ------------------------------------------------------------         
         spread_ticks = (best_ask - best_bid) / step
         tightening_mode = (spread_ticks >= bias_ticks)
-    
+        # ------------------------------------------------------------
+        # Check if a side is sparse 
+        # ------------------------------------------------------------         
+        #check sizes at different levels
+        sparse_side = self.which_side_sparse(best_bid, best_ask)
+
         # ------------------------------------------------------------
         # Choose action + side randomly
         # ------------------------------------------------------------  
@@ -311,6 +372,12 @@ class NoiseTrader(PausingTrader):
             await self.fill_gaps('asks', best_bid, best_ask)
         
             await self.place_tightening_passive_orders(max_order_amount, side, best_bid, best_ask)
+
+        elif sparse_side != 0:
+
+            bid_or_ask_to_fill = "bids" if sparse_side == 1 else "asks"
+            await self.fill_gaps(bid_or_ask_to_fill, best_bid, best_ask)
+
         else:
             # Normal behavior
             action = random.choices(["passive", "aggressive"],weights=[pr_passive, pr_aggresive],k=1)[0]
