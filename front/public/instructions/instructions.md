@@ -59,6 +59,7 @@ If you have **7 shares** and **7 active passive sell orders**, you cannot sell a
 
 If you have **350 Liras** and **300 Liras** committed to passive buy orders, you can only use the remaining **50 Liras**.
 
+<br>
 
 ## End-of-Market Rule
 
@@ -137,7 +138,7 @@ Your earnings will be paid to you in Amazon vouchers. The transfer may take a fe
 
 <br>
 
-## The trading platform
+## The Trading Platform
 
 <br>
 
@@ -188,7 +189,7 @@ Entering a buy order (bid) at a price higher than the current best bid
 
 <br>
 
-## Final remarks
+## Final Remarks
 
 <br>
 
