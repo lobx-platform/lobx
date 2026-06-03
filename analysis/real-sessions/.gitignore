@@ -1,0 +1,9 @@
+# Local session data + generated outputs — NEVER commit (human-subjects data).
+_local_data/
+*.log
+all_*.csv
+filtered_*.csv
+payment_*.csv
+*_markets.csv
+*_OB.csv
+__pycache__/

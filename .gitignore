@@ -73,7 +73,9 @@ Thumbs.db
 # ====================
 REVIEW.md
 papers/
-analysis/
+# analysis/ is local-only EXCEPT the committed real-sessions log-analysis pipeline
+/analysis/*
+!/analysis/real-sessions/
 designs/
 docs/
 agentic-paper/
