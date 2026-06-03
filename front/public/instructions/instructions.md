@@ -50,6 +50,16 @@ Within this endowment you may buy and sell as you please (no short selling).
 
 <br>
 
+
+These limits also include active passive orders: cash and shares already committed to passive orders cannot be used for other orders, unless the passive order is first cancelled.
+
+Example:
+
+If you have 7 shares and 7 active passive sell orders, you cannot sell additional shares without first cancelling an order.
+
+If you have 350 lire and 300 lire committed to passive buy orders, you can only use the remaining 50 lire.
+
+
 ## End-of-Market Rule
 
 <br>
