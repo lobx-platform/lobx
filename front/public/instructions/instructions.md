@@ -6,7 +6,7 @@ The purpose of this study is to investigate the interaction between humans and m
 
 The study will last approximately 60 minutes. Participating is an excellent opportunity to understand how electronic financial markets work.
 
-You will receive a show-up fee of 5 euro. In addition, you can earn a considerable amount of extra money depending on your decisions.
+You will receive a show-up fee of 5 Euro. In addition, you can earn a considerable amount of extra money depending on your decisions.
 
 <br>
 
@@ -44,7 +44,7 @@ You can earn considerable money depending on your decisions. Your earnings will 
 
 <br>
 
-At the start of each market you will receive {initialCash} lire and {initialStocks} shares.
+At the start of each market you will receive {initialCash} Liras and {initialStocks} shares.
 
 Within this endowment you may buy and sell as you please (no short selling).
 
@@ -57,7 +57,7 @@ Example:
 
 If you have 7 shares and 7 active passive sell orders, you cannot sell additional shares without first cancelling an order.
 
-If you have 350 lire and 300 lire committed to passive buy orders, you can only use the remaining 50 lire.
+If you have 350 Liras and 300 Liras committed to passive buy orders, you can only use the remaining 50 Liras.
 
 
 ## End-of-Market Rule
@@ -121,11 +121,11 @@ If you had bought earlier, you could have bought at 110. Your profits are reduce
 
 At the end of the study, you will receive the earnings from one randomly selected market.
 
-Your earnings correspond to the difference between the lire held at the end and the lire held at the beginning:
+Your earnings correspond to the difference between the lire held at the end and the Liras held at the beginning:
 
 Liras at the end minus {initialCash}
 
-Your earnings will be converted at the rate of 2 Lires = 1 Euro.
+Your earnings will be converted at the rate of 2 Liras = 1 Euro.
 
 For each market, earnings will be capped at a maximum of 10 Euro.
 
