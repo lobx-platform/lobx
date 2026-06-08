@@ -9,12 +9,11 @@ from settings import BASE_DIR, FOLDER, DATE, DAYSTATS_SUBFOLDER, ORDER_BOOKS_SUB
 pathname = BASE_DIR
 folder = FOLDER
 
-filename = pathname + '/' + folder + '/'+ DAYSTATS_SUBFOLDER + '/'
+path_daystats = pathname + '/' + folder + '/'+ DAYSTATS_SUBFOLDER + '/'
 
 files = [f'filtered_{DATE}.csv']
+df = pd.read_csv(path_daystats + files[0])
 
-
-df = pd.read_csv(filename + files[0])
 
 
 order_book_markets_needed = list( df.loc[df.Trader != 'no_human']['Market'] )
@@ -35,4 +34,6 @@ def pool_order_books(order_books_folder,order_book_markets_needed,filename_to_ex
   all_df.sort_values(by=['Trader', 'Market'], ascending=[True, True], inplace=True)
   all_df.to_csv(filename_to_export,index=False)
 
-pool_order_books(order_books_folder,order_book_markets_needed,filename_to_export=filename + 'Udine_OB.csv')
+
+filename_ob = os.path.join(path_daystats, f'OB_{DATE}.csv')
+pool_order_books(order_books_folder,order_book_markets_needed,filename_to_export=filename_ob)

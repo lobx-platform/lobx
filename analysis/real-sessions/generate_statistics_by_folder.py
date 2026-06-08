@@ -27,6 +27,9 @@ for index, folder in enumerate(folders):
 
     orderbook_folder = os.path.join(BASE_DIR, folder, ORDER_BOOKS_SUBFOLDER)
 
+    os.makedirs(orderbook_folder, exist_ok=True)
+
+
     log_files = [logfiles_folder + '/' + f for f in os.listdir(logfiles_folder) if f.endswith('.log')]
     market_ids = [os.path.basename(p).replace('SESSION_', '').replace('MARKET_', '').replace('.log', '').replace('_', '_', 2) for p in log_files]
 
@@ -147,6 +150,11 @@ for index, folder in enumerate(folders):
 day_statistics_sorted = day_statistics.sort_values(by=['Trader','Market'])
 #filtered_df = day_statistics_sorted.groupby('Trader').apply(lambda group: group.iloc[1:]).reset_index(drop=True)
 print(day_statistics_sorted)
-save_file_path = os.path.join(BASE_DIR, folders[0], DAYSTATS_SUBFOLDER, f'all_{date_of_session}.csv')
+
+save_dir = os.path.join(BASE_DIR, folders[0], DAYSTATS_SUBFOLDER)
+os.makedirs(save_dir, exist_ok=True)
+
+save_file_path = os.path.join(save_dir, f'all_{date_of_session}.csv')
+day_statistics_sorted.to_csv(save_file_path, index=False)
 day_statistics_sorted.to_csv(save_file_path, index=False)
 # print(f"File saved to {save_file_path}")
