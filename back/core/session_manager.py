@@ -138,80 +138,81 @@ class SessionManager:
 
     async def start_trading_session(self, username: str) -> Tuple[str, TraderManager]:
         """Convert waiting session into active market. Returns (market_id, trader_manager)."""
-        session_id = self.user_sessions.get(username)
-        if not session_id:
-            raise Exception(f"User {username} not in any session")
+        async with self._session_join_lock:
+            session_id = self.user_sessions.get(username)
+            if not session_id:
+                raise Exception(f"User {username} not in any session")
 
-        if session_id in self.active_markets:
-            return session_id, self.active_markets[session_id]
+            if session_id in self.active_markets:
+                return session_id, self.active_markets[session_id]
 
-        users = self.session_pools.get(session_id, [])
-        if not users:
-            raise Exception(f"Session {session_id} not found")
+            users = self.session_pools.get(session_id, [])
+            if not users:
+                raise Exception(f"Session {session_id} not found")
 
-        first_user = users[0].username
-        market_count = self.user_market_count.get(first_user, 0)
+            first_user = users[0].username
+            market_count = self.user_market_count.get(first_user, 0)
 
-        # Build merged params: base -> treatment (by treatment_group index)
-        base_params_dict = users[0].params.model_dump()
-        treatment_group = self.user_treatment_groups.get(first_user)
-        applied_treatment_index = treatment_group if treatment_group is not None else market_count
+            # Build merged params: base -> treatment (by treatment_group index)
+            base_params_dict = users[0].params.model_dump()
+            treatment_group = self.user_treatment_groups.get(first_user)
+            applied_treatment_index = treatment_group if treatment_group is not None else market_count
 
-        if treatment_group is not None:
-            # Use treatment_group as index into treatments list
-            treatment_settings = treatment_manager.get_treatment_for_market(applied_treatment_index)
-            if treatment_settings:
-                merged = base_params_dict.copy()
-                merged.update(treatment_settings)
-                logger.info(f"Applied treatment_group {applied_treatment_index}: {treatment_settings}")
+            if treatment_group is not None:
+                # Use treatment_group as index into treatments list
+                treatment_settings = treatment_manager.get_treatment_for_market(applied_treatment_index)
+                if treatment_settings:
+                    merged = base_params_dict.copy()
+                    merged.update(treatment_settings)
+                    logger.info(f"Applied treatment_group {applied_treatment_index}: {treatment_settings}")
+                else:
+                    merged = base_params_dict.copy()
+                    logger.warning(f"No treatment found for treatment_group {applied_treatment_index}")
             else:
-                merged = base_params_dict.copy()
-                logger.warning(f"No treatment found for treatment_group {applied_treatment_index}")
-        else:
-            # No treatment_group: fall back to market_count-based treatment
-            merged = treatment_manager.get_merged_params(applied_treatment_index, base_params_dict)
+                # No treatment_group: fall back to market_count-based treatment
+                merged = treatment_manager.get_merged_params(applied_treatment_index, base_params_dict)
 
-        params = TradingParameters(**merged)
-        # Lab room keys are short (T0_M0), so append timestamp for uniqueness.
-        # Prolific room keys already contain a timestamp, so use as-is.
-        if session_id.startswith("T"):
-            timestamped_id = f"{session_id}_{int(time.time())}"
-        else:
-            timestamped_id = session_id
-        trader_manager = TraderManager(params, market_id=timestamped_id)
-        market_id = trader_manager.trading_market.id
+            params = TradingParameters(**merged)
+            # Lab room keys are short (T0_M0), so append timestamp for uniqueness.
+            # Prolific room keys already contain a timestamp, so use as-is.
+            if session_id.startswith("T"):
+                timestamped_id = f"{session_id}_{int(time.time())}"
+            else:
+                timestamped_id = session_id
+            trader_manager = TraderManager(params, market_id=timestamped_id)
+            market_id = trader_manager.trading_market.id
 
-        for wu in users:
-            await trader_manager.add_human_trader(wu.username, role=wu.role, goal=wu.goal)
-            if wu.username not in self.user_historical_markets:
-                self.user_historical_markets[wu.username] = set()
-            self.user_historical_markets[wu.username].add(market_id)
-            # Increment market count for sequential markets
-            self.user_market_count[wu.username] = self.user_market_count.get(wu.username, 0) + 1
+            for wu in users:
+                await trader_manager.add_human_trader(wu.username, role=wu.role, goal=wu.goal)
+                if wu.username not in self.user_historical_markets:
+                    self.user_historical_markets[wu.username] = set()
+                self.user_historical_markets[wu.username].add(market_id)
+                # Increment market count for sequential markets
+                self.user_market_count[wu.username] = self.user_market_count.get(wu.username, 0) + 1
 
-        self.active_markets[market_id] = trader_manager
+            self.active_markets[market_id] = trader_manager
 
-        # Clean up waiting pool and per-market permutation
-        self.session_pools.pop(session_id, None)
-        self._market_goal_permutations.pop(session_id, None)
+            # Clean up waiting pool and per-market permutation
+            self.session_pools.pop(session_id, None)
+            self._market_goal_permutations.pop(session_id, None)
 
-        for u in users:
-            self.user_sessions[u.username] = market_id
+            for u in users:
+                self.user_sessions[u.username] = market_id
 
-        # Log market start
-        treatment_info = treatment_manager.get_treatment(applied_treatment_index)
-        treatment_name = treatment_info.get("name") if treatment_info else None
-        parameter_logger.log_market_start(
-            market_id=market_id,
-            participants=[u.username for u in users],
-            session_id=session_id,
-            treatment_name=treatment_name,
-            treatment_index=applied_treatment_index,
-            parameters=merged
-        )
+            # Log market start
+            treatment_info = treatment_manager.get_treatment(applied_treatment_index)
+            treatment_name = treatment_info.get("name") if treatment_info else None
+            parameter_logger.log_market_start(
+                market_id=market_id,
+                participants=[u.username for u in users],
+                session_id=session_id,
+                treatment_name=treatment_name,
+                treatment_index=applied_treatment_index,
+                parameters=merged
+            )
 
-        logger.info(f"Created market {market_id} from room {session_id} with {len(users)} participants")
-        return market_id, trader_manager
+            logger.info(f"Created market {market_id} from room {session_id} with {len(users)} participants")
+            return market_id, trader_manager
 
     def get_session_status(self, username: str) -> Dict:
         """Get current status for a user."""
