@@ -161,6 +161,11 @@ class TraderManager:
             while len(self.human_traders) < num_required_traders:
                 await asyncio.sleep(1)
 
+        for ht in self.human_traders:
+            self.trading_market.orchestrator.trading_logger.info(
+                f"PARTICIPANT_REGISTERED: {{'trader_id': '{ht.id}', 'gmail_username': '{ht.gmail_username}', 'role': '{ht.role}', 'goal': {ht.goal}}}"
+            )
+
         await self.trading_market.start_trading()
 
         trading_market_task = asyncio.create_task(self.trading_market.run())

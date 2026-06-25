@@ -85,7 +85,7 @@ def logfile_to_message(logfile_name):
                 timestamp_save.append(timestamp_str)
                 type_save.append(msg_type)
 
-            if msg_type == 'RECORD_KEEPING_ORDER':
+            if msg_type in ('RECORD_KEEPING_ORDER', 'PARTICIPANT_REGISTERED'):
                 trader_key = "'trader_id': "
                 start_index = msg_content.index(trader_key) + len(trader_key)
                 end_index = msg_content.index(',', start_index)
