@@ -36,6 +36,7 @@ class TraderManager:
         self.tasks = []
         self.human_informed_trader = None  # Keep only for tracking human trader with INFORMED role
         self.human_traders = []
+        self._launched = False
         
         params_dict = params.model_dump()  # Convert to dict for easier access
         
@@ -127,6 +128,10 @@ class TraderManager:
         return False
 
     async def launch(self):
+        if self._launched:
+            logger.warning(f"launch() called again on {self.trading_market.id}, ignoring")
+            return
+        self._launched = True
         await self.trading_market.initialize()
 
         for trader_id, trader in self.traders.items():
