@@ -35,6 +35,12 @@ def setup_trading_logger(market_id: str) -> logging.Logger:
     logger = logging.getLogger(f"trading_market_{market_id}")
     logger.setLevel(logging.INFO)
 
+    # getLogger returns a singleton per name; guard against attaching a second
+    # FileHandler if this market_id's logger was already configured. Otherwise a
+    # reused market_id makes every log line be written once per handler (#76).
+    if logger.handlers:
+        return logger
+
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f"{market_id}.log")

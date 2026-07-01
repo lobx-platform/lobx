@@ -173,10 +173,13 @@ class SessionManager:
                 merged = treatment_manager.get_merged_params(applied_treatment_index, base_params_dict)
 
             params = TradingParameters(**merged)
-            # Lab room keys are short (T0_M0), so append timestamp for uniqueness.
+            # Lab room keys are short (T0_M0), so append a timestamp for uniqueness.
+            # Use nanoseconds, not seconds: two participants can start markets within
+            # the same wall-clock second, and int-second suffixes then collide into one
+            # market_id -> one shared log file, corrupting/losing per-market logs (#76).
             # Prolific room keys already contain a timestamp, so use as-is.
             if session_id.startswith("T"):
-                timestamped_id = f"{session_id}_{int(time.time())}"
+                timestamped_id = f"{session_id}_{time.time_ns()}"
             else:
                 timestamped_id = session_id
             trader_manager = TraderManager(params, market_id=timestamped_id)
