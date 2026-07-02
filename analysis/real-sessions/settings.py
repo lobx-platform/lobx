@@ -23,14 +23,14 @@ import os
 #   a local folder you copied a session's data into:
 #       BASE_DIR = os.path.join(os.path.dirname(__file__), '_local_data')
 BASE_DIR = os.path.expanduser(
-    '~/Dropbox/Accademic/InformationDisseminatationProject/ResultsExperiments/Real_Sessions_Siena_20260605')
+    '~/Dropbox/Accademic/InformationDisseminatationProject/ResultsExperiments/Real_Sessions_Siena_20260622')
 
 
 
 # Which session subfolder to analyse, and the date used in file names
 # (all_<DATE>.csv, filtered_<DATE>.csv, ...).
 FOLDER = 'Treatments'
-DATE = '20260605'
+DATE = '20260622'
 
 CCY = 'Euro'
 CONVERSION_RATE = 2 #liras per unit of CCY local currency (e.g. GBP or EUR)

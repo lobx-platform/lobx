@@ -18,6 +18,7 @@ SCRIPTS = [
     'generate_statistics_by_folder.py',
     'analysis.py',
     'order_book.py',
+    'order_book_detailed.py',
 ]
 
 if __name__ == '__main__':
