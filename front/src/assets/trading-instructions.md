@@ -67,7 +67,7 @@ If you do not achieve the objective within the time limit of the market the trad
   - Market earnings = (Number of shares) \* (mid-price at the beginning of the market) – total expense of purchases (incl. automatically bought shares)
   - The market price might rise above the mid-price at the beginning of the market. If that happens each purchase of a share will make a loss. However buying the shares is still in your interest as not buying them would create an even more significant loss. To cover your losses you will given # Liras at the beginning of each market.
 
-At the end of the study you will be awarded earnings from one randomly selected market. Your earnings in the chosen market are converted into GBP and paid to you. The conversion rate is X Liras = 1 GBP.
+At the end of the study you will be awarded the average of your earnings across all markets (excluding the practice market); a market with negative earnings counts as zero in the average. Your average earnings are converted into GBP and paid to you. The conversion rate is X Liras = 1 GBP.
 
 ### Page 6: Other Participants in the Market
 
@@ -84,9 +84,9 @@ After answering some control questions you will practice trading to familiarise 
 5. Your task is either to sell or buy shares. To maximise your earnings you must complete the task. (Correct/Incorrect)
 6. Your earnings are the sum of the earnings in all markets. (correct/incorrect)
 
-Let us assume a market is selected in which you had the task of selling all your 10 shares and you received 50 Lira at the start. You sold all the 10 shares for an average price of 11. The price at the beginning of the market was 12. What would be your earnings in Lira at the end of this market? (40 Lira)
+Consider a market in which you had the task of selling all your 10 shares and you received 50 Lira at the start. You sold all the 10 shares for an average price of 11. The price at the beginning of the market was 12. What would be your earnings in Lira at the end of this market? (40 Lira)
 
-Let us assume a market is selected in which you had the task of buying 10 shares and you received 60 Lira at the start. You bought 10 shares for an average price of 11. The price at the beginning of the market was 10. What would be your earnings in Lira at the end of this market? (50 Lira)
+Consider a market in which you had the task of buying 10 shares and you received 60 Lira at the start. You bought 10 shares for an average price of 11. The price at the beginning of the market was 10. What would be your earnings in Lira at the end of this market? (50 Lira)
 
 ### Page 8: Practice
 

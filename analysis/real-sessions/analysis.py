@@ -88,22 +88,32 @@ df_filtered_final.loc[_nohuman_mask, 'Trader'] = (
 
 df_filtered_final.to_csv(save_file_path, index=False)
 
-# Randomly select one paying market per participant,
-# excluding the training market M0.
-df_filtered_final_payment = (
-    df_filtered_final[df_filtered_final['Trader'] != NON_HUMAN_LABEL]
-    .groupby('Trader', group_keys=False)
-    .sample(n=1, random_state=RANDOM_STATE )
-    .reset_index(drop=True)
-)
-
-df_filtered_final_payment = df_filtered_final_payment[
-    ['Trader', 'Market', 'Id', 'PnL_Original']
-]
-
-df_filtered_final_payment[CCY] = (
-    df_filtered_final_payment['PnL_Original'] / CONVERSION_RATE
+# Payment = average of max(per-market earnings, 0) over all non-practice
+# markets (issue #78). This replaces the random selection of a single paying
+# market and must stay in sync with Accumulated_Reward on the platform
+# (back/api/routes/trading.py).
+# Old behaviour, kept for reference:
+# df_filtered_final_payment = (
+#     df_filtered_final[df_filtered_final['Trader'] != NON_HUMAN_LABEL]
+#     .groupby('Trader', group_keys=False)
+#     .sample(n=1, random_state=RANDOM_STATE )
+#     .reset_index(drop=True)
+# )
+# df_filtered_final_payment[CCY] = (
+#     df_filtered_final_payment['PnL_Original'] / CONVERSION_RATE
+# ).clip(lower=0, upper=10)
+df_payment_base = df_filtered_final[
+    df_filtered_final['Trader'] != NON_HUMAN_LABEL
+].copy()
+df_payment_base[CCY] = (
+    df_payment_base['PnL_Original'] / CONVERSION_RATE
 ).clip(lower=0, upper=PAYMENT_CAP_CCY)
+
+df_filtered_final_payment = (
+    df_payment_base
+    .groupby('Trader', as_index=False)
+    .agg(**{'Markets': ('Id', 'nunique'), CCY: (CCY, 'mean')})
+)
 
 
 save_file_path = os.path.join(save_dir, f'payment_{date_of_session}.csv')

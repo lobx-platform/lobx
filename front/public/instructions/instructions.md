@@ -120,17 +120,17 @@ If you had bought earlier, you could have bought at 110. Your profits are reduce
 
 <br>
 
-At the end of the study, you will receive the earnings from one randomly selected market.
+At the end of the study, you will receive the average of your earnings across all markets (excluding the practice market).
 
-Your earnings correspond to the difference between the lire held at the end and the Liras held at the beginning:
+Your earnings in each market correspond to the difference between the lire held at the end and the Liras held at the beginning:
 
 Liras at the end minus {initialCash}
 
 Your earnings will be converted at the rate of 2 Liras = 1 Euro.
 
-Losses are capped to 0
+Losses in a market are capped to 0, so a market with negative earnings counts as zero in the average.
 
-Total earnings = 5 Euro + earnings from randomly selected market
+Total earnings = 5 Euro + average market earnings
 
 Your earnings will be paid to you in Amazon vouchers. The transfer may take a few working days.
 

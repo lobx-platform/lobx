@@ -15,6 +15,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from api.reward_aggregation import average_positive_rewards
 from utils.logfiles_analysis import calculate_vwap_reward, calculate_trader_specific_metrics
 
 
@@ -246,7 +247,7 @@ class TestAccumulatedRewards:
         if len(all_rewards) <= 1:
             accumulated = 0
         else:
-            accumulated = sum(all_rewards[1:])  # Simplified - actual uses random pick
+            accumulated = average_positive_rewards(all_rewards[1:])
 
         assert accumulated == 0
         print(f"✓ Single market: accumulated_reward=0 (first market skipped)")
@@ -299,6 +300,27 @@ class TestAccumulatedRewards:
         assert 0.0 in rewards_after_first
         assert len(rewards_after_first) == 3
         print(f"✓ Zero trades market included: {rewards_after_first}")
+
+
+class TestAveragePositiveRewards:
+    """Final payment = average of max(reward, 0) across markets (issue #78)."""
+
+    def test_issue_78_example(self):
+        """The example from the issue: 2,1,1,1,-200 -> mean(2,1,1,1,0) = 1."""
+        assert average_positive_rewards([2, 1, 1, 1, -200]) == 1
+
+    def test_all_positive(self):
+        assert average_positive_rewards([8.0, 0, 0, 9.0, 9.0]) == pytest.approx(5.2)
+
+    def test_empty_list(self):
+        assert average_positive_rewards([]) == 0
+
+    def test_single_market(self):
+        assert average_positive_rewards([7.5]) == 7.5
+
+    def test_zero_trade_market_counts_in_denominator(self):
+        """A played-but-untraded market drags the average down as a 0."""
+        assert average_positive_rewards([10.0, 0]) == 5.0
 
 
 class TestEdgeCases:
