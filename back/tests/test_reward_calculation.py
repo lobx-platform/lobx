@@ -15,7 +15,31 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.logfiles_analysis import calculate_vwap_reward
+from utils.logfiles_analysis import calculate_vwap_reward, calculate_trader_specific_metrics
+
+
+class TestNoGoalRewardCap:
+    """No-goal (speculator) reward: floored at 0, cap effectively disabled (issue #78)."""
+
+    def _reward_for_pnl(self, pnl, conversion_rate=2):
+        metrics = calculate_trader_specific_metrics(
+            {"PnL": pnl, "Trades": 4, "Num_Buy": 2, "Num_Sell": 2,
+             "VWAP": 100, "Prices_Buy": [100, 100], "Prices_Sell": [100, 100]},
+            {}, trader_goal=0, conversion_rate=conversion_rate)
+        return metrics["Reward"]
+
+    def test_negative_pnl_floored_to_zero(self):
+        assert self._reward_for_pnl(-200) == 0
+
+    def test_positive_pnl_converts_linearly(self):
+        # PnL / conversion_rate, no longer clipped at 10
+        assert self._reward_for_pnl(10) == pytest.approx(5.0)
+        assert self._reward_for_pnl(20) == pytest.approx(10.0)
+
+    def test_old_cap_no_longer_binds(self):
+        """Was capped at 10 GBP; PnL of 50 Lira must now pay 25 GBP."""
+        assert self._reward_for_pnl(50) == pytest.approx(25.0)
+        assert self._reward_for_pnl(100) == pytest.approx(50.0)
 
 
 class TestBasicRewardCalculation:

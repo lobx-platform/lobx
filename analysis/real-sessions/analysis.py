@@ -16,6 +16,10 @@ date_of_session = DATE
 
 RANDOM_STATE = 123
 
+# Per-market payment cap in CCY (issue #78): was 10, now set very high to
+# effectively disable it while retaining the capping code path.
+PAYMENT_CAP_CCY = 1_000_000
+
 save_dir = os.path.join(pathname, folder, DAYSTATS_SUBFOLDER)
 os.makedirs(save_dir, exist_ok=True)
 
@@ -99,7 +103,7 @@ df_filtered_final_payment = df_filtered_final_payment[
 
 df_filtered_final_payment[CCY] = (
     df_filtered_final_payment['PnL_Original'] / CONVERSION_RATE
-).clip(lower=0, upper=10)
+).clip(lower=0, upper=PAYMENT_CAP_CCY)
 
 
 save_file_path = os.path.join(save_dir, f'payment_{date_of_session}.csv')

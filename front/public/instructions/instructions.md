@@ -128,8 +128,6 @@ Liras at the end minus {initialCash}
 
 Your earnings will be converted at the rate of 2 Liras = 1 Euro.
 
-For each market, earnings will be capped at a maximum of 10 Euro.
-
 Losses are capped to 0
 
 Total earnings = 5 Euro + earnings from randomly selected market
