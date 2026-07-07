@@ -18,6 +18,9 @@ base_settings = default_params.model_dump()
 # Store accumulated rewards per user
 accumulated_rewards: Dict[str, dict] = {}
 
+# Per-market stats snapshots per user (drives the end-of-session summary table)
+accumulated_market_stats: Dict[str, dict] = {}
+
 # Central market handler (owns session_manager, trader_managers, etc.)
 market_handler = SimpleMarketHandler()
 
