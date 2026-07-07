@@ -27,7 +27,7 @@
                 }}</span>
               </div>
               <div class="stat-row">
-                <span class="stat-name">Market Reward (if selected)</span>
+                <span class="stat-name">Market Reward</span>
                 <span class="stat-val">{{
                   formatValue(traderSpecificMetrics.Reward, 'gbp')
                 }}</span>
