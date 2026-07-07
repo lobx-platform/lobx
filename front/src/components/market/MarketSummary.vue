@@ -8,30 +8,70 @@
             <!-- Your Statistics -->
             <div v-if="traderSpecificMetrics" class="stat-section">
               <div class="section-label">Your Statistics</div>
-              <div class="stat-row">
-                <span class="stat-name">Your Trades</span>
-                <span class="stat-val">{{
-                  formatValue(traderSpecificMetrics.Trades, 'number')
-                }}</span>
+              <!-- End of session: one column per market (practice market excluded) -->
+              <div v-if="isLastMarket && marketHistory.length" class="stat-table-wrap">
+                <table class="stat-table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th v-for="m in marketHistory" :key="m.market">Market {{ m.market }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="stat-name">Your Trades</td>
+                      <td v-for="m in marketHistory" :key="m.market" class="stat-val">
+                        {{ formatValue(m.Trades, 'number') }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="stat-name">Inventory Imbalance</td>
+                      <td v-for="m in marketHistory" :key="m.market" class="stat-val">
+                        {{ formatValue(m.Remaining_Trades, 'number') }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="stat-name">PnL</td>
+                      <td v-for="m in marketHistory" :key="m.market" class="stat-val">
+                        {{ formatValue(m.PnL, 'number') }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="stat-name">Market Reward</td>
+                      <td v-for="m in marketHistory" :key="m.market" class="stat-val">
+                        {{ formatValue(m.Reward, 'gbp') }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div class="stat-row">
-                <span class="stat-name">Inventory Imbalance</span>
-                <span class="stat-val">{{
-                  formatValue(traderSpecificMetrics.Remaining_Trades, 'number')
-                }}</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-name">PnL</span>
-                <span class="stat-val">{{
-                  formatValue(traderSpecificMetrics.PnL, 'number')
-                }}</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-name">Market Reward</span>
-                <span class="stat-val">{{
-                  formatValue(traderSpecificMetrics.Reward, 'gbp')
-                }}</span>
-              </div>
+              <!-- During the session: the market just played -->
+              <template v-else>
+                <div class="stat-row">
+                  <span class="stat-name">Your Trades</span>
+                  <span class="stat-val">{{
+                    formatValue(traderSpecificMetrics.Trades, 'number')
+                  }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-name">Inventory Imbalance</span>
+                  <span class="stat-val">{{
+                    formatValue(traderSpecificMetrics.Remaining_Trades, 'number')
+                  }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-name">PnL</span>
+                  <span class="stat-val">{{
+                    formatValue(traderSpecificMetrics.PnL, 'number')
+                  }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-name">Market Reward</span>
+                  <span class="stat-val">{{
+                    formatValue(traderSpecificMetrics.Reward, 'gbp')
+                  }}</span>
+                </div>
+              </template>
             </div>
 
             <div class="stat-section">
@@ -245,6 +285,12 @@ const isNavigating = ref(false)
 const perMarketQuestions = ref({
   marketDescription: null,
   imbalanceReason: null,
+})
+
+const marketHistory = computed(() => {
+  const history = traderSpecificMetrics.value?.Market_History || []
+  // market 0 is the practice market — it does not count toward the payment
+  return history.filter((m) => m.market > 0)
 })
 
 const hasInventoryImbalance = computed(() => {
@@ -555,6 +601,38 @@ onMounted(() => {
   align-items: center;
   padding: 6px 0;
   border-bottom: 1px solid var(--color-border-light);
+}
+
+.stat-table-wrap {
+  overflow-x: auto;
+}
+
+.stat-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stat-table th {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  padding: 6px 8px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stat-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border-light);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stat-table th:first-child,
+.stat-table td.stat-name {
+  text-align: left;
 }
 
 .stat-name {

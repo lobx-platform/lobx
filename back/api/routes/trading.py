@@ -15,7 +15,7 @@ from core.trader_manager import TraderManager
 from core.data_models import TradingParameters
 from ..auth import get_current_user
 from ..shared import (
-    base_settings, market_handler, accumulated_rewards,
+    base_settings, market_handler, accumulated_rewards, accumulated_market_stats,
     get_historical_markets_count,
 )
 from utils.api_responses import success, waiting, not_in_session
@@ -225,6 +225,12 @@ async def get_trader_info(trader_id: str):
                 if not isinstance(reward, (int, float)):
                     reward = 0
                 accumulated_rewards.setdefault(trader_id, {})[internal_session_id] = reward
+                accumulated_market_stats.setdefault(trader_id, {})[internal_session_id] = {
+                    'Trades': trader_specific_metrics.get('Trades', 0),
+                    'Remaining_Trades': trader_specific_metrics.get('Remaining_Trades', 0),
+                    'PnL': trader_specific_metrics.get('PnL', 0),
+                    'Reward': reward,
+                }
 
                 # Final payment: average of max(reward, 0) over all markets
                 # except the first (practice) one (issue #78; replaces the
@@ -234,6 +240,15 @@ async def get_trader_info(trader_id: str):
                     trader_specific_metrics['Accumulated_Reward'] = 0
                 else:
                     trader_specific_metrics['Accumulated_Reward'] = average_positive_rewards(all_rewards[1:])
+
+                # Chronological per-market history for the summary table
+                # (market 0 is the practice market).
+                trader_specific_metrics['Market_History'] = [
+                    {'market': market_number, **stats_snapshot}
+                    for market_number, stats_snapshot in enumerate(
+                        accumulated_market_stats.get(trader_id, {}).values()
+                    )
+                ]
             else:
                 order_book_metrics = {}
                 trader_specific_metrics = {}
