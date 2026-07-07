@@ -15,6 +15,11 @@ import json
 from datetime import datetime
 from typing import Optional
 
+# Cap (in GBP) on the per-market reward of no-goal (speculator) traders.
+# Was 10; set very high to effectively disable it while retaining the capping
+# code path (issue #78). Goal traders were never capped.
+MAX_GBP_TO_GIVE = 1_000_000
+
 
 def calculate_vwap_reward(
     goal: int,
@@ -518,16 +523,16 @@ def calculate_trader_specific_metrics(trader_specific_metrics, general_metrics, 
     # Store the original PnL
     original_pnl = trader_specific_metrics['PnL']
     
-    # Calculate reward with scaling between 3 and 10 based on PnL (for no-goal traders)
+    # Reward for no-goal traders: PnL converted to GBP, floored at 0 and
+    # capped at MAX_GBP_TO_GIVE (currently set high enough to never bind).
     if isinstance(original_pnl, (int, float)):
-        max_pnl_possible = 10 * conversion_rate
-        max_gbp_to_give = 10
+        max_pnl_possible = MAX_GBP_TO_GIVE * conversion_rate
         if original_pnl < 0:
             reward = 0
         else:
             ratio = original_pnl / max_pnl_possible
             real_ratio = min(ratio, 1)
-            reward = real_ratio * max_gbp_to_give
+            reward = real_ratio * MAX_GBP_TO_GIVE
     else:
         reward = '-'
     
