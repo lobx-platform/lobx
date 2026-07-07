@@ -21,7 +21,7 @@ from ..shared import (
 from utils.api_responses import success, waiting, not_in_session
 from utils.logfiles_analysis import order_book_contruction, calculate_trader_specific_metrics
 from utils.calculate_metrics import process_log_file, write_to_csv
-from ..random_picker import pick_random_element_new
+from ..reward_aggregation import average_positive_rewards
 
 router = APIRouter()
 
@@ -212,21 +212,28 @@ async def get_trader_info(trader_id: str):
                     trader_specific_metrics = calculate_trader_specific_metrics(
                         trader_specific_metrics, general_metrics, trader_goal, conversion_rate
                     )
-                    if isinstance(trader_specific_metrics.get('Reward'), (int, float)):
-                        if trader_id not in accumulated_rewards:
-                            accumulated_rewards[trader_id] = {}
-                        accumulated_rewards[trader_id][internal_session_id] = trader_specific_metrics['Reward']
-
-                    all_rewards = list(accumulated_rewards.get(trader_id, {}).values())
-                    if len(all_rewards) <= 1:
-                        trader_specific_metrics['Accumulated_Reward'] = 0
-                    else:
-                        trader_specific_metrics['Accumulated_Reward'] = pick_random_element_new(all_rewards[1:])
                 else:
                     trader_specific_metrics = {
                         'Trades': 0, 'Num_Buy': 0, 'Num_Sell': 0, 'Remaining_Trades': 0,
-                        'PnL': 0, 'Reward': 0, 'Accumulated_Reward': 0,
+                        'PnL': 0, 'Reward': 0,
                     }
+
+                # Record this market for the trader. Markets where the trader
+                # never traded still count as 0-reward markets (issue #78) —
+                # they used to vanish from the payment pool entirely.
+                reward = trader_specific_metrics.get('Reward')
+                if not isinstance(reward, (int, float)):
+                    reward = 0
+                accumulated_rewards.setdefault(trader_id, {})[internal_session_id] = reward
+
+                # Final payment: average of max(reward, 0) over all markets
+                # except the first (practice) one (issue #78; replaces the
+                # seeded random pick of a single market).
+                all_rewards = list(accumulated_rewards.get(trader_id, {}).values())
+                if len(all_rewards) <= 1:
+                    trader_specific_metrics['Accumulated_Reward'] = 0
+                else:
+                    trader_specific_metrics['Accumulated_Reward'] = average_positive_rewards(all_rewards[1:])
             else:
                 order_book_metrics = {}
                 trader_specific_metrics = {}
