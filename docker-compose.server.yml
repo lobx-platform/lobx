@@ -13,15 +13,6 @@ services:
     environment:
       - PORT=8000
       - ROOT_PATH=
-      - FIREBASE_API_KEY=${FIREBASE_API_KEY}
-      - FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
-      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
-      - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
-      - FIREBASE_MESSAGING_SENDER_ID=${FIREBASE_MESSAGING_SENDER_ID}
-      - FIREBASE_APP_ID=${FIREBASE_APP_ID}
-      - FIREBASE_MEASUREMENT_ID=${FIREBASE_MEASUREMENT_ID}
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/config/auth/firebase-service-account.json
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD_required}
     command: sh -c 'uv run uvicorn api.endpoints:app --host 0.0.0.0 --port 8000 --root-path "$${ROOT_PATH:-}"'
     restart: unless-stopped

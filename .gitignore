@@ -98,3 +98,9 @@ audits/
 # Experiment data (PII: consent, payment, questionnaires — never commit)
 data/
 !data/.gitkeep
+
+# One-off stress-test output, generated not authored
+stress_tests/
+
+# Local browser-automation snapshots
+.playwright-cli/

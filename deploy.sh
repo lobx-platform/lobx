@@ -17,11 +17,6 @@ if [ ! -f ".env" ]; then
   exit 1
 fi
 
-if [ ! -f "back/config/auth/firebase-service-account.json" ]; then
-  echo "Missing back/config/auth/firebase-service-account.json"
-  exit 1
-fi
-
 if ! grep -q '^NGROK_AUTHTOKEN=' .env && [ -z "${NGROK_AUTHTOKEN:-}" ]; then
   echo "Missing NGROK_AUTHTOKEN in .env or environment"
   exit 1
@@ -34,7 +29,7 @@ fi
 
 echo "Updating repository from origin/${DEPLOY_BRANCH}..."
 git fetch origin "$DEPLOY_BRANCH"
-git reset --hard "origin/${DEPLOY_BRANCH}"
+git checkout -B "$DEPLOY_BRANCH" "origin/${DEPLOY_BRANCH}"
 
 # Pull the backend image directly rather than via `docker compose pull`.
 #
