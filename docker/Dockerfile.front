@@ -13,8 +13,8 @@ RUN yarn install --frozen-lockfile --production=false
 COPY . .
 
 # Set build environment variables
-ENV VITE_HTTP_URL="https://dthinkr.ngrok.app/"
-ENV VITE_WS_URL="wss://dthinkr.ngrok.app/"
+ENV VITE_HTTP_URL="https://lobx.ngrok.app/"
+ENV VITE_WS_URL="wss://lobx.ngrok.app/"
 ENV VITE_PROLIFIC_REDIRECT_URL="https://app.prolific.com/submissions/complete?cc=C11I8OGE"
 
 # Build the app

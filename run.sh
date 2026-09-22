@@ -36,7 +36,7 @@ elif [ "$MODE" = "prod" ]; then
     echo ""
     echo "✅ production running"
     echo "  backend: http://localhost:8000"
-    echo "  public:  https://dthinkr.ngrok.app"
+    echo "  public:  https://lobx.ngrok.app"
     echo "  frontend: https://london-trader.web.app"
     echo "📝 view logs: docker compose logs -f"
     
