@@ -12,17 +12,17 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Backend image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v7
       with:
         context: ./back
         file: ./docker/Dockerfile.back
@@ -62,21 +62,8 @@ jobs:
               || echo "${name}=${value}" >> .env
           }
 
-          upsert_env_var TURNSTILE_SECRET_KEY '${{ secrets.TURNSTILE_SECRET_KEY }}'
           upsert_env_var ADMIN_PASSWORD '${{ secrets.ADMIN_PASSWORD }}'
           upsert_env_var NGROK_AUTHTOKEN '${{ secrets.NGROK_AUTHTOKEN }}'
-
-          if ! grep -q '^NGROK_AUTHTOKEN=' .env 2>/dev/null && [ -n '${{ secrets.NGROK_YML }}' ]; then
-            cat > /tmp/lobx-ngrok.yml <<'EOF'
-          ${{ secrets.NGROK_YML }}
-          EOF
-            legacy_ngrok_token="$(awk -F': *' '/^authtoken:/ {print $2; exit}' /tmp/lobx-ngrok.yml)"
-            rm -f /tmp/lobx-ngrok.yml
-            upsert_env_var NGROK_AUTHTOKEN "$legacy_ngrok_token"
-          fi
-
-          git fetch origin main
-          git reset --hard origin/main
 
           # Log in to ghcr.io with the workflow's own short-lived token. It expires
           # when this job ends, so no long-lived registry credential is ever stored
@@ -96,10 +83,10 @@ jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: '20'
         cache: 'yarn'
@@ -112,8 +99,6 @@ jobs:
       run: cd front && yarn build
       env:
         VITE_HTTP_URL: https://lobx.ngrok.app/
-        VITE_WS_URL: wss://lobx.ngrok.app/
-        VITE_TURNSTILE_SITE_KEY: 0x4AAAAAACfHKEP_ndWYpu3-
 
     - name: Deploy to Firebase
       uses: FirebaseExtended/action-hosting-deploy@v0

@@ -11,7 +11,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@v11
         with:
           only-labels: 'fix-pushed'
           days-before-stale: 7
