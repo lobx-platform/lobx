@@ -91,7 +91,7 @@ services:
       - "http"
       - "localhost:8000"
       - "--hostname"
-      - "${NGROK_DOMAIN:-dthinkr.ngrok.app}"
+      - "${NGROK_DOMAIN:-lobx.ngrok.app}"
       - "--authtoken"
       - "${NGROK_AUTHTOKEN:?NGROK_AUTHTOKEN_required}"
     network_mode: host  # This gives direct localhost access like your working setup

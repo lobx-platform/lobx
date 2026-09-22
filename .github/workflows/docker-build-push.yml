@@ -111,8 +111,8 @@ jobs:
     - name: Build frontend
       run: cd front && yarn build
       env:
-        VITE_HTTP_URL: https://dthinkr.ngrok.app/
-        VITE_WS_URL: wss://dthinkr.ngrok.app/
+        VITE_HTTP_URL: https://lobx.ngrok.app/
+        VITE_WS_URL: wss://lobx.ngrok.app/
         VITE_TURNSTILE_SITE_KEY: 0x4AAAAAACfHKEP_ndWYpu3-
 
     - name: Deploy to Firebase
