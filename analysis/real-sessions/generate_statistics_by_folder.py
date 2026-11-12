@@ -59,13 +59,19 @@ for index, folder in enumerate(folders):
         informed_id = None
         informed_direction = [all_metrics['Informed_Direction']]
 
+        #for value in all_metrics:
+        #    if 'HUMAN_' in value:
+        #        # Extract the rest of the string after 'Human_'
+        #        human_id = value.split('HUMAN_', 1)[1]
+        #    if 'INFORMED_' in value:
+        #        informed_id = value
+
+        human_traders = [value for value in all_metrics if value.startswith("'HUMAN_")]
+
         for value in all_metrics:
-            if 'HUMAN_' in value:
-                # Extract the rest of the string after 'Human_'
-                human_id = value.split('HUMAN_', 1)[1]
             if 'INFORMED_' in value:
                 informed_id = value
-
+      
 
         order_book['Midprice'] = (order_book['Bid_Price_1'] + order_book['Ask_Price_1']) / 2
         order_book['Trader_IM'] = message_df['Trader'].values
