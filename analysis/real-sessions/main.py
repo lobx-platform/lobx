@@ -15,6 +15,7 @@ import runpy
 import settings
 
 SCRIPTS = [
+     'participant_market_map.py',
     'generate_statistics_by_folder.py',
     'analysis.py',
     'order_book.py',
