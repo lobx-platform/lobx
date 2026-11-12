@@ -18,10 +18,13 @@ df = pd.read_csv(path_daystats + files[0])
 
 #order_book_markets_needed = list( df.loc[df.Trader != 'no_human']['Market'] )
 #order_book_markets_needed = list(df['Market'])
-order_book_markets_needed = list( 
-  df.loc[(df.Trader != 'no_human') | df.Market.str.startswith('SESSION_'),'Market']
-)
+#order_book_markets_needed = list( 
+#  df.loc[(df.Trader != 'no_human') | df.Market.str.startswith('SESSION_'),'Market']
+#)
 
+order_book_markets_needed = list(
+  df.loc[(df.Trader != 'no_human') | df.Market.str.startswith('SESSION_'),'Market'].unique()
+   )
 
 order_books_folder = pathname + '/' + folder + '/' + ORDER_BOOKS_SUBFOLDER
 # for file in os.listdir(order_books_folder):
@@ -35,7 +38,11 @@ def pool_order_books(order_books_folder,order_book_markets_needed,filename_to_ex
     df = pd.read_csv(filename_to_read,header=0)
     all_df = pd.concat([all_df,df],axis=0).reset_index(drop=True)
 
-  all_df.sort_values(by=['Trader', 'Market'], ascending=[True, True], inplace=True)
+  #all_df.sort_values(by=['Trader', 'Market'], ascending=[True, True], inplace=True)
+  all_df.sort_values(by=['Session_ID', 'Market'], ascending=[True, True], inplace=True)
+
+
+  
   all_df.to_csv(filename_to_export,index=False)
 
 
