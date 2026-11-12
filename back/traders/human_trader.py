@@ -215,11 +215,9 @@ class HumanTrader(PausingTrader):
         self._sio_sid = None
         self._sio_room = None
 
-    async def handle_TRADING_STARTED(self, data):
-        """
-        Handle the TRADING_STARTED message by placing a zero-amount order.
-        This ensures that human traders who don't trade still generate records.
-        """
+    async def on_trading_started(self, data):
+        """Record the human participant at market start, even if they never trade."""
+        await super().on_trading_started(data)
         # Get the current market price
         top_bid = None
         top_ask = None
@@ -247,5 +245,3 @@ class HumanTrader(PausingTrader):
         order_type = OrderType.BID
         await self.post_new_order(0, price, order_type)
         
-        # Forward the message to the client
-        await self.post_processing_server_message(data)
