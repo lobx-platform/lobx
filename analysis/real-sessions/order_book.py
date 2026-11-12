@@ -17,7 +17,11 @@ df = pd.read_csv(path_daystats + files[0])
 
 
 #order_book_markets_needed = list( df.loc[df.Trader != 'no_human']['Market'] )
-order_book_markets_needed = list(df['Market'])
+#order_book_markets_needed = list(df['Market'])
+order_book_markets_needed = list( 
+  df.loc[(df.Trader != 'no_human') | df.Market.str.startswith('SESSION_'),'Market']
+)
+
 
 order_books_folder = pathname + '/' + folder + '/' + ORDER_BOOKS_SUBFOLDER
 # for file in os.listdir(order_books_folder):
