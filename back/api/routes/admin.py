@@ -160,11 +160,11 @@ async def run_headless_batch(
 
     async def run_batch():
         if parallel:
-            tasks = [run_single_market(i, start_treatment + i) for i in range(num_markets)]
+            tasks = [run_single_market(i, start_treatment) for i in range(num_markets)]
             await asyncio.gather(*tasks)
         else:
             for i in range(num_markets):
-                await run_single_market(i, start_treatment + i)
+                await run_single_market(i, start_treatment)
                 if i < num_markets - 1:
                     await asyncio.sleep(delay_seconds)
 
