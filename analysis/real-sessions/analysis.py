@@ -34,8 +34,8 @@ df['Session'] = df['Market'].str.rsplit('_', n=1).str[0]
 
 #old does not extract the correct market ID
 #df['Id'] = df['Market'].str.split('_').str[-1].astype(int)
-df['Id'] = df['Market'].str.extract(r'_M(\d+)_')[0].astype(int)
-
+#df['Id'] = df['Market'].str.extract(r'_M(\d+)_')[0].astype(int)
+df['Id'] = df['Market'].str.extract(r'_M(\d+)(?:_|$)')[0].astype(int)
 
 #df_to_exclude = pd.read_csv(filename2, header=0)
 
@@ -45,11 +45,23 @@ df['Id'] = df['Market'].str.extract(r'_M(\d+)_')[0].astype(int)
 df_filtered = df
 
 # Exclude training market M0
+#df_filtered_final = (
+#    df_filtered[df_filtered['Id'] != 0]
+#    .sort_values(by=['Trader', 'Id'])
+#    .reset_index(drop=True)
+#)
+
+# Exclude training market M0 for humans, retain all machine markets
 df_filtered_final = (
-    df_filtered[df_filtered['Id'] != 0]
+    df_filtered[
+        df_filtered['Market'].str.startswith('SESSION_') |
+        (df_filtered['Id'] != 0)
+    ]
     .sort_values(by=['Trader', 'Id'])
     .reset_index(drop=True)
 )
+
+
 
 
 save_file_path = os.path.join(save_dir, f'filtered_{date_of_session}.csv')
