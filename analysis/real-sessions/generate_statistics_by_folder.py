@@ -31,8 +31,8 @@ for index, folder in enumerate(folders):
 
 
     log_files = [logfiles_folder + '/' + f for f in os.listdir(logfiles_folder) if f.endswith('.log')]
-    market_ids = [os.path.basename(p).replace('SESSION_', '').replace('MARKET_', '').replace('.log', '').replace('_', '_', 2) for p in log_files]
-
+    #market_ids = [os.path.basename(p).replace('SESSION_', '').replace('MARKET_', '').replace('.log', '').replace('_', '_', 2) for p in log_files]
+    market_ids = [os.path.splitext(os.path.basename(p))[0] for p in log_files]
     jj = 0
     for logfile in log_files:
         print(logfile)
