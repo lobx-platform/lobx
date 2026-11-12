@@ -161,8 +161,11 @@ def process_logfile(logfile_name):
     message_df, trader_type_recorded  = logfile_to_message(logfile_name)
     all_traders = list(np.unique(message_df.Trader))
 
-    if trader_type_recorded and trader_type_recorded not in all_traders:
-        all_traders = all_traders + [trader_type_recorded]
+    #if trader_type_recorded and trader_type_recorded not in all_traders:
+    #    all_traders = all_traders + [trader_type_recorded]
+    for trader in trader_type_recorded:
+        if trader not in all_traders:
+            all_traders.append(trader)
 
     trades_by_human = {}
     trades_by_informed_machine = {}
