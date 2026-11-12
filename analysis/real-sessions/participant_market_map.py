@@ -96,9 +96,9 @@ def build_rows():
 
         for log_path in sorted(logs_dir.glob("*.log")):
             market_id = log_path.stem
-            trader, status = identify_traders(market_id, assignments)
+            traders, status = identify_traders(market_id, assignments)
             rows.append({"Folder": folder, "Market": market_id,
-                         "Session_ID": trader, "Status": status})
+                         "Session_ID": traders, "Status": status})
     return rows
 
 
