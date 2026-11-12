@@ -23,8 +23,8 @@ participant_market = pd.read_csv(mapping_file, dtype=str)
 
 participant_market = participant_market.set_index(['Folder', 'Market'], verify_integrity=True)
 #==========
-
-day_statistics = pd.DataFrame(columns=['Trader', 'Market', 'Informed_Direction', 'Informed_Passive', 'Informed_Participation_Rate',
+#=========added Session_ID
+day_statistics = pd.DataFrame(columns=['Trader','Session_ID', 'Market', 'Informed_Direction', 'Informed_Passive', 'Informed_Participation_Rate',
                                        'PnL_Original', 'PnL_New','PnL_Original_per_transaction','PnL_New_per_transaction',
                                        'Penalty_Original','Penalty_New','Initial_Midprice', 'Last_Midprice',
                                        'Informed_Machine_VWAP','Informed_Machine_Slippage',
@@ -74,6 +74,9 @@ for index, folder in enumerate(folders):
         order_book['Trader_IM_Direction'] = message_df['Direction'].values
         order_book['Trader_IM_Type'] = message_df['Type'].values
 
+        #===
+        order_book['Session_ID'] = session_id
+        #==
         order_book['Trader'] =  human_id[:-1] if human_id else None
         order_book['Market'] = market_id
         order_book['Treatment'] = folders[0]
@@ -137,8 +140,8 @@ for index, folder in enumerate(folders):
         #keep_remaining_trades = trader_specific_metrics['Remaining_Trades']
         #human_vwap_buy = np.mean(trader_specific_metrics['Prices_Buy']) if trader_specific_metrics['Prices_Buy'] else 0
         #human_vwap_sell = np.mean(trader_specific_metrics['Prices_Sell']) if trader_specific_metrics['Prices_Sell'] else 0
-
-        new_row = pd.DataFrame({'Trader': [human_id[:-1]], 'Market': [market_id],
+        # added Session_ID
+        new_row = pd.DataFrame({'Trader': [human_id[:-1]], 'Session_ID': [session_id], 'Market': [market_id],
                                 'Informed_Direction': informed_direction[index],
                                 'Informed_Passive': informed_passive[index],
                                 'Informed_Participation_Rate': informed_par_rate[index],
