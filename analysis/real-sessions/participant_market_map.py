@@ -21,7 +21,7 @@ from settings import BASE_DIR, DATE, FOLDERS, LOGFILES_SUBFOLDER, DAYSTATS_SUBFO
 
 
 LAB_ID = re.compile(r"LAB_T(\d+)_P(\d+)")
-COLUMNS = ["Folder", "Market", "Trader", "Status"]
+COLUMNS = ["Folder", "Market", "Session_ID", "Status"]
 
 
 def load_market_assignments(json_path):
@@ -97,7 +97,7 @@ def build_rows():
             market_id = log_path.stem
             trader, status = identify_trader(market_id, assignments)
             rows.append({"Folder": folder, "Market": market_id,
-                         "Trader": trader, "Status": status})
+                         "Session_ID": trader, "Status": status})
     return rows
 
 
