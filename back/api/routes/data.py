@@ -59,7 +59,8 @@ async def list_files(path: str = Query("", description="Relative path to browse"
 async def list_files_grouped():
     """Returns log files grouped by session for heatmap display."""
     try:
-        multi_market_pattern = re.compile(r'^(?:COHORT\d+_)?SESSION_(\d+_[a-f0-9]+)_MARKET_(\d+)\.log$', re.IGNORECASE)
+        #multi_market_pattern = re.compile(r'^(?:COHORT\d+_)?SESSION_(\d+_[a-f0-9]+)_MARKET_(\d+)\.log$', re.IGNORECASE)
+        multi_market_pattern = re.compile(r'^SESSION_(\d+_[a-f0-9]+)_T\d+_M(\d+)\.log$', re.IGNORECASE)
         single_market_pattern = re.compile(r'^(?:COHORT\d+_)?SESSION_(\d+_[a-f0-9]+)_trading\.log$', re.IGNORECASE)
         cohort_market_pattern = re.compile(r'^COHORT\d+_SESSION_(\d+_[a-f0-9]+)_trading_market(\d+)\.log$', re.IGNORECASE)
         # New format: T{treatment}_M{market}_{timestamp}.log
