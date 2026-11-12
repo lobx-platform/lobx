@@ -14,6 +14,16 @@ informed_passive = INFORMED_PASSIVE
 informed_par_rate = INFORMED_PAR_RATE
 date_of_session = DATE
 
+
+#========= Load the market-to-session mapping
+mapping_file = os.path.join(BASE_DIR, folders[0], DAYSTATS_SUBFOLDER,
+                            f'participant_market_{date_of_session}.csv')
+
+participant_market = pd.read_csv(mapping_file, dtype=str)
+
+participant_market = participant_market.set_index(['Folder', 'Market'], verify_integrity=True)
+#==========
+
 day_statistics = pd.DataFrame(columns=['Trader', 'Market', 'Informed_Direction', 'Informed_Passive', 'Informed_Participation_Rate',
                                        'PnL_Original', 'PnL_New','PnL_Original_per_transaction','PnL_New_per_transaction',
                                        'Penalty_Original','Penalty_New','Initial_Midprice', 'Last_Midprice',
@@ -38,6 +48,11 @@ for index, folder in enumerate(folders):
         print(logfile)
         jj += 1
         market_id = market_ids[jj-1]
+        #===================
+        market_mapping = participant_market.loc[(folder, market_id)]
+        session_id = market_mapping['Session_ID']
+        mapping_status = market_mapping['Status']
+        #===================
         message_df, all_metrics, order_book = process_logfile(logfile)
 
         human_id = None
