@@ -376,7 +376,7 @@ for market in market_available:
         last_row = new_df_i.iloc[-1]
         for jj in range(platform_buy_shares):
             new_row = { #'Trader':last_row['Trader'],
-                        Session_ID': last_row['Session_ID'],
+                        'Session_ID': last_row['Session_ID'],
                        'Market':last_row['Market'],
                        'Treatment': last_row['Treatment'],
                        'Informed_Passive': last_row['Informed_Passive'],
@@ -405,7 +405,7 @@ for market in market_available:
         human_buy_prices_left = human_buy_prices[len(human_sell_prices):]  
         for new_price in human_buy_prices_left:
             new_row = { #'Trader':last_row['Trader'],
-                        Session_ID': last_row['Session_ID'],
+                        'Session_ID': last_row['Session_ID'],
                        'Market':last_row['Market'],
                        'Treatment': last_row['Treatment'],
                        'Informed_Passive': last_row['Informed_Passive'],
@@ -439,7 +439,7 @@ for market in market_available:
         last_row = new_df_i.iloc[-1]
         for jj in range(platform_sell_shares):
             new_row = { #'Trader':last_row['Trader'],
-                        Session_ID': last_row['Session_ID'],
+                        'Session_ID': last_row['Session_ID'],
                        'Market':last_row['Market'],
                        'Treatment': last_row['Treatment'],
                        'Informed_Passive': last_row['Informed_Passive'],
@@ -468,7 +468,7 @@ for market in market_available:
         human_sell_prices_left = human_sell_prices[len(human_buy_prices):]  
         for new_price in human_sell_prices_left:
             new_row = { #'Trader':last_row['Trader'],
-                        Session_ID': last_row['Session_ID'],
+                        'Session_ID': last_row['Session_ID'],
                        'Market':last_row['Market'],
                        'Treatment': last_row['Treatment'],
                        'Informed_Passive': last_row['Informed_Passive'],
