@@ -50,10 +50,11 @@ def load_market_assignments(json_path):
     return assignments
 
 
-def identify_trader(market_id, assignments):
+def identify_traders(market_id, assignments):
     """Return (session label, status) for one logfile market ID."""
+    
     if market_id.startswith("SESSION_"):
-        return "no_human", "machine"
+        return "machine_" + market_id, "machine"
 
     candidates = assignments.get(market_id)
     if not candidates:
@@ -95,7 +96,7 @@ def build_rows():
 
         for log_path in sorted(logs_dir.glob("*.log")):
             market_id = log_path.stem
-            trader, status = identify_trader(market_id, assignments)
+            trader, status = identify_traders(market_id, assignments)
             rows.append({"Folder": folder, "Market": market_id,
                          "Session_ID": trader, "Status": status})
     return rows
