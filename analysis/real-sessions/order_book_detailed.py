@@ -18,7 +18,9 @@ df = pd.read_csv(input_file)
 
 df['Datetime'] = pd.to_datetime(df.Timestamp)
 
-df_sorted = df.sort_values(by=['Trader', 'Market', 'Datetime'])
+#df_sorted = df.sort_values(by=['Trader', 'Market', 'Datetime'])
+df_sorted = df.sort_values(by=['Session_ID', 'Market', 'Datetime'])
+
 
 df_sorted['Time'] = df_sorted.groupby('Market')['Datetime'].transform(lambda x: (x - x.iloc[0]).dt.total_seconds())
 
@@ -56,7 +58,8 @@ for market in market_available:
         row_df = df_market_i.iloc[i]
         #print(row_df)
         #print('------')
-        trader = row_df['Trader']
+        #trader = row_df['Trader']
+        session_id = row_df['Session_ID']
         market = row_df['Market']
         
         trader_im = row_df['Trader_IM']
@@ -236,7 +239,8 @@ for market in market_available:
 
 
         # report and save line
-        new_line = {'Trader': [trader],
+        new_line = {#'Trader': [trader],
+                    'Session_ID': [session_id],
                     'Market': [market],
                     'Treatment': [treatment],
                     'Informed_Passive': [informed_passive],
@@ -371,7 +375,8 @@ for market in market_available:
         platform_buy_shares = human_buy_trades - human_sell_trades
         last_row = new_df_i.iloc[-1]
         for jj in range(platform_buy_shares):
-            new_row = { 'Trader':last_row['Trader'],
+            new_row = { #'Trader':last_row['Trader'],
+                        Session_ID': last_row['Session_ID'],
                        'Market':last_row['Market'],
                        'Treatment': last_row['Treatment'],
                        'Informed_Passive': last_row['Informed_Passive'],
@@ -399,7 +404,8 @@ for market in market_available:
         
         human_buy_prices_left = human_buy_prices[len(human_sell_prices):]  
         for new_price in human_buy_prices_left:
-            new_row = { 'Trader':last_row['Trader'],
+            new_row = { #'Trader':last_row['Trader'],
+                        Session_ID': last_row['Session_ID'],
                        'Market':last_row['Market'],
                        'Treatment': last_row['Treatment'],
                        'Informed_Passive': last_row['Informed_Passive'],
@@ -432,7 +438,8 @@ for market in market_available:
         platform_sell_shares = human_sell_trades - human_buy_trades
         last_row = new_df_i.iloc[-1]
         for jj in range(platform_sell_shares):
-            new_row = { 'Trader':last_row['Trader'],
+            new_row = { #'Trader':last_row['Trader'],
+                        Session_ID': last_row['Session_ID'],
                        'Market':last_row['Market'],
                        'Treatment': last_row['Treatment'],
                        'Informed_Passive': last_row['Informed_Passive'],
@@ -460,7 +467,8 @@ for market in market_available:
 
         human_sell_prices_left = human_sell_prices[len(human_buy_prices):]  
         for new_price in human_sell_prices_left:
-            new_row = { 'Trader':last_row['Trader'],
+            new_row = { #'Trader':last_row['Trader'],
+                        Session_ID': last_row['Session_ID'],
                        'Market':last_row['Market'],
                        'Treatment': last_row['Treatment'],
                        'Informed_Passive': last_row['Informed_Passive'],
@@ -493,7 +501,8 @@ for market in market_available:
     
     
     market_i_metrics = {
-        'Trader': [trader],
+        #'Trader': [trader],
+        'Session_ID': [session_id],
         'Market': [market],
         'Treatment': [treatment],
         'Informed_Passive': [informed_passive],
