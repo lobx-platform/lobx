@@ -114,9 +114,15 @@ df_filtered_final.to_csv(save_file_path, index=False)
 # df_filtered_final_payment[CCY] = (
 #     df_filtered_final_payment['PnL_Original'] / CONVERSION_RATE
 # ).clip(lower=0, upper=10)
-df_payment_base = df_filtered_final[
-    df_filtered_final['Trader'] != NON_HUMAN_LABEL
-].copy()
+
+
+#df_payment_base = df_filtered_final[
+#    df_filtered_final['Trader'] != NON_HUMAN_LABEL
+#].copy()
+#new version with Session_ID
+df_payment_base = df_filtered_final[ (df_filtered_final['Trader'] != NON_HUMAN_LABEL)
+            & ~df_filtered_final['Session_ID'].isin(['Error_conflated', 'Error_missing'])].copy()
+
 df_payment_base[CCY] = (
     df_payment_base['PnL_Original'] / CONVERSION_RATE
 ).clip(lower=0, upper=PAYMENT_CAP_CCY)
