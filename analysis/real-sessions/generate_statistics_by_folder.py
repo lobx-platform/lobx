@@ -83,7 +83,8 @@ for index, folder in enumerate(folders):
         #===
         order_book['Session_ID'] = session_id
         #==
-        order_book['Trader'] =  human_id[:-1] if human_id else None
+        #order_book['Trader'] =  human_id[:-1] if human_id else None
+        
         order_book['Market'] = market_id
         order_book['Treatment'] = folders[0]
         order_book['Informed_Passive'] = informed_passive[0]
