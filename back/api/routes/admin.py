@@ -145,7 +145,8 @@ async def run_headless_batch(
                 params_dict.update(treatment)
             params_dict["predefined_goals"] = []
             params = TradingParameters(**params_dict)
-            market_id = f"{session_id}_MARKET_{market_index}"
+            #market_id = f"{session_id}_MARKET_{market_index}"
+            market_id = f"{session_id}_T{treatment_idx}_M{market_index}"
             manager = TraderManager(params, market_id=market_id)
             market_handler.session_manager.active_markets[market_id] = manager
             print(f"Starting market {market_index} (treatment {treatment_idx}): {market_id}")
