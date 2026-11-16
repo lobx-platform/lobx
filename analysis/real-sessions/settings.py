@@ -41,13 +41,11 @@ LOGFILES_SUBFOLDER = 'Logfiles'        # raw .log files
 DAYSTATS_SUBFOLDER = 'Daystatistics'   # all aggregate outputs are written here
 ORDER_BOOKS_SUBFOLDER = 'Order_Books'  # per-market order-book .csv files (built by stage 1)
 
-# Session metadata. Only used to label columns in all_<DATE>.csv (one entry
-# per folder in FOLDERS below); does not affect any computation.
-INFORMED_PASSIVE = ['Mixed']
-INFORMED_PAR_RATE = ['Mixed']
+# Session metadata used to label columns in all_<DATE>.csv.
+INFORMED_PASSIVE = 'Mixed'
+INFORMED_PAR_RATE = 'Mixed'
 
 # === DERIVED (no need to edit) =============================================
-FOLDERS = [FOLDER]
 FOLDER_DIR = os.path.join(BASE_DIR, FOLDER)
 LOGFILES_DIR = os.path.join(FOLDER_DIR, LOGFILES_SUBFOLDER)
 DAYSTATS_DIR = os.path.join(FOLDER_DIR, DAYSTATS_SUBFOLDER)

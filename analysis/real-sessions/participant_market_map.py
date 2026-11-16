@@ -17,7 +17,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-from settings import BASE_DIR, DATE, FOLDERS, LOGFILES_SUBFOLDER, DAYSTATS_SUBFOLDER
+from settings import DATE, LOGFILES_DIR, DAYSTATS_DIR
 
 
 LAB_ID = re.compile(r"LAB_T(\d+)_P(\d+)")
@@ -84,30 +84,26 @@ def identify_traders(market_id, assignments):
 def build_rows():
     """Return exactly one mapping row per available .log file."""
     rows = []
-    for folder in FOLDERS:
-        logs_dir = Path(BASE_DIR) / folder / LOGFILES_SUBFOLDER
-        if not logs_dir.is_dir():
-            raise FileNotFoundError(f"Logfiles directory not found: {logs_dir}")
+    logs_dir = Path(LOGFILES_DIR)
+    if not logs_dir.is_dir():
+        raise FileNotFoundError(f"Logfiles directory not found: {logs_dir}")
 
-        json_path = logs_dir / "parameters" / "parameter_history.json"
-        assignments = load_market_assignments(json_path) if json_path.is_file() else {}
-        if not json_path.is_file():
-            print(f"Warning: metadata file not found: {json_path}")
+    json_path = logs_dir / "parameters" / "parameter_history.json"
+    assignments = load_market_assignments(json_path) if json_path.is_file() else {}
+    if not json_path.is_file():
+        print(f"Warning: metadata file not found: {json_path}")
 
-        for log_path in sorted(logs_dir.glob("*.log")):
-            market_id = log_path.stem
-            traders, status = identify_traders(market_id, assignments)
-            rows.append({"Market": market_id,
-                         "Session_ID": traders, "Status": status})
+    for log_path in sorted(logs_dir.glob("*.log")):
+        market_id = log_path.stem
+        traders, status = identify_traders(market_id, assignments)
+        rows.append({"Market": market_id,
+                     "Session_ID": traders, "Status": status})
     return rows
 
 
 def main():
-    if not FOLDERS:
-        raise ValueError("FOLDERS in settings.py must not be empty")
-
     rows = build_rows()
-    output_dir = Path(BASE_DIR) / FOLDERS[0] / DAYSTATS_SUBFOLDER
+    output_dir = Path(DAYSTATS_DIR)
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / f"participant_market_{DATE}.csv"
 
