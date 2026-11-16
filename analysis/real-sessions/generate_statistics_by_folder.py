@@ -10,6 +10,7 @@ from settings import (FOLDER, DATE, INFORMED_PASSIVE, INFORMED_PAR_RATE,
 
 date_of_session = DATE
 
+good_status =  ('matched', 'machine')
 
 #========= Load the market-to-session mapping
 mapping_file = os.path.join(DAYSTATS_DIR, f'participant_market_{date_of_session}.csv')
@@ -42,6 +43,9 @@ for logfile in log_files:
     market_mapping = participant_market.loc[market_id]
     session_id = market_mapping['Session_ID']
     mapping_status = market_mapping['Status']
+
+    if mapping_status not in good_status:
+    continue
     #===================
     message_df, all_metrics, order_book = process_logfile(logfile)
 
