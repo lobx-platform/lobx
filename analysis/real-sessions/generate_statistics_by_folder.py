@@ -45,7 +45,7 @@ for logfile in log_files:
     mapping_status = market_mapping['Status']
 
     if mapping_status not in good_status:
-    continue
+      continue
     #===================
     message_df, all_metrics, order_book = process_logfile(logfile)
 
