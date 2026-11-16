@@ -21,7 +21,7 @@ mapping_file = os.path.join(BASE_DIR, folders[0], DAYSTATS_SUBFOLDER,
 
 participant_market = pd.read_csv(mapping_file, dtype=str)
 
-participant_market = participant_market.set_index(['Folder', 'Market'], verify_integrity=True)
+participant_market = participant_market.set_index('Market', verify_integrity=True)
 #==========
 #=========added Session_ID
 day_statistics = pd.DataFrame(columns=['Trader','Session_ID', 'Market', 'Informed_Direction', 'Informed_Passive', 'Informed_Participation_Rate',
@@ -49,7 +49,7 @@ for index, folder in enumerate(folders):
         jj += 1
         market_id = market_ids[jj-1]
         #===================
-        market_mapping = participant_market.loc[(folder, market_id)]
+        market_mapping = participant_market.loc[market_id]
         session_id = market_mapping['Session_ID']
         mapping_status = market_mapping['Status']
         #===================
